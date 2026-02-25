@@ -1,1155 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScreenMind — AI Resume Intelligence</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3d;
-    --accent: #6ee7b7;
-    --accent2: #818cf8;
-    --warn: #fbbf24;
-    --danger: #f87171;
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
-    --font-display: 'DM Serif Display', serif;
-    --font-mono: 'DM Mono', monospace;
-    --font-body: 'DM Sans', sans-serif;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Background grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(110,231,183,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(110,231,183,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 24px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Header */
-  header {
-    padding: 40px 0 32px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 48px;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .logo-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-  }
-
-  .logo-text {
-    font-family: var(--font-display);
-    font-size: 26px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .tagline {
-    color: var(--muted);
-    font-size: 14px;
-    font-family: var(--font-mono);
-    letter-spacing: 0.05em;
-  }
-
-  /* API Key setup */
-  #setup-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    margin-bottom: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #setup-section::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: 22px;
-    margin-bottom: 8px;
-    color: var(--text);
-  }
-
-  .section-desc {
-    color: var(--muted);
-    font-size: 14px;
-    margin-bottom: 24px;
-    line-height: 1.6;
-  }
-
-  .input-group {
-    margin-bottom: 20px;
-  }
-
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 8px;
-    letter-spacing: 0.02em;
-  }
-
-  input[type="text"], input[type="password"], textarea, select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 14px;
-    padding: 12px 16px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(110,231,183,0.08);
-  }
-
-  textarea { resize: vertical; line-height: 1.6; }
-
-  .api-input-row {
-    display: flex;
-    gap: 10px;
-  }
-
-  .api-input-row input { flex: 1; font-family: var(--font-mono); font-size: 13px; }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--accent), #34d399);
-    color: #0a0a0f;
-  }
-
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(110,231,183,0.25); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  .btn-secondary {
-    background: var(--surface2);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-  .btn-small { padding: 8px 16px; font-size: 13px; }
-
-  /* API status */
-  .api-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-family: var(--font-mono);
-    padding: 6px 12px;
-    border-radius: 6px;
-    margin-top: 12px;
-  }
-
-  .api-status.connected { background: rgba(110,231,183,0.1); color: var(--accent); }
-  .api-status.error { background: rgba(248,113,113,0.1); color: var(--danger); }
-
-  .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: currentColor;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  /* Main form */
-  #main-form {
-    display: none;
-  }
-
-  #main-form.visible { display: block; }
-
-  .form-grid {
-    display: grid;
-    gap: 24px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent2), transparent);
-    opacity: 0.6;
-  }
-
-  /* ICP Checklist */
-  .icp-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  @media (max-width: 600px) {
-    .icp-grid { grid-template-columns: 1fr; }
-  }
-
-  /* File upload */
-  .file-drop {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 32px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-
-  .file-drop:hover, .file-drop.dragover {
-    border-color: var(--accent);
-    background: rgba(110,231,183,0.04);
-  }
-
-  .file-drop input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-
-  .file-icon { font-size: 32px; margin-bottom: 12px; }
-  .file-text { color: var(--muted); font-size: 14px; }
-  .file-text strong { color: var(--accent); }
-  .file-name { margin-top: 10px; font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
-
-  /* Action row */
-  .action-row {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 8px;
-  }
-
-  /* Results */
-  #results-section {
-    display: none;
-    margin-top: 32px;
-  }
-
-  #results-section.visible { display: block; }
-
-  .score-hero {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-    margin-bottom: 32px;
-    padding: 32px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .score-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-
-  .score-circle {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  .score-circle svg {
-    position: absolute;
-    inset: 0;
-    transform: rotate(-90deg);
-  }
-
-  .score-number {
-    font-family: var(--font-display);
-    font-size: 38px;
-    line-height: 1;
-    position: relative;
-    z-index: 1;
-  }
-
-  .score-label {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--muted);
-    position: relative;
-    z-index: 1;
-    margin-top: 2px;
-  }
-
-  .score-verdict {
-    flex: 1;
-  }
-
-  .verdict-badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 12px;
-  }
-
-  .verdict-badge.strong { background: rgba(110,231,183,0.15); color: var(--accent); }
-  .verdict-badge.good { background: rgba(129,140,248,0.15); color: var(--accent2); }
-  .verdict-badge.weak { background: rgba(251,191,36,0.15); color: var(--warn); }
-  .verdict-badge.poor { background: rgba(248,113,113,0.15); color: var(--danger); }
-
-  .verdict-title {
-    font-family: var(--font-display);
-    font-size: 24px;
-    margin-bottom: 8px;
-  }
-
-  .verdict-summary {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  /* Breakdown cards */
-  .breakdown-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  @media (max-width: 600px) {
-    .breakdown-grid { grid-template-columns: 1fr; }
-    .score-hero { flex-direction: column; text-align: center; }
-  }
-
-  .breakdown-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-  }
-
-  .breakdown-card h4 {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 12px;
-  }
-
-  .breakdown-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .breakdown-item:last-child { margin-bottom: 0; }
-
-  .check { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
-  .cross { color: var(--danger); flex-shrink: 0; margin-top: 2px; }
-  .warn-icon { color: var(--warn); flex-shrink: 0; margin-top: 2px; }
-
-  /* ICP match table */
-  .icp-match-table {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .icp-match-table h4 {
-    padding: 16px 20px;
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .icp-row {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
-    gap: 12px;
-    font-size: 14px;
-  }
-
-  .icp-row:last-child { border-bottom: none; }
-  .icp-row-label { flex: 1; color: var(--muted); font-family: var(--font-mono); font-size: 13px; }
-  .icp-row-value { flex: 2; color: var(--text); }
-  .icp-row-status { flex-shrink: 0; }
-
-  /* Recruiter note */
-  .recruiter-note {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent2);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-  }
-
-  .recruiter-note h4 {
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--accent2);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-  }
-
-  .recruiter-note p {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text);
-    font-style: italic;
-  }
-
-  /* Loading */
-  .loading-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(8px);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .loading-overlay.visible { display: flex; }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading-text {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-  }
-
-  .loading-sub {
-    font-size: 13px;
-    color: var(--muted);
-    font-family: var(--font-mono);
-  }
-
-  /* Misc */
-  .hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 6px;
-    font-family: var(--font-mono);
-  }
-
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 8px 0 20px;
-  }
-
-  .new-screen-btn {
-    margin-top: 24px;
-    text-align: center;
-  }
-
-  footer {
-    text-align: center;
-    padding: 40px 0 24px;
-    color: var(--muted);
-    font-size: 13px;
-    font-family: var(--font-mono);
-  }
-
-  .error-msg {
-    background: rgba(248,113,113,0.1);
-    border: 1px solid rgba(248,113,113,0.3);
-    border-radius: 8px;
-    padding: 12px 16px;
-    color: var(--danger);
-    font-size: 13px;
-    margin-top: 12px;
-    display: none;
-  }
-
-  .error-msg.visible { display: block; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ScreenMind • MVP Demo (India Focus)</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1830;
+      --muted:#9bb0d1;
+      --text:#eaf2ff;
+      --accent:#2f7df6;
+      --gold:#f7c948;
+      --danger:#ff5c7a;
+      --success:#1fc77e;
+      --border:rgba(255,255,255,0.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 800px at 10% 0%, #152345, #0b1220);
+      color:var(--text);
+    }
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:18px 22px;border-bottom:1px solid var(--border);backdrop-filter: blur(6px);
+      position:sticky;top:0;background:rgba(11,18,32,0.7);
+    }
+    .logo{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:0.3px}
+    .logo-badge{
+      width:36px;height:36px;border-radius:10px;
+      background: conic-gradient(from 200deg, var(--gold), #ffd36b, #a5852a, var(--gold));
+      position:relative;display:grid;place-items:center;
+      box-shadow: 0 6px 22px rgba(247,201,72,0.25), inset 0 0 22px rgba(255,255,255,0.25);
+    }
+    .logo-badge svg{width:20px;height:20px;filter: drop-shadow(0 2px 6px rgba(0,0,0,0.45));}
+    .logo-text{font-size:18px}
+    .tag{padding:6px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px}
+    main{max-width:1100px;margin:24px auto;padding:0 16px 80px}
+    .grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.0));
+      border:1px solid var(--border); border-radius:16px; padding:16px 16px 18px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    h2{font-size:18px;margin:0 0 10px}
+    textarea, input, select{
+      width:100%; background:#0b132a; color:var(--text); border:1px solid var(--border);
+      border-radius:12px; padding:12px 12px; resize:vertical; min-height:120px; font-size:14px;
+    }
+    .row{display:flex; gap:10px; align-items:center; flex-wrap: wrap;}
+    .btn{
+      background: linear-gradient(90deg, var(--accent), #5aa2ff 60%);
+      color:white; border:none; border-radius:12px; padding:10px 14px; font-weight:600;
+      cursor:pointer; transition: transform .04s ease, box-shadow .2s ease;
+      box-shadow: 0 10px 24px rgba(47,125,246,0.28);
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:12px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th, td{border-bottom:1px solid var(--border);padding:10px 8px;vertical-align:top}
+    th{text-align:left;font-size:12px;color:#c8d7f2}
+    .score{font-weight:800}
+    .score.good{color:var(--success)}
+    .score.mid{color:#ffd36b}
+    .score.bad{color:var(--danger)}
+    .chips{display:flex; gap:6px; flex-wrap:wrap}
+    .chip{border:1px solid var(--border); border-radius:10px; padding:4px 8px; font-size:12px; color:#d9e6ff}
+    .footer{
+      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(11,18,32,0.85); border:1px solid var(--border); border-radius:14px; padding:8px 12px;
+      color:var(--muted); font-size:12px; display:flex; gap:8px; align-items:center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+    .blurred{ filter: blur(3px); opacity: 0.85}
+    .threshold{accent-color: var(--accent)}
+    .badge{padding:3px 8px;border-radius:999px;font-size:11px;border:1px solid var(--border);color:var(--muted)}
+    .goodbadge{border-color:rgba(31,199,126,0.4);color:#aaf1d3}
+    .badbadge{border-color:rgba(255,92,122,0.4);color:#ffd0da}
+    .gold{color:var(--gold)}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .small{font-size:12px}
+    .note{font-size:12px;color:#9db4e7}
+  </style>
 </head>
 <body>
-
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text">SCREENING IN PROGRESS</div>
-  <div class="loading-sub" id="loadingStep">Parsing resume...</div>
-</div>
-
-<div class="container">
   <header>
     <div class="logo">
-      <div class="logo-icon">🧠</div>
-      <span class="logo-text">ScreenMind</span>
+      <div class="logo-badge" title="ScreenMind">
+        <!-- Symbol-only logo -->
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 12c0-5 4-9 9-9s9 4 9 9" stroke="#0b1220" stroke-width="3" stroke-linecap="round"/>
+          <path d="M7 12c0-2.761 2.239-5 5-5" stroke="#0b1220" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="19" cy="5" r="2" fill="#0b1220"/>
+        </svg>
+      </div>
+      <div class="logo-text">ScreenMind <span class="tag">India Soft Launch</span></div>
     </div>
-    <div class="tagline">// ICP-driven resume intelligence · not just keywords</div>
+    <div class="row">
+      <span class="pill">Instant ICPs</span>
+      <span class="pill">Batch Scoring</span>
+      <span class="pill">Explainable AI</span>
+    </div>
   </header>
 
-  <!-- Step 0: API Key Setup -->
-  <div id="setup-section">
-    <div class="section-label">Step 0 · One-time setup</div>
-    <div class="section-title">Connect your Groq API Key</div>
-    <div class="section-desc">Your key stays in your browser only — never sent anywhere except directly to Google's API. Get a free key at <strong>console.groq.com</strong> → API Keys → Create API Key.</div>
-    <div class="api-input-row">
-      <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off" />
-      <button class="btn btn-primary btn-small" onclick="saveApiKey()">Connect</button>
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h2>📄 Job Description (Paste or use sample)</h2>
+        <textarea id="jd" placeholder="Paste the JD here..."></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="sampleJD">Use Sample JD – Sr Backend Engineer (Cybersecurity)</button>
+          <button class="btn-ghost" id="clearJD">Clear</button>
+        </div>
+        <p class="note">Focus: India hiring • Salary in INR • Sample data is anonymized/blurred for public demo.</p>
+      </section>
+
+      <section class="card">
+        <h2>🧠 Generated ICP (from JD)</h2>
+        <div id="icpBox" class="muted">Click “Generate ICP” to extract skills, experience, and traits.</div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="genICP">Generate ICP</button>
+        </div>
+      </section>
     </div>
-    <div class="hint">Your key is saved locally in your browser. You only need to do this once.</div>
-    <div id="apiStatus"></div>
-    <div class="error-msg" id="apiError"></div>
-  </div>
 
-  <!-- Main screening form -->
-  <div id="main-form">
-    <div class="form-grid">
-
-      <!-- Job Description -->
-      <div class="card">
-        <div class="section-label">Step 1 · Role definition</div>
-        <div class="section-title">Job Description</div>
-        <hr class="divider">
-        <div class="input-group">
-          <label>Paste the full job description</label>
-          <textarea id="jobDescription" rows="8" placeholder="Paste the complete job description here — title, responsibilities, requirements, everything..."></textarea>
+    <section class="card" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <h2>👤 Candidate Resumes (10 demo profiles)</h2>
+        <div class="row">
+          <label class="small">Move/Drop threshold: <span id="threshLabel">75</span>%</label>
+          <input id="threshold" class="threshold" type="range" min="0" max="100" value="75"/>
+          <button class="btn" id="scoreBtn">Score All</button>
+          <button class="btn-ghost" id="exportBtn">Export Shortlist CSV</button>
         </div>
       </div>
+      <div id="candidates"></div>
+    </section>
+  </main>
 
-      <!-- ICP Checklist -->
-      <div class="card">
-        <div class="section-label">Step 2 · Ideal Candidate Profile</div>
-        <div class="section-title">ICP Checklist</div>
-        <hr class="divider">
-        <div class="icp-grid">
-          <div class="input-group">
-            <label>Must-have skill #1</label>
-            <input type="text" id="skill1" placeholder="e.g. Python, SQL, React" />
-          </div>
-          <div class="input-group">
-            <label>Must-have skill #2</label>
-            <input type="text" id="skill2" placeholder="e.g. Machine Learning, AWS" />
-          </div>
-          <div class="input-group">
-            <label>Must-have skill #3</label>
-            <input type="text" id="skill3" placeholder="e.g. Team leadership" />
-          </div>
-          <div class="input-group">
-            <label>Min. years of experience</label>
-            <input type="text" id="minYears" placeholder="e.g. 3+ years" />
-          </div>
-          <div class="input-group">
-            <label>Industry/domain experience</label>
-            <input type="text" id="industry" placeholder="e.g. SaaS, Fintech, Healthcare" />
-          </div>
-          <div class="input-group">
-            <label>Absolute deal-breaker</label>
-            <input type="text" id="dealbreaker" placeholder="e.g. No management experience" />
-          </div>
-        </div>
-        <div class="input-group" style="margin-top:8px">
-          <label>Nice-to-have / bonus criteria</label>
-          <input type="text" id="niceToHave" placeholder="e.g. Startup experience, open source contributions" />
-        </div>
-      </div>
-
-      <!-- Resume Upload -->
-      <div class="card">
-        <div class="section-label">Step 3 · Candidate resume</div>
-        <div class="section-title">Add Resume</div>
-        <hr class="divider">
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <button id="tabUpload" onclick="switchTab('upload')" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--accent);background:rgba(110,231,183,0.1);color:var(--accent);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;">📎 Upload .txt File</button>
-          <button id="tabPaste" onclick="switchTab('paste')" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;">📋 Paste Text (PDF/DOC)</button>
-        </div>
-        <div id="uploadPanel">
-          <div class="file-drop" id="fileDrop">
-            <input type="file" id="resumeFile" accept=".txt,.pdf,.doc,.docx" onchange="handleFileSelect(this)" />
-            <div class="file-icon">📄</div>
-            <div class="file-text">Drop resume here or <strong>click to upload</strong></div>
-            <div class="file-text" style="font-size:12px;margin-top:4px;">PDF · DOCX · DOC · TXT — all supported</div>
-            <div class="file-name" id="fileName"></div>
-          </div>
-          <div id="extractStatus" class="hint" style="margin-top:10px;display:none;"></div>
-        </div>
-        <div id="pastePanel" style="display:none;">
-          <textarea id="resumeText" rows="12" placeholder="Paste resume text here — Ctrl+A in your PDF → Ctrl+C → Ctrl+V"></textarea>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="action-row">
-      <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
-      <button class="btn btn-primary" id="screenBtn" onclick="runScreening()">
-        <span>⚡</span> Run ICP Screening
-      </button>
-    </div>
-    <div class="error-msg" id="formError"></div>
+  <div class="footer">
+    <span>Built by <strong class="gold">Muralidhar K</strong> • ScreenMind © 2025 • Demo mode (blurred)</span>
   </div>
 
-  <!-- Results -->
-  <div id="results-section">
-    <div id="resultsContent"></div>
-    <div class="new-screen-btn">
-      <button class="btn btn-secondary" onclick="newScreening()">← Screen another candidate</button>
-    </div>
-  </div>
+  <script>
+    const sampleJDText = `Role: Senior Backend Engineer – Cybersecurity (India)
+Location: Hyderabad (Hybrid) | Compensation: ₹45–65 LPA
+Must-haves:
+- 6–10 years backend development (Go or Java)
+- Distributed systems, microservices, event-driven architecture
+- Security: OAuth2/OIDC, JWT, RBAC, key management
+- Datastores: Postgres, Redis, Kafka
+- Cloud: AWS (EKS, IAM), CI/CD
+- Code quality, unit/integration testing
+Nice-to-haves: Rust, gRPC, Terraform, SOC2 exposure
+Traits: Ownership, low-ego collaboration, clarity in written comms, bias to ship securely`;
 
-  <footer>
-    ScreenMind · AI Resume Intelligence · Powered by Groq
-  </footer>
-</div>
+    const sampleResumes = [
+      {name:"A.K.", text:`Ex-Flipkart / Go + Kafka + Redis. 8 yrs building microservices at scale. Designed RBAC service, JWT auth, key rotation. AWS EKS, Terraform, CI/CD. Hyderabad.`},
+      {name:"B.R.", text:`Java Spring Boot 9 yrs, some Kafka, Postgres. OAuth2, OIDC basics. Built payments microservices. Strong testing culture. Worked on Azure mostly.`},
+      {name:"C.S.", text:`Go 7 yrs, gRPC, protobuf, Redis. Security-first mindset. Implemented OIDC provider integration, rotating secrets via AWS KMS. Bangalore based, open to Hyd.`},
+      {name:"D.P.", text:`Rust 2 yrs, Go 6 yrs. Kafka streams, event-driven arch. Wrote IAM policy tooling. SOC2 readiness on team. Postgres, AWS IAM, EKS.`},
+      {name:"E.T.", text:`Java 10 yrs, monolith to microservices migration. OAuth, JWT, RBAC. Kafka consumer groups. Redis caching. GCP + AWS. Strong docs.`},
+      {name:"F.M.", text:`Polyglot: Go, Java, Node. 8 yrs. Built key management service w/ KMS, HashiCorp Vault. Terraform. On-call for security incidents. Hyderabad.`},
+      {name:"G.V.", text:`Go 5 yrs, Java 3 yrs. Redis, Postgres, Kafka. Basic OAuth2. Wrote integration tests. Some EKS. Needs mentoring on IAM.`},
+      {name:"H.N.", text:`Java 7 yrs. Spring Boot, Kafka, Postgres. Auth via Okta (OIDC). CI/CD Jenkins. Writes ADRs. Hyderabad.`},
+      {name:"I.R.", text:`Go 9 yrs. Designed multi-tenant auth service supporting JWT & OIDC. Heavy gRPC. AWS IAM, EKS, KMS. SOC2 Type1 contributions.`},
+      {name:"J.L.", text:`Python/Node 8 yrs. Some Go. Redis/Postgres. Basic OAuth2. Limited Kafka. Good communicator. Sec reviews exposure.`},
+    ];
 
-<script>
-  let apiKey = localStorage.getItem('sm_api_key') || '';
-  let resumeContent = '';
+    const skillKeywords = [
+      "go","java","distributed systems","microservices","event-driven","kafka","redis","postgres","grpc","protobuf","aws","eks","iam","oauth2","oidc","jwt","rbac","key management","kms","vault","terraform","ci/cd","testing","unit","integration","rust","soc2","okta"
+    ];
 
-  // On load
-  window.onload = () => {
-    // Clear old Gemini key if stored
-    const stored = localStorage.getItem('sm_api_key') || '';
-    if (stored.startsWith('AIza')) {
-      localStorage.removeItem('sm_api_key');
-      apiKey = '';
+    const el = sel => document.querySelector(sel);
+    const uniq = a => [...new Set(a)];
+    function extractSkills(text){
+      const t = (text||"").toLowerCase();
+      const found = skillKeywords.filter(k => t.includes(k));
+      return uniq(found);
     }
-    if (apiKey) {
-      showApiConnected();
-      showMainForm();
+    function yearsExperienceGuess(text){
+      const m = text.match(/(\d+)\s*(?:yrs|years)/i);
+      return m ? parseInt(m[1],10) : 0;
     }
-    setupDragDrop();
-  };
-
-  function saveApiKey() {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if (!key.startsWith('gsk_')) {
-      showError('apiError', 'That doesn\'t look like a valid Groq API key. It should start with "gsk_".');
-      return;
+    function genICPFromJD(jd){
+      const skills = extractSkills(jd);
+      const years = Math.max(6, Math.min(12, yearsExperienceGuess(jd) || 8));
+      const traits = ["ownership","collaboration","clear communication","security mindset"];
+      return { skills, years, traits };
     }
-    apiKey = key;
-    localStorage.setItem('sm_api_key', key);
-    showApiConnected();
-    showMainForm();
-    hideError('apiError');
-  }
+    function scoreCandidate(icp, cand){
+      const skills = extractSkills(cand.text);
+      const exp = yearsExperienceGuess(cand.text);
+      const overlap = skills.filter(s => icp.skills.includes(s)).length;
+      const overlapPct = icp.skills.length ? (overlap/icp.skills.length) : 0;
+      const expDelta = Math.abs((exp||7) - (icp.years||8));
+      const expScore = Math.max(0, 1 - expDelta/6);
+      const securityBoostKeys = ["oauth2","oidc","jwt","rbac","key management","kms","vault","iam","eks","soc2"];
+      const secHits = skills.filter(s => securityBoostKeys.includes(s)).length;
+      const secBoost = Math.min(1, secHits/5);
+      let score = (overlapPct*0.7 + expScore*0.2 + secBoost*0.1) * 100;
+      score = Math.round(score);
+      const missing = icp.skills.filter(s => !skills.includes(s));
+      const strengths = skills.slice(0,6);
+      const concerns = [];
+      if (missing.includes("kafka")) concerns.push("Kafka depth unclear");
+      if (missing.includes("redis")) concerns.push("Redis usage not explicit");
+      if (missing.includes("oauth2") && missing.includes("oidc")) concerns.push("Auth standards shallow");
+      if (exp && exp < icp.years) concerns.push("Years of experience below target");
+      return {score, strengths, missing, concerns};
+    }
+    function scoreClass(n){ return n>=80 ? "good" : n>=60 ? "mid" : "bad"; }
 
-  function showApiConnected() {
-    document.getElementById('apiStatus').innerHTML = `
-      <div class="api-status connected">
-        <div class="dot"></div> Groq API key connected · Ready to screen
-      </div>`;
-    document.getElementById('apiKeyInput').value = '••••••••••••••••••••';
-  }
+    const jdEl = el("#jd");
+    const icpBox = el("#icpBox");
+    const thresh = el("#threshold");
+    const threshLabel = el("#threshLabel");
+    const candidatesDiv = el("#candidates");
 
-  function showMainForm() {
-    document.getElementById('main-form').classList.add('visible');
-  }
+    el("#sampleJD").onclick = ()=>{ jdEl.value = sampleJDText; window.scrollTo({top:0, behavior:"smooth"}) };
+    el("#clearJD").onclick = ()=>{ jdEl.value = "" };
+    el("#genICP").onclick = ()=>{
+      const jd = jdEl.value.trim();
+      if(!jd){ icpBox.innerHTML = `<span class="badbadge badge">Please paste a JD first</span>`; return; }
+      const icp = genICPFromJD(jd);
+      icpBox.innerHTML = `
+        <div class="grid-3">
+          <div>
+            <div class="muted small">Target Experience</div>
+            <div style="font-weight:700">${icp.years} yrs</div>
+          </div>
+          <div>
+            <div class="muted small">Core Skills (from JD)</div>
+            <div class="chips">${icp.skills.map(s=>`<span class="chip">${s}</span>`).join("") || "<span class='muted'>None detected</span>"}</div>
+          </div>
+          <div>
+            <div class="muted small">Mindset Traits</div>
+            <div class="chips">${icp.traits.map(s=>`<span class="chip">${s}</span>`).join("")}</div>
+          </div>
+        </div>
+      `;
+      candidatesDiv.dataset.icp = JSON.stringify(icp);
+    };
 
-  function setupDragDrop() {
-    const drop = document.getElementById('fileDrop');
-    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
-    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-    drop.addEventListener('drop', e => {
-      e.preventDefault();
-      drop.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        document.getElementById('resumeFile').files = e.dataTransfer.files;
-        processFile(file);
-      }
-    });
-  }
+    thresh.oninput = ()=>{ threshLabel.textContent = thresh.value; renderCandidates() };
 
-  function handleFileSelect(input) {
-    if (input.files[0]) processFile(input.files[0]);
-  }
+    function renderCandidates(){
+      const icp = candidatesDiv.dataset.icp ? JSON.parse(candidatesDiv.dataset.icp) : null;
+      const threshold = parseInt(thresh.value,10);
+      let html = `<table><thead><tr>
+        <th style="width:8ch">Score</th>
+        <th>Candidate</th>
+        <th>Strengths</th>
+        <th>Gaps</th>
+        <th>Decision</th>
+      </tr></thead><tbody>`;
+      sampleResumes.forEach(c => {
+        let res = {score:0,strengths:[],missing:[],concerns:[]};
+        if(icp){ res = scoreCandidate(icp, c); }
+        const decision = res.score >= threshold ? `<span class="badge goodbadge">Move</span>` : `<span class="badge badbadge">Drop</span>`;
+        html += `<tr>
+          <td class="score ${scoreClass(res.score)}">${String(res.score).padStart(2,"0")}%</td>
+          <td><div class="blurred">${c.name}</div><div class="muted small">${c.text}</div></td>
+          <td><div class="chips">${(res.strengths||[]).map(s=>`<span class="chip">${s}</span>`).join("")}</div>
+              <div class="muted small">${(res.concerns||[]).join(" • ")}</div></td>
+          <td><div class="chips">${(res.missing||[]).map(s=>`<span class="chip">${s}</span>`).join("")}</div></td>
+          <td>${decision}</td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+      candidatesDiv.innerHTML = html;
+    }
+    renderCandidates();
 
-  function setExtractStatus(msg, color) {
-    const el = document.getElementById('extractStatus');
-    el.style.display = 'block';
-    el.style.color = color || 'var(--muted)';
-    el.textContent = msg;
-  }
-
-  async function processFile(file) {
-    document.getElementById('fileName').textContent = '✓ ' + file.name;
-    const ext = file.name.split('.').pop().toLowerCase();
-    setExtractStatus('⏳ Extracting text from ' + file.name + '...', 'var(--accent)');
-
-    try {
-      if (ext === 'txt') {
-        const text = await file.text();
-        resumeContent = text;
-        setExtractStatus('✓ Text extracted successfully (' + text.length + ' chars)', 'var(--accent)');
-
-      } else if (ext === 'pdf') {
-        // Use PDF.js from CDN
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let fullText = '';
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          fullText += content.items.map(item => item.str).join(' ') + '\n';
-        }
-        resumeContent = fullText.trim();
-        setExtractStatus('✓ PDF extracted successfully (' + pdf.numPages + ' pages)', 'var(--accent)');
-
-      } else if (ext === 'docx') {
-        // Use mammoth.js from CDN
-        const arrayBuffer = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        resumeContent = result.value.trim();
-        setExtractStatus('✓ DOCX extracted successfully (' + resumeContent.length + ' chars)', 'var(--accent)');
-
-      } else if (ext === 'doc') {
-        setExtractStatus('⚠ .doc format not supported — please save as .docx or .pdf and re-upload', 'var(--warn)');
-        resumeContent = '';
+    el("#scoreBtn").onclick = ()=>{
+      if(!candidatesDiv.dataset.icp){
+        icpBox.innerHTML = `<span class="badbadge badge">Generate ICP first</span>`;
         return;
       }
+      renderCandidates();
+      window.scrollTo({top: document.body.scrollHeight, behavior:"smooth"});
+    };
 
-      if (!resumeContent) {
-        setExtractStatus('⚠ Could not extract text. Please use the Paste Text tab instead.', 'var(--warn)');
-      }
-
-    } catch(err) {
-      console.error(err);
-      setExtractStatus('⚠ Extraction failed. Please use the Paste Text tab instead.', 'var(--warn)');
-      resumeContent = '';
-    }
-  }
-
-  function switchTab(tab) {
-    const uploadPanel = document.getElementById('uploadPanel');
-    const pastePanel = document.getElementById('pastePanel');
-    const tabUpload = document.getElementById('tabUpload');
-    const tabPaste = document.getElementById('tabPaste');
-    if (tab === 'upload') {
-      uploadPanel.style.display = 'block';
-      pastePanel.style.display = 'none';
-      tabUpload.style.borderColor = 'var(--accent)';
-      tabUpload.style.background = 'rgba(110,231,183,0.1)';
-      tabUpload.style.color = 'var(--accent)';
-      tabPaste.style.borderColor = 'var(--border)';
-      tabPaste.style.background = 'transparent';
-      tabPaste.style.color = 'var(--muted)';
-    } else {
-      uploadPanel.style.display = 'none';
-      pastePanel.style.display = 'block';
-      tabPaste.style.borderColor = 'var(--accent)';
-      tabPaste.style.background = 'rgba(110,231,183,0.1)';
-      tabPaste.style.color = 'var(--accent)';
-      tabUpload.style.borderColor = 'var(--border)';
-      tabUpload.style.background = 'transparent';
-      tabUpload.style.color = 'var(--muted)';
-    }
-  }
-
-  function getResumeText() {
-    const uploadPanel = document.getElementById('uploadPanel');
-    if (uploadPanel.style.display !== 'none') {
-      return resumeContent;
-    } else {
-      return document.getElementById('resumeText').value.trim();
-    }
-  }
-
-  function clearForm() {
-    ['jobDescription','skill1','skill2','skill3','minYears','industry','dealbreaker','niceToHave','resumeText'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    document.getElementById('fileName').textContent = '';
-    resumeContent = '';
-    switchTab('upload');
-    hideError('formError');
-  }
-
-  function newScreening() {
-    document.getElementById('results-section').classList.remove('visible');
-    document.getElementById('main-form').classList.add('visible');
-    clearForm();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function showError(id, msg) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.classList.add('visible');
-  }
-
-  function hideError(id) {
-    document.getElementById(id).classList.remove('visible');
-  }
-
-  async function runScreening() {
-    hideError('formError');
-
-    const jd = document.getElementById('jobDescription').value.trim();
-    const resume = getResumeText();
-    const skill1 = document.getElementById('skill1').value.trim();
-    const skill2 = document.getElementById('skill2').value.trim();
-    const skill3 = document.getElementById('skill3').value.trim();
-    const minYears = document.getElementById('minYears').value.trim();
-    const industry = document.getElementById('industry').value.trim();
-    const dealbreaker = document.getElementById('dealbreaker').value.trim();
-    const niceToHave = document.getElementById('niceToHave').value.trim();
-
-    if (!jd) { showError('formError', 'Please paste a job description.'); return; }
-    if (!resume) { showError('formError', '⚠ No resume found. Either upload a .txt file or switch to the Paste Text tab and paste the resume content.'); return; }
-    if (!skill1 && !skill2) { showError('formError', 'Please add at least one must-have skill to your ICP.'); return; }
-
-    const icp = [
-      skill1 && `Must-have skill: ${skill1}`,
-      skill2 && `Must-have skill: ${skill2}`,
-      skill3 && `Must-have skill: ${skill3}`,
-      minYears && `Minimum experience: ${minYears}`,
-      industry && `Industry/domain: ${industry}`,
-      dealbreaker && `Deal-breaker (auto-fail if missing): ${dealbreaker}`,
-      niceToHave && `Nice-to-have: ${niceToHave}`,
-    ].filter(Boolean).join('\n');
-
-    showLoading('Analyzing resume against ICP...');
-
-    const prompt = `You are ScreenMind, an expert AI resume screener. You evaluate candidates against an Ideal Candidate Profile (ICP) — not just keywords, but true depth of experience, real fit, and honest signal. CRITICAL: Your entire response must be a single raw JSON object only. No markdown, no code fences, no explanation before or after. Start your response with { and end with }.
-
-## JOB DESCRIPTION
-${jd}
-
-## IDEAL CANDIDATE PROFILE (ICP)
-${icp}
-
-## CANDIDATE RESUME
-${resume}
-
-## YOUR TASK
-Perform a deep, honest, recruiter-grade evaluation. Return ONLY a valid JSON object with this exact structure (no markdown, no preamble):
-
-{
-  "score": <integer 0-100>,
-  "verdict": "<one of: Strong Match | Good Match | Weak Match | Poor Match>",
-  "headline": "<one punchy sentence summarizing this candidate in recruiter terms>",
-  "summary": "<2-3 sentences of honest recruiter commentary on this candidate's overall fit>",
-  "strengths": ["<strength 1>", "<strength 2>", "<strength 3>"],
-  "gaps": ["<gap 1>", "<gap 2>"],
-  "icp_breakdown": [
-    {"criterion": "<ICP criterion>", "met": <true/false>, "note": "<brief evidence or gap note>"}
-  ],
-  "dealbreaker_triggered": <true/false>,
-  "dealbreaker_reason": "<if triggered, explain why, else empty string>",
-  "recruiter_note": "<A 2-3 sentence note written as if you're a senior recruiter briefing a hiring manager. Be direct, honest, and specific.>",
-  "recommended_action": "<one of: Advance to interview | Consider with reservations | Request more info | Pass>"
-}
-
-Scoring guide:
-- 85-100: Exceptional fit, advance immediately
-- 70-84: Good fit, worth interviewing
-- 50-69: Partial fit, consider with reservations
-- 30-49: Weak fit, significant gaps
-- 0-29: Poor fit or dealbreaker triggered
-
-Be honest and specific. Generic praise is useless. If the dealbreaker criterion is missing, set dealbreaker_triggered to true and score must be below 30.`;
-
-    updateLoadingStep('Running ICP analysis...');
-
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
-          temperature: 0.3,
-          max_tokens: 2048,
-          messages: [{ role: 'user', content: prompt }]
-        })
+    el("#exportBtn").onclick = ()=>{
+      if(!candidatesDiv.dataset.icp){ alert("Generate ICP and Score first."); return; }
+      const icp = JSON.parse(candidatesDiv.dataset.icp);
+      const threshold = parseInt(thresh.value,10);
+      const rows = [["Candidate","Score","Decision","Strengths","Gaps","Concerns"]];
+      sampleResumes.forEach(c=>{
+        const r = scoreCandidate(icp,c);
+        const decision = r.score >= threshold ? "Move" : "Drop";
+        rows.push([c.name, r.score, decision, (r.strengths||[]).join("; "), (r.missing||[]).join("; "), (r.concerns||[]).join("; ")]);
       });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error?.message || 'API error');
-      }
-
-      const data = await response.json();
-      const rawText = data.choices?.[0]?.message?.content || '';
-      
-      updateLoadingStep('Generating recruiter report...');
-
-      // Parse JSON — robustly extract JSON from anywhere in the response
-      let result;
-      try {
-        let clean = rawText;
-        // Strip markdown code fences
-        clean = clean.replace(/```json/gi, '').replace(/```/g, '').trim();
-        // Find the first { and last } to extract JSON object
-        const start = clean.indexOf('{');
-        const end = clean.lastIndexOf('}');
-        if (start === -1 || end === -1) throw new Error('No JSON found');
-        clean = clean.substring(start, end + 1);
-        result = JSON.parse(clean);
-      } catch(e) {
-        console.error('Parse error:', e, 'Raw:', rawText);
-        // Show raw response visibly for debugging
-        document.getElementById('formError').innerHTML = '⚠ Parse failed. Raw Gemini response:<br><pre style="font-size:11px;overflow:auto;max-height:200px;background:#1a1a26;padding:10px;border-radius:6px;margin-top:8px;white-space:pre-wrap;">' + rawText.substring(0, 2000) + '</pre>';
-        document.getElementById('formError').classList.add('visible');
-        throw new Error('AI response parsing failed. Raw response logged to console. Please try again.');
-      }
-
-      hideLoading();
-      renderResults(result);
-
-    } catch(err) {
-      hideLoading();
-      showError('formError', '⚠ ' + (err.message.includes('API_KEY_INVALID') ? 'Invalid API key. Please check your Gemini API key.' : err.message));
-    }
-  }
-
-  function renderResults(r) {
-    const score = r.score || 0;
-    const verdictClass = {
-      'Strong Match': 'strong',
-      'Good Match': 'good',
-      'Weak Match': 'weak',
-      'Poor Match': 'poor'
-    }[r.verdict] || 'weak';
-
-    const scoreColor = score >= 85 ? '#6ee7b7' : score >= 70 ? '#818cf8' : score >= 50 ? '#fbbf24' : '#f87171';
-    const circumference = 2 * Math.PI * 52;
-    const dashOffset = circumference - (score / 100) * circumference;
-
-    const icpRows = (r.icp_breakdown || []).map(item => `
-      <div class="icp-row">
-        <div class="icp-row-label">${escHtml(item.criterion)}</div>
-        <div class="icp-row-value">${escHtml(item.note)}</div>
-        <div class="icp-row-status">${item.met ? '✅' : '❌'}</div>
-      </div>
-    `).join('');
-
-    const strengths = (r.strengths || []).map(s => `
-      <div class="breakdown-item"><span class="check">✓</span><span>${escHtml(s)}</span></div>
-    `).join('');
-
-    const gaps = (r.gaps || []).map(g => `
-      <div class="breakdown-item"><span class="cross">✗</span><span>${escHtml(g)}</span></div>
-    `).join('');
-
-    const actionColor = {
-      'Advance to interview': 'var(--accent)',
-      'Consider with reservations': 'var(--accent2)',
-      'Request more info': 'var(--warn)',
-      'Pass': 'var(--danger)'
-    }[r.recommended_action] || 'var(--muted)';
-
-    document.getElementById('resultsContent').innerHTML = `
-      ${r.dealbreaker_triggered ? `
-        <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:12px;padding:16px 20px;margin-bottom:20px;color:var(--danger);font-size:14px;">
-          ⛔ <strong>Deal-breaker triggered:</strong> ${escHtml(r.dealbreaker_reason)}
-        </div>
-      ` : ''}
-
-      <div class="score-hero">
-        <div class="score-circle">
-          <svg viewBox="0 0 120 120" width="120" height="120">
-            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="8"/>
-            <circle cx="60" cy="60" r="52" fill="none" stroke="${scoreColor}" stroke-width="8"
-              stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
-              stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/>
-          </svg>
-          <div class="score-number" style="color:${scoreColor}">${score}</div>
-          <div class="score-label">/ 100</div>
-        </div>
-        <div class="score-verdict">
-          <div class="verdict-badge ${verdictClass}">${escHtml(r.verdict)}</div>
-          <div class="verdict-title">${escHtml(r.headline)}</div>
-          <div class="verdict-summary">${escHtml(r.summary)}</div>
-          <div style="margin-top:16px;font-size:13px;font-family:var(--font-mono);">
-            Recommended action: <span style="color:${actionColor};font-weight:600;">${escHtml(r.recommended_action)}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="breakdown-grid">
-        <div class="breakdown-card">
-          <h4>✅ Strengths</h4>
-          ${strengths || '<div class="breakdown-item"><span class="muted">None identified</span></div>'}
-        </div>
-        <div class="breakdown-card">
-          <h4>⚠ Gaps & Concerns</h4>
-          ${gaps || '<div class="breakdown-item"><span class="muted">No significant gaps</span></div>'}
-        </div>
-      </div>
-
-      ${icpRows ? `
-        <div class="icp-match-table">
-          <h4>ICP Criteria Breakdown</h4>
-          ${icpRows}
-        </div>
-      ` : ''}
-
-      <div class="recruiter-note">
-        <h4>💬 Recruiter Briefing Note</h4>
-        <p>${escHtml(r.recruiter_note)}</p>
-      </div>
-    `;
-
-    document.getElementById('results-section').classList.add('visible');
-    document.getElementById('main-form').classList.remove('visible');
-    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function showLoading(msg) {
-    document.getElementById('loadingOverlay').classList.add('visible');
-    document.getElementById('loadingStep').textContent = msg;
-    document.getElementById('screenBtn').disabled = true;
-  }
-
-  function updateLoadingStep(msg) {
-    document.getElementById('loadingStep').textContent = msg;
-  }
-
-  function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('visible');
-    document.getElementById('screenBtn').disabled = false;
-  }
-</script>
+      const csv = rows.map(r=>r.map(x=>`"${(x||"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], {type:"text/csv"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "screenmind_shortlist.csv";
+      a.click();
+    };
+  </script>
 </body>
 </html>
