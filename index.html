@@ -8,610 +8,884 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3d;
-    --accent: #6ee7b7;
-    --accent2: #818cf8;
-    --warn: #fbbf24;
-    --danger: #f87171;
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
-    --font-display: 'DM Serif Display', serif;
-    --font-mono: 'DM Mono', monospace;
-    --font-body: 'DM Sans', sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background-image: linear-gradient(rgba(110,231,183,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(110,231,183,0.03) 1px, transparent 1px);
-    background-size: 40px 40px; pointer-events: none; z-index: 0;
-  }
-  .container { max-width: 860px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3d;--accent:#6ee7b7;--accent2:#818cf8;--warn:#fbbf24;--danger:#f87171;--text:#e8e8f0;--muted:#6b6b8a;--font-display:'DM Serif Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(110,231,183,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(110,231,183,0.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+.container{max-width:920px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
 
-  /* Header */
-  header { padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .logo-text { font-family: var(--font-display); font-size: 26px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .tagline { color: var(--muted); font-size: 13px; font-family: var(--font-mono); letter-spacing: 0.05em; }
-  .beta-badge { background: rgba(110,231,183,0.1); border: 1px solid rgba(110,231,183,0.3); color: var(--accent); font-family: var(--font-mono); font-size: 11px; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.08em; }
+/* ── LOGIN ── */
+#login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:48px 44px;max-width:440px;width:100%;text-align:center;position:relative;overflow:hidden;}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.login-logo-wrap{margin-bottom:28px;}
+.login-logo-svg{width:80px;height:80px;margin:0 auto 14px;}
+.login-product-name{font-family:var(--font-display);font-size:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.login-tagline{color:var(--muted);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;margin-bottom:32px;}
+.login-form{text-align:left;}
+.login-form label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.login-form input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font-body);font-size:14px;padding:12px 16px;outline:none;transition:border-color 0.2s;margin-bottom:10px;}
+.login-form input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(110,231,183,0.08);}
+.login-btn{width:100%;padding:13px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),#34d399);color:#0a0a0f;font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:4px;}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(110,231,183,0.3);}
+.login-note{font-size:12px;color:var(--muted);margin-top:14px;font-family:var(--font-mono);text-align:center;}
+.login-error{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:10px 14px;color:var(--danger);font-size:13px;margin-top:10px;display:none;}
+.login-error.visible{display:block;}
+.login-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:28px;text-align:left;}
+.login-feature{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.login-feature-icon{font-size:18px;margin-bottom:5px;}
+.login-feature-text{font-size:12px;color:var(--muted);line-height:1.4;}
+.login-feature-text strong{color:var(--text);display:block;margin-bottom:2px;}
 
-  /* Steps indicator */
-  .steps { display: flex; align-items: center; gap: 0; margin-bottom: 32px; }
-  .step { display: flex; align-items: center; gap: 8px; font-size: 12px; font-family: var(--font-mono); color: var(--muted); }
-  .step.active { color: var(--accent); }
-  .step.done { color: var(--accent2); }
-  .step-num { width: 24px; height: 24px; border-radius: 50%; border: 1px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
-  .step-line { flex: 1; height: 1px; background: var(--border); margin: 0 8px; min-width: 20px; }
+/* ── APP ── */
+#app-view{display:none;}
+header{padding:24px 0 20px;border-bottom:1px solid var(--border);margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:14px;}
+.logo-svg{width:40px;height:40px;flex-shrink:0;}
+.logo-text{font-family:var(--font-display);font-size:24px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-tag{color:var(--muted);font-size:12px;font-family:var(--font-mono);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.user-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;display:flex;align-items:center;gap:8px;}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0a0a0f;}
+.beta-badge{background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.3);color:var(--accent);font-family:var(--font-mono);font-size:11px;padding:4px 10px;border-radius:20px;}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:var(--font-body);}
+.logout-btn:hover{color:var(--danger);border-color:var(--danger);}
 
-  /* Cards */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; position: relative; overflow: hidden; margin-bottom: 20px; }
-  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent2), transparent); opacity: 0.5; }
-  .card.accent-green::before { background: linear-gradient(90deg, var(--accent), transparent); }
+/* Nav */
+.nav-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px;}
+.nav-tab{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;}
+.nav-tab.active{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.view{display:none;}.view.active{display:block;}
 
-  .section-label { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
-  .section-title { font-family: var(--font-display); font-size: 20px; margin-bottom: 6px; }
-  .section-desc { color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.6; }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 6px 0 18px; }
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;position:relative;overflow:hidden;margin-bottom:18px;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),transparent);opacity:0.5;}
+.card.green::before{background:linear-gradient(90deg,var(--accent),transparent);}
+.section-label{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px;}
+.section-title{font-family:var(--font-display);font-size:20px;margin-bottom:5px;}
+.section-desc{color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.6;}
+.divider{border:none;border-top:1px solid var(--border);margin:5px 0 16px;}
+input[type="text"],textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font-body);font-size:14px;padding:10px 14px;outline:none;transition:border-color 0.2s;}
+input[type="text"]:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(110,231,183,0.08);}
+textarea{resize:vertical;line-height:1.6;}
+label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px;}
 
-  /* Form elements */
-  .input-group { margin-bottom: 16px; }
-  label { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; letter-spacing: 0.03em; }
-  input[type="text"], textarea {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text); font-family: var(--font-body); font-size: 14px;
-    padding: 11px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  input[type="text"]:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(110,231,183,0.08); }
-  textarea { resize: vertical; line-height: 1.6; }
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#34d399);color:#0a0a0f;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(110,231,183,0.25);}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);font-size:13px;padding:9px 16px;}
+.btn-ghost:hover{color:var(--text);border-color:var(--text);}
+.btn-auto{background:rgba(129,140,248,0.1);color:var(--accent2);border:1px solid rgba(129,140,248,0.3);font-size:13px;padding:10px 18px;width:100%;justify-content:center;margin-bottom:14px;border-radius:10px;}
+.btn-auto:hover{background:rgba(129,140,248,0.18);}
+.btn-auto:disabled{opacity:0.5;cursor:not-allowed;}
 
-  /* Buttons */
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: 10px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
-  .btn-primary { background: linear-gradient(135deg, var(--accent), #34d399); color: #0a0a0f; }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(110,231,183,0.25); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); font-size: 13px; padding: 8px 16px; }
-  .btn-ghost:hover { color: var(--text); border-color: var(--text); }
-  .btn-auto { background: rgba(129,140,248,0.12); color: var(--accent2); border: 1px solid rgba(129,140,248,0.3); font-size: 13px; padding: 9px 18px; width: 100%; justify-content: center; margin-bottom: 16px; }
-  .btn-auto:hover { background: rgba(129,140,248,0.2); }
-  .btn-auto:disabled { opacity: 0.5; cursor: not-allowed; }
+/* ICP */
+.icp-auto-note{display:none;background:rgba(129,140,248,0.08);border:1px solid rgba(129,140,248,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent2);font-family:var(--font-mono);margin-bottom:14px;}
+.icp-auto-note.visible{display:block;}
+.criteria-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.criterion-row{display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;}
+.criterion-row.ai-generated{border-color:rgba(129,140,248,0.25);}
+.criterion-body{flex:1;}
+.criterion-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;}
+.criterion-text{font-size:13px;color:var(--text);font-weight:500;}
+.criterion-reasoning{font-size:11px;color:var(--muted);font-family:var(--font-mono);line-height:1.4;}
+.weight-badge{padding:2px 7px;border-radius:4px;font-size:10px;font-family:var(--font-mono);font-weight:600;text-transform:uppercase;}
+.weight-critical{background:rgba(248,113,113,0.15);color:var(--danger);}
+.weight-important{background:rgba(251,191,36,0.15);color:var(--warn);}
+.weight-nicetoha,.weight-nicetohave{background:rgba(110,231,183,0.12);color:var(--accent);}
+.ai-tag{font-size:10px;font-family:var(--font-mono);color:var(--accent2);background:rgba(129,140,248,0.1);padding:2px 6px;border-radius:3px;}
+.criterion-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:2px 5px;border-radius:4px;}
+.criterion-delete:hover{color:var(--danger);}
+.add-criterion-row{display:flex;gap:8px;align-items:center;}
+.add-criterion-row input{flex:1;}
+.weight-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 11px;outline:none;cursor:pointer;}
 
-  /* ICP Grid */
-  .icp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 600px) { .icp-grid { grid-template-columns: 1fr; } }
+/* File */
+.tab-row{display:flex;gap:8px;margin-bottom:14px;}
+.tab-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.tab-btn.active{border-color:var(--accent);background:rgba(110,231,183,0.08);color:var(--accent);}
+.file-drop{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+.file-drop:hover,.file-drop.dragover{border-color:var(--accent);background:rgba(110,231,183,0.04);}
+.file-drop input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.file-icon{font-size:26px;margin-bottom:7px;}
+.file-text{color:var(--muted);font-size:13px;}
+.file-text strong{color:var(--accent);}
+.file-name{margin-top:7px;font-family:var(--font-mono);font-size:12px;color:var(--accent);}
+.extract-status{margin-top:7px;font-size:12px;font-family:var(--font-mono);display:none;}
+.action-row{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;}
+.error-msg{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:11px 15px;color:var(--danger);font-size:13px;margin-top:10px;display:none;}
+.error-msg.visible{display:block;}
+.dup-warning{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.3);border-radius:10px;padding:13px 16px;margin-bottom:14px;display:none;gap:10px;align-items:flex-start;}
+.dup-warning.visible{display:flex;}
+.dup-warning-text{font-size:13px;color:var(--warn);line-height:1.5;}
 
-  /* File upload */
-  .tab-row { display: flex; gap: 8px; margin-bottom: 16px; }
-  .tab-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .tab-btn.active { border-color: var(--accent); background: rgba(110,231,183,0.08); color: var(--accent); }
+/* Loading */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,15,0.92);backdrop-filter:blur(10px);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+.loading-overlay.visible{display:flex;}
+.loading-logo{width:56px;height:56px;animation:pulse-logo 2s ease-in-out infinite;}
+@keyframes pulse-logo{0%,100%{opacity:0.7;transform:scale(0.97);}50%{opacity:1;transform:scale(1.03);}}
+.loading-steps{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.loading-step{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:12px;color:var(--muted);transition:all 0.3s;}
+.loading-step.active{color:var(--accent);}
+.loading-step.done{color:var(--accent2);}
+.step-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.loading-step.active .step-dot{animation:dot-pulse 0.8s ease-in-out infinite;}
+@keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.6);}}
 
-  .file-drop { border: 2px dashed var(--border); border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
-  .file-drop:hover, .file-drop.dragover { border-color: var(--accent); background: rgba(110,231,183,0.04); }
-  .file-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .file-icon { font-size: 28px; margin-bottom: 8px; }
-  .file-text { color: var(--muted); font-size: 13px; }
-  .file-text strong { color: var(--accent); }
-  .file-name { margin-top: 8px; font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
-  .extract-status { margin-top: 8px; font-size: 12px; font-family: var(--font-mono); display: none; }
+/* Results */
+#results-section{display:none;}
+.score-hero{display:flex;align-items:center;gap:26px;padding:26px;background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:18px;position:relative;overflow:hidden;}
+.score-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+.score-circle{width:106px;height:106px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.score-circle svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.score-number{font-family:var(--font-display);font-size:34px;line-height:1;position:relative;z-index:1;}
+.score-label{font-size:10px;font-family:var(--font-mono);color:var(--muted);position:relative;z-index:1;margin-top:2px;}
+.score-verdict{flex:1;}
+.verdict-badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+.verdict-badge.strong{background:rgba(110,231,183,0.15);color:var(--accent);}
+.verdict-badge.good{background:rgba(129,140,248,0.15);color:var(--accent2);}
+.verdict-badge.weak{background:rgba(251,191,36,0.15);color:var(--warn);}
+.verdict-badge.poor{background:rgba(248,113,113,0.15);color:var(--danger);}
+.verdict-title{font-family:var(--font-display);font-size:21px;margin-bottom:5px;line-height:1.3;}
+.verdict-summary{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:10px;}
+.action-chip{display:inline-block;padding:5px 13px;border-radius:6px;font-size:12px;font-family:var(--font-mono);font-weight:600;}
+.breakdown-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+@media(max-width:600px){.breakdown-grid{grid-template-columns:1fr;}.score-hero{flex-direction:column;text-align:center;}}
+.breakdown-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.breakdown-card h4{font-size:10px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+.breakdown-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:13px;line-height:1.5;}
+.check{color:var(--accent);flex-shrink:0;}.cross{color:var(--danger);flex-shrink:0;}
+.icp-results-table{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.icp-results-table .table-header{padding:12px 16px;font-size:10px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;border-bottom:1px solid var(--border);display:grid;grid-template-columns:2fr 1fr 2fr 60px;gap:10px;}
+.icp-result-row{display:grid;grid-template-columns:2fr 1fr 2fr 60px;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);align-items:start;font-size:12px;}
+.icp-result-row:last-child{border-bottom:none;}
+.icp-criterion-text{color:var(--text);font-weight:500;}
+.icp-weight-cell{display:flex;align-items:center;}
+.icp-evidence{color:var(--muted);font-size:11px;line-height:1.4;}
+.icp-evidence .inferred{color:var(--accent2);font-style:italic;font-size:11px;display:block;margin-top:2px;}
+.icp-status{display:flex;justify-content:center;}
+.recruiter-note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:12px;padding:16px 20px;margin-bottom:18px;}
+.recruiter-note h4{font-size:10px;font-family:var(--font-mono);color:var(--accent2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;}
+.recruiter-note p{font-size:14px;line-height:1.7;font-style:italic;}
+.dealbreaker-alert{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:13px 16px;margin-bottom:16px;color:var(--danger);font-size:13px;}
 
-  /* Action row */
-  .action-row { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+/* Co-pilot */
+.copilot-section{background:var(--surface);border:1px solid rgba(129,140,248,0.3);border-radius:16px;padding:22px;margin-bottom:18px;position:relative;overflow:hidden;}
+.copilot-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent));}
+.copilot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.copilot-title{font-family:var(--font-display);font-size:18px;}
+.copilot-badge{background:rgba(129,140,248,0.15);color:var(--accent2);font-family:var(--font-mono);font-size:10px;padding:3px 8px;border-radius:4px;}
+.question-group{margin-bottom:14px;}
+.question-group-title{font-size:11px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.question-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:8px;margin-bottom:6px;font-size:13px;line-height:1.5;}
+.question-num{font-family:var(--font-mono);font-size:11px;color:var(--accent2);flex-shrink:0;margin-top:1px;min-width:20px;}
+.question-why{font-size:11px;color:var(--muted);margin-top:3px;font-style:italic;}
 
-  /* Error */
-  .error-msg { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 8px; padding: 12px 16px; color: var(--danger); font-size: 13px; margin-top: 12px; display: none; }
-  .error-msg.visible { display: block; }
+/* Feedback */
+.feedback-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:18px;}
+.feedback-title{font-size:13px;font-weight:600;margin-bottom:14px;}
+.feedback-row{display:flex;gap:8px;flex-wrap:wrap;}
+.feedback-btn{padding:9px 16px;border-radius:8px;border:none;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.fb-advance{background:rgba(110,231,183,0.1);color:var(--accent);border:1px solid rgba(110,231,183,0.3);}
+.fb-advance:hover{background:rgba(110,231,183,0.2);}
+.fb-reserve{background:rgba(129,140,248,0.1);color:var(--accent2);border:1px solid rgba(129,140,248,0.3);}
+.fb-reserve:hover{background:rgba(129,140,248,0.2);}
+.fb-pass{background:rgba(248,113,113,0.1);color:var(--danger);border:1px solid rgba(248,113,113,0.3);}
+.fb-pass:hover{background:rgba(248,113,113,0.2);}
+.feedback-done{font-size:12px;color:var(--accent);font-family:var(--font-mono);display:none;padding:8px 12px;background:rgba(110,231,183,0.08);border-radius:8px;margin-top:10px;}
+.feedback-done.visible{display:block;}
+.new-screen-btn{text-align:center;margin-top:22px;padding-bottom:36px;}
 
-  /* Loading */
-  .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,15,0.88); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
-  .loading-overlay.visible { display: flex; }
-  .spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.08em; }
-  .loading-sub { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
-
-  /* Results */
-  #results-section { display: none; margin-top: 8px; }
-  #results-section.visible { display: block; }
-
-  .score-hero { display: flex; align-items: center; gap: 28px; padding: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px; position: relative; overflow: hidden; }
-  .score-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
-
-  .score-circle { width: 110px; height: 110px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
-  .score-circle svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-  .score-number { font-family: var(--font-display); font-size: 36px; line-height: 1; position: relative; z-index: 1; }
-  .score-label { font-size: 10px; font-family: var(--font-mono); color: var(--muted); position: relative; z-index: 1; margin-top: 2px; }
-
-  .score-verdict { flex: 1; }
-  .verdict-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-  .verdict-badge.strong { background: rgba(110,231,183,0.15); color: var(--accent); }
-  .verdict-badge.good { background: rgba(129,140,248,0.15); color: var(--accent2); }
-  .verdict-badge.weak { background: rgba(251,191,36,0.15); color: var(--warn); }
-  .verdict-badge.poor { background: rgba(248,113,113,0.15); color: var(--danger); }
-
-  .verdict-title { font-family: var(--font-display); font-size: 22px; margin-bottom: 6px; line-height: 1.3; }
-  .verdict-summary { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
-  .action-chip { display: inline-block; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-family: var(--font-mono); font-weight: 600; letter-spacing: 0.05em; }
-
-  .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  @media (max-width: 600px) { .breakdown-grid { grid-template-columns: 1fr; } .score-hero { flex-direction: column; text-align: center; } }
-
-  .breakdown-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-  .breakdown-card h4 { font-size: 10px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
-  .breakdown-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
-  .breakdown-item:last-child { margin-bottom: 0; }
-  .check { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
-  .cross { color: var(--danger); flex-shrink: 0; margin-top: 1px; }
-
-  .icp-match-table { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-  .icp-match-table h4 { padding: 14px 18px; font-size: 10px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid var(--border); }
-  .icp-row { display: flex; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--border); gap: 12px; font-size: 13px; }
-  .icp-row:last-child { border-bottom: none; }
-  .icp-row-label { flex: 1; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
-  .icp-row-value { flex: 2; color: var(--text); }
-
-  .recruiter-note { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 12px; padding: 18px 22px; margin-bottom: 20px; }
-  .recruiter-note h4 { font-size: 10px; font-family: var(--font-mono); color: var(--accent2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-  .recruiter-note p { font-size: 14px; line-height: 1.7; font-style: italic; }
-
-  .dealbreaker-alert { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; color: var(--danger); font-size: 13px; }
-
-  .new-screen-btn { text-align: center; margin-top: 24px; padding-bottom: 40px; }
-  footer { text-align: center; padding: 32px 0 20px; color: var(--muted); font-size: 12px; font-family: var(--font-mono); border-top: 1px solid var(--border); margin-top: 20px; }
-  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; font-family: var(--font-mono); }
-
-  /* ICP auto badge */
-  .icp-auto-note { display: none; background: rgba(129,140,248,0.08); border: 1px solid rgba(129,140,248,0.2); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--accent2); font-family: var(--font-mono); margin-bottom: 14px; }
-  .icp-auto-note.visible { display: block; }
+/* Dashboard */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:600px){.dash-stats{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.stat-number{font-family:var(--font-display);font-size:30px;margin-bottom:4px;}
+.stat-label{font-size:10px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.metric-highlight{background:linear-gradient(135deg,rgba(110,231,183,0.05),rgba(129,140,248,0.05));border:1px solid rgba(110,231,183,0.2);border-radius:14px;padding:22px;margin-bottom:20px;text-align:center;}
+.metric-big{font-family:var(--font-display);font-size:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.metric-desc{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.6;}
+.metric-sub{font-size:11px;font-family:var(--font-mono);color:var(--accent);margin-top:5px;}
+.screenings-table{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.screenings-table .table-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;padding:12px 16px;font-size:10px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);}
+.screening-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;align-items:center;transition:background 0.15s;}
+.screening-row:last-child{border-bottom:none;}
+.screening-row:hover{background:var(--surface2);}
+.candidate-name{font-weight:600;color:var(--text);}
+.candidate-role{font-size:11px;color:var(--muted);margin-top:2px;}
+.outcome-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-family:var(--font-mono);font-weight:600;}
+.outcome-advanced{background:rgba(110,231,183,0.12);color:var(--accent);}
+.outcome-reserved{background:rgba(129,140,248,0.12);color:var(--accent2);}
+.outcome-passed{background:rgba(248,113,113,0.12);color:var(--danger);}
+.outcome-pending{background:rgba(107,107,138,0.15);color:var(--muted);}
+.funnel-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:18px;}
+.funnel-card h4{font-size:12px;font-weight:600;margin-bottom:14px;}
+.funnel-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:13px;}
+.funnel-label{width:110px;color:var(--muted);font-family:var(--font-mono);font-size:11px;flex-shrink:0;}
+.funnel-bar-wrap{flex:1;background:var(--surface2);border-radius:4px;height:8px;}
+.funnel-bar{height:8px;border-radius:4px;transition:width 0.6s ease;}
+.funnel-count{width:36px;text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text);flex-shrink:0;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state .empty-icon{font-size:40px;margin-bottom:14px;}
+footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;font-family:var(--font-mono);border-top:1px solid var(--border);margin-top:14px;}
 </style>
 </head>
 <body>
 
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">PROCESSING</div>
-  <div class="loading-sub" id="loadingStep">Please wait...</div>
+  <svg class="loading-logo" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#6ee7b7"/>
+        <stop offset="100%" style="stop-color:#818cf8"/>
+      </linearGradient>
+    </defs>
+    <polygon points="50,8 82,26 82,62 50,80 18,62 18,26" fill="none" stroke="url(#lg1)" stroke-width="3"/>
+    <circle cx="50" cy="44" r="12" fill="none" stroke="url(#lg1)" stroke-width="2.5"/>
+    <circle cx="50" cy="44" r="5" fill="url(#lg1)"/>
+    <polyline points="35,44 42,51 65,37" fill="none" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="loading-steps">
+    <div class="loading-step" id="ls1"><div class="step-dot"></div>Reading job description</div>
+    <div class="loading-step" id="ls2"><div class="step-dot"></div>Building ICP context</div>
+    <div class="loading-step" id="ls3"><div class="step-dot"></div>Analyzing resume depth</div>
+    <div class="loading-step" id="ls4"><div class="step-dot"></div>Detecting implicit experience</div>
+    <div class="loading-step" id="ls5"><div class="step-dot"></div>Generating co-pilot questions</div>
+    <div class="loading-step" id="ls6"><div class="step-dot"></div>Compiling recruiter report</div>
+  </div>
 </div>
 
+<!-- ═══ LOGIN ═══ -->
+<div id="login-view">
+  <div class="login-box">
+    <div class="login-logo-wrap">
+      <svg class="login-logo-svg" viewBox="0 0 100 100">
+        <defs>
+          <linearGradient id="llg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6ee7b7"/>
+            <stop offset="100%" style="stop-color:#818cf8"/>
+          </linearGradient>
+        </defs>
+        <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="none" stroke="url(#llg)" stroke-width="3"/>
+        <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="rgba(110,231,183,0.06)" stroke="url(#llg)" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="50" cy="50" r="18" fill="rgba(110,231,183,0.08)" stroke="url(#llg)" stroke-width="2"/>
+        <circle cx="50" cy="50" r="7" fill="url(#llg)"/>
+        <polyline points="33,50 42,59 67,41" fill="none" stroke="url(#llg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="24" y1="47" x2="76" y2="47" stroke="url(#llg)" stroke-width="1" opacity="0.4"/>
+        <line x1="24" y1="53" x2="76" y2="53" stroke="url(#llg)" stroke-width="1" opacity="0.4"/>
+      </svg>
+      <div class="login-product-name">ScreenMind</div>
+      <div class="login-tagline">// AI RESUME INTELLIGENCE · NOT JUST KEYWORDS</div>
+    </div>
+    <div class="login-form">
+      <label>Your Name</label>
+      <input type="text" id="loginName" placeholder="e.g. Muralidhar Kasyapa" />
+      <label>Your Role</label>
+      <input type="text" id="loginRole" placeholder="e.g. Senior Recruiter, TA Lead" />
+      <button class="login-btn" onclick="doLogin()">Enter ScreenMind →</button>
+      <div class="login-error" id="loginError"></div>
+    </div>
+    <div class="login-note">No password needed · Your data stays on your device</div>
+    <div class="login-features">
+      <div class="login-feature"><div class="login-feature-icon">🎯</div><div class="login-feature-text"><strong>ICP Auto-generation</strong>AI builds your ideal candidate profile from any JD</div></div>
+      <div class="login-feature"><div class="login-feature-icon">🔵</div><div class="login-feature-text"><strong>Implicit Detection</strong>Finds experience even when not explicitly stated</div></div>
+      <div class="login-feature"><div class="login-feature-icon">🎤</div><div class="login-feature-text"><strong>Interview Co-pilot</strong>5 targeted questions per candidate</div></div>
+      <div class="login-feature"><div class="login-feature-icon">📊</div><div class="login-feature-text"><strong>7:1 Ratio Tracker</strong>Prove your screening accuracy over time</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app-view">
 <div class="container">
   <header>
     <div class="logo">
-      <div class="logo-icon">🧠</div>
+      <svg class="logo-svg" viewBox="0 0 100 100">
+        <defs><linearGradient id="hlg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6ee7b7"/><stop offset="100%" style="stop-color:#818cf8"/></linearGradient></defs>
+        <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="none" stroke="url(#hlg)" stroke-width="3"/>
+        <circle cx="50" cy="50" r="16" fill="rgba(110,231,183,0.08)" stroke="url(#hlg)" stroke-width="2"/>
+        <circle cx="50" cy="50" r="6" fill="url(#hlg)"/>
+        <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#hlg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
       <div>
         <div class="logo-text">ScreenMind</div>
-        <div class="tagline">// ICP-driven resume intelligence · not just keywords</div>
+        <div class="logo-tag">// ICP-driven resume intelligence</div>
       </div>
     </div>
-    <div class="beta-badge">BETA</div>
+    <div class="header-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="userAvatar">M</div>
+        <span id="userName">Recruiter</span>
+      </div>
+      <span class="beta-badge">BETA</span>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
   </header>
 
-  <div id="main-form">
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchView('screen')" id="nav-screen">⚡ Screen Resume</button>
+    <button class="nav-tab" onclick="switchView('dashboard')" id="nav-dashboard">📊 My Dashboard</button>
+  </div>
 
-    <!-- Step 1: Job Description -->
+  <!-- SCREEN VIEW -->
+  <div class="view active" id="view-screen">
     <div class="card">
       <div class="section-label">Step 1 · Role Definition</div>
       <div class="section-title">Job Description</div>
-      <div class="section-desc">Paste the full JD — ScreenMind will read it deeply, not just scan keywords.</div>
+      <div class="section-desc">Paste the full JD — ScreenMind reads context and intent, not just keywords.</div>
       <hr class="divider">
-      <div class="input-group">
-        <textarea id="jobDescription" rows="7" placeholder="Paste the complete job description here — title, responsibilities, requirements, everything..."></textarea>
-      </div>
+      <textarea id="jobDescription" rows="7" placeholder="Paste the complete job description here — title, responsibilities, requirements, everything..."></textarea>
     </div>
 
-    <!-- Step 2: ICP -->
-    <div class="card accent-green">
+    <div class="card green">
       <div class="section-label">Step 2 · Ideal Candidate Profile</div>
-      <div class="section-title">ICP Checklist</div>
-      <div class="section-desc">Define what great looks like — or let ScreenMind auto-generate it from your JD.</div>
+      <div class="section-title">ICP Criteria</div>
+      <div class="section-desc">Auto-generate weighted criteria from your JD, or build manually. 🔴 Critical = dealbreaker. 🟡 Important = strong signal. 🟢 Nice-to-have = bonus.</div>
       <hr class="divider">
-
-      <button class="btn btn-auto" id="autoIcpBtn" onclick="autoGenerateICP()">
-        ✨ Auto-generate ICP from Job Description
-      </button>
-
-      <div class="icp-auto-note" id="icpAutoNote">✓ ICP auto-generated from your JD — review and edit as needed</div>
-
-      <div class="icp-grid">
-        <div class="input-group">
-          <label>Must-have skill #1</label>
-          <input type="text" id="skill1" placeholder="e.g. Python, SQL, React" />
-        </div>
-        <div class="input-group">
-          <label>Must-have skill #2</label>
-          <input type="text" id="skill2" placeholder="e.g. Machine Learning, AWS" />
-        </div>
-        <div class="input-group">
-          <label>Must-have skill #3</label>
-          <input type="text" id="skill3" placeholder="e.g. Team leadership" />
-        </div>
-        <div class="input-group">
-          <label>Min. years of experience</label>
-          <input type="text" id="minYears" placeholder="e.g. 5+ years" />
-        </div>
-        <div class="input-group">
-          <label>Industry / domain</label>
-          <input type="text" id="industry" placeholder="e.g. SaaS, Fintech, Healthcare" />
-        </div>
-        <div class="input-group">
-          <label>Absolute deal-breaker</label>
-          <input type="text" id="dealbreaker" placeholder="e.g. No people management exp." />
-        </div>
+      <button class="btn btn-auto" id="autoIcpBtn" onclick="autoGenerateICP()">✨ Auto-generate Weighted ICP from Job Description</button>
+      <div class="icp-auto-note" id="icpAutoNote">✓ AI-generated ICP with expert reasoning — edit, remove, or add your own criteria below</div>
+      <div class="criteria-list" id="criteriaList"></div>
+      <div class="add-criterion-row">
+        <input type="text" id="newCriterionText" placeholder="Add your own criterion..." />
+        <select class="weight-select" id="newCriterionWeight">
+          <option value="Critical">🔴 Critical</option>
+          <option value="Important" selected>🟡 Important</option>
+          <option value="Nice-to-have">🟢 Nice-to-have</option>
+        </select>
+        <button class="btn btn-ghost" onclick="addManualCriterion()">+ Add</button>
       </div>
-      <div class="input-group">
-        <label>Nice-to-have / bonus criteria</label>
-        <input type="text" id="niceToHave" placeholder="e.g. Startup experience, open source contributions, MBA" />
-      </div>
+      <div class="error-msg" id="icpError"></div>
     </div>
 
-    <!-- Step 3: Resume -->
     <div class="card">
       <div class="section-label">Step 3 · Candidate Resume</div>
       <div class="section-title">Upload Resume</div>
-      <div class="section-desc">PDF, DOCX, DOC, or TXT — all formats supported.</div>
+      <div class="section-desc">PDF, DOCX, or TXT — ScreenMind extracts and understands context automatically.</div>
       <hr class="divider">
-
+      <div class="dup-warning" id="dupWarning">
+        <span style="font-size:20px;flex-shrink:0">⚠️</span>
+        <div class="dup-warning-text"><strong>Possible Duplicate Detected</strong><br><span id="dupWarningText"></span></div>
+      </div>
       <div class="tab-row">
         <button class="tab-btn active" id="tabUpload" onclick="switchTab('upload')">📎 Upload File</button>
         <button class="tab-btn" id="tabPaste" onclick="switchTab('paste')">📋 Paste Text</button>
       </div>
-
       <div id="uploadPanel">
         <div class="file-drop" id="fileDrop">
           <input type="file" id="resumeFile" accept=".txt,.pdf,.doc,.docx" onchange="handleFileSelect(this)" />
           <div class="file-icon">📄</div>
           <div class="file-text">Drop resume here or <strong>click to upload</strong></div>
-          <div class="file-text" style="font-size:11px;margin-top:3px;">PDF · DOCX · DOC · TXT</div>
+          <div class="file-text" style="font-size:11px;margin-top:3px;">PDF · DOCX · TXT — all supported</div>
           <div class="file-name" id="fileName"></div>
         </div>
         <div class="extract-status" id="extractStatus"></div>
       </div>
-
       <div id="pastePanel" style="display:none;">
-        <textarea id="resumeText" rows="11" placeholder="Open your PDF → Select All (Ctrl+A / Cmd+A) → Copy → Paste here"></textarea>
+        <textarea id="resumeText" rows="10" placeholder="Open PDF → Select All (Ctrl+A / Cmd+A) → Copy → Paste here"></textarea>
       </div>
     </div>
 
     <div class="action-row">
       <button class="btn btn-ghost" onclick="clearForm()">Clear all</button>
-      <button class="btn btn-primary" id="screenBtn" onclick="runScreening()">
-        ⚡ Run ICP Screening
-      </button>
+      <button class="btn btn-primary" id="screenBtn" onclick="runScreening()">⚡ Run ICP Screening</button>
     </div>
     <div class="error-msg" id="formError"></div>
   </div>
 
-  <!-- Results -->
+  <!-- RESULTS -->
   <div id="results-section">
     <div id="resultsContent"></div>
+    <div class="copilot-section" id="copilotSection" style="display:none;">
+      <div class="copilot-header">
+        <div class="copilot-title">🎯 Interview Co-pilot</div>
+        <span class="copilot-badge">AI GENERATED</span>
+      </div>
+      <div id="copilotContent"></div>
+    </div>
+    <div class="feedback-section">
+      <div class="feedback-title">📝 What's your decision? Record it to build your accuracy data.</div>
+      <div class="feedback-row">
+        <button class="feedback-btn fb-advance" onclick="recordOutcome('advanced')">✅ Advanced to Interview</button>
+        <button class="feedback-btn fb-reserve" onclick="recordOutcome('reserved')">🟡 Consider with Reservations</button>
+        <button class="feedback-btn fb-pass" onclick="recordOutcome('passed')">❌ Pass</button>
+      </div>
+      <div class="feedback-done" id="feedbackDone">✓ Outcome recorded — building your 7:1 accuracy story</div>
+    </div>
     <div class="new-screen-btn">
       <button class="btn btn-secondary" onclick="newScreening()">← Screen another candidate</button>
     </div>
   </div>
 
-  <footer>ScreenMind · AI Resume Intelligence · Powered by Groq · Beta</footer>
+  <!-- DASHBOARD -->
+  <div class="view" id="view-dashboard">
+    <div id="dashContent"></div>
+  </div>
+
+  <footer>ScreenMind · AI Resume Intelligence · Built by a Recruiter, for Recruiters · Beta</footer>
+</div>
 </div>
 
 <script>
-  const BACKEND = 'https://screenmind-backend.onrender.com/screen';
-  let resumeContent = '';
+const BACKEND='https://screenmind-backend.onrender.com/screen';
+let resumeContent='';
+let criteria=[];
+let currentRole='';
+let currentUser=null;
 
-  window.onload = () => {
-    document.getElementById('main-form').style.display = 'block';
-    setupDragDrop();
-  };
+// ── Auth ──
+function doLogin(){
+  const name=document.getElementById('loginName').value.trim();
+  const role=document.getElementById('loginRole').value.trim();
+  if(!name){document.getElementById('loginError').textContent='Please enter your name.';document.getElementById('loginError').classList.add('visible');return;}
+  currentUser={name,role:role||'Recruiter',initial:name.charAt(0).toUpperCase(),joinedAt:Date.now()};
+  localStorage.setItem('sm_user',JSON.stringify(currentUser));
+  showApp();
+}
+function doLogout(){
+  localStorage.removeItem('sm_user');
+  document.getElementById('app-view').style.display='none';
+  document.getElementById('login-view').style.display='flex';
+  currentUser=null;
+}
+function showApp(){
+  document.getElementById('login-view').style.display='none';
+  document.getElementById('app-view').style.display='block';
+  document.getElementById('userName').textContent=currentUser.name.split(' ')[0];
+  document.getElementById('userAvatar').textContent=currentUser.initial;
+}
+window.onload=()=>{
+  const saved=localStorage.getItem('sm_user');
+  if(saved){currentUser=JSON.parse(saved);showApp();}
+  setupDragDrop();
+};
 
-  // ── Tab switching ──
-  function switchTab(tab) {
-    const uploadPanel = document.getElementById('uploadPanel');
-    const pastePanel = document.getElementById('pastePanel');
-    document.getElementById('tabUpload').classList.toggle('active', tab === 'upload');
-    document.getElementById('tabPaste').classList.toggle('active', tab === 'paste');
-    uploadPanel.style.display = tab === 'upload' ? 'block' : 'none';
-    pastePanel.style.display = tab === 'paste' ? 'block' : 'none';
+// ── View ──
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('nav-'+v).classList.add('active');
+  if(v==='dashboard')renderDashboard();
+}
+
+// ── Storage ──
+function getKey(){return 'sm_screenings_'+(currentUser?currentUser.name.replace(/\s/g,''):'default');}
+function loadScreenings(){try{return JSON.parse(localStorage.getItem(getKey())||'[]');}catch(e){return[];}}
+function saveScreening(s){const list=loadScreenings();list.unshift(s);if(list.length>500)list.pop();localStorage.setItem(getKey(),JSON.stringify(list));}
+function updateLastOutcome(outcome){const list=loadScreenings();if(list.length>0){list[0].outcome=outcome;list[0].outcomeAt=Date.now();}localStorage.setItem(getKey(),JSON.stringify(list));}
+
+// ── Criteria ──
+function renderCriteria(){
+  const list=document.getElementById('criteriaList');
+  if(!criteria.length){list.innerHTML='';return;}
+  list.innerHTML=criteria.map((c,i)=>`
+    <div class="criterion-row ${c.aiGenerated?'ai-generated':''}">
+      <div class="criterion-body">
+        <div class="criterion-top">
+          <span class="weight-badge weight-${c.weight.toLowerCase().replace(/[^a-z]/g,'')}">${c.weight==='Critical'?'🔴':c.weight==='Important'?'🟡':'🟢'} ${c.weight}</span>
+          <span class="criterion-text">${esc(c.text)}</span>
+          ${c.aiGenerated?'<span class="ai-tag">AI</span>':''}
+        </div>
+        ${c.reasoning?`<div class="criterion-reasoning">↳ ${esc(c.reasoning)}</div>`:''}
+      </div>
+      <button class="criterion-delete" onclick="removeCriterion(${i})">×</button>
+    </div>`).join('');
+}
+function removeCriterion(i){criteria.splice(i,1);renderCriteria();}
+function addManualCriterion(){
+  const text=document.getElementById('newCriterionText').value.trim();
+  const weight=document.getElementById('newCriterionWeight').value;
+  if(!text)return;
+  criteria.push({text,weight,reasoning:'',aiGenerated:false});
+  document.getElementById('newCriterionText').value='';
+  renderCriteria();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='newCriterionText')addManualCriterion();});
+
+// ── Duplicate detection ──
+function checkDuplicate(resumeText){
+  const screenings=loadScreenings();
+  if(!screenings.length)return null;
+  const words=new Set(resumeText.toLowerCase().split(/\W+/).filter(w=>w.length>4));
+  for(const s of screenings){
+    if(!s.resumeSnippet)continue;
+    const prev=new Set(s.resumeSnippet.toLowerCase().split(/\W+/).filter(w=>w.length>4));
+    const inter=[...words].filter(w=>prev.has(w)).length;
+    const sim=inter/Math.max(words.size,prev.size,1);
+    if(sim>0.65)return{...s,similarity:sim};
   }
+  return null;
+}
 
-  function getResumeText() {
-    const uploadVisible = document.getElementById('uploadPanel').style.display !== 'none';
-    return uploadVisible ? resumeContent : document.getElementById('resumeText').value.trim();
-  }
+// ── Auto ICP ──
+async function autoGenerateICP(){
+  const jd=document.getElementById('jobDescription').value.trim();
+  if(!jd){showError('icpError','⚠ Please paste a Job Description first.');return;}
+  hideError('icpError');
+  const btn=document.getElementById('autoIcpBtn');
+  btn.disabled=true;btn.textContent='⏳ Generating weighted ICP...';
+  setLoadingSteps(['active','','','','','']);
+  showLoadingSimple('GENERATING ICP','Analyzing job description...');
 
-  // ── File handling ──
-  function setupDragDrop() {
-    const drop = document.getElementById('fileDrop');
-    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
-    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-    drop.addEventListener('drop', e => {
-      e.preventDefault(); drop.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) processFile(file);
-    });
-  }
+  const prompt=`You are a world-class talent acquisition expert with 20+ years experience. Extract the most accurate Ideal Candidate Profile from this JD with weighted criteria and expert reasoning for each.
 
-  function handleFileSelect(input) { if (input.files[0]) processFile(input.files[0]); }
-
-  function setExtractStatus(msg, color) {
-    const el = document.getElementById('extractStatus');
-    el.style.display = 'block';
-    el.style.color = color || 'var(--muted)';
-    el.textContent = msg;
-  }
-
-  async function processFile(file) {
-    document.getElementById('fileName').textContent = '✓ ' + file.name;
-    const ext = file.name.split('.').pop().toLowerCase();
-    setExtractStatus('⏳ Extracting text...', 'var(--accent)');
-    try {
-      if (ext === 'txt') {
-        resumeContent = await file.text();
-        setExtractStatus('✓ Text extracted (' + resumeContent.length + ' chars)', 'var(--accent)');
-      } else if (ext === 'pdf') {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let fullText = '';
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          fullText += content.items.map(item => item.str).join(' ') + '\n';
-        }
-        resumeContent = fullText.trim();
-        setExtractStatus('✓ PDF extracted (' + pdf.numPages + ' pages)', 'var(--accent)');
-      } else if (ext === 'docx') {
-        const arrayBuffer = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        resumeContent = result.value.trim();
-        setExtractStatus('✓ DOCX extracted (' + resumeContent.length + ' chars)', 'var(--accent)');
-      } else if (ext === 'doc') {
-        setExtractStatus('⚠ Old .doc format — please save as .docx or .pdf and re-upload', 'var(--warn)');
-        resumeContent = '';
-      }
-      if (!resumeContent) setExtractStatus('⚠ Could not extract text — switch to Paste Text tab', 'var(--warn)');
-    } catch(err) {
-      setExtractStatus('⚠ Extraction failed — switch to Paste Text tab', 'var(--warn)');
-      resumeContent = '';
-    }
-  }
-
-  // ── Auto ICP Generation ──
-  async function autoGenerateICP() {
-    const jd = document.getElementById('jobDescription').value.trim();
-    if (!jd) { showError('formError', '⚠ Please paste a Job Description first, then click Auto-generate ICP.'); return; }
-
-    const btn = document.getElementById('autoIcpBtn');
-    btn.disabled = true;
-    btn.textContent = '⏳ Generating ICP...';
-    hideError('formError');
-
-    const prompt = `You are an expert recruiter. Extract the Ideal Candidate Profile from this job description and return ONLY a JSON object with no markdown, no code fences, no preamble. Start with { and end with }.
+CRITICAL: Return ONLY raw JSON. No markdown. No code fences. Start with { end with }.
 
 Job Description:
 ${jd}
 
-Return this exact JSON structure:
+Return:
 {
-  "skill1": "most critical technical or domain skill required",
-  "skill2": "second most critical skill",
-  "skill3": "third important skill or competency",
-  "minYears": "minimum years of experience (e.g. 5+ years)",
-  "industry": "industry or domain experience required",
-  "dealbreaker": "one absolute must-have that if missing disqualifies the candidate",
-  "niceToHave": "bonus skills or nice-to-have qualifications"
-}`;
+  "role": "job title",
+  "criteria": [
+    {"text":"specific criterion","weight":"Critical|Important|Nice-to-have","reasoning":"why this weight for this specific role"}
+  ]
+}
 
-    try {
-      const response = await fetch(BACKEND, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      });
-      const data = await response.json();
-      const raw = data.text || '';
-      const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
-      if (start === -1 || end === -1) throw new Error('No JSON found');
-      const icp = JSON.parse(raw.substring(start, end + 1));
+Rules: 6-10 criteria. 2-3 Critical, 3-4 Important, 1-2 Nice-to-have. Think beyond keywords — include leadership signals, domain depth, behavioral indicators. Be specific.`;
 
-      if (icp.skill1) document.getElementById('skill1').value = icp.skill1;
-      if (icp.skill2) document.getElementById('skill2').value = icp.skill2;
-      if (icp.skill3) document.getElementById('skill3').value = icp.skill3;
-      if (icp.minYears) document.getElementById('minYears').value = icp.minYears;
-      if (icp.industry) document.getElementById('industry').value = icp.industry;
-      if (icp.dealbreaker) document.getElementById('dealbreaker').value = icp.dealbreaker;
-      if (icp.niceToHave) document.getElementById('niceToHave').value = icp.niceToHave;
+  try{
+    const r=await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const d=await r.json();const raw=d.text||'';
+    const s=raw.indexOf('{'),e=raw.lastIndexOf('}');
+    if(s===-1)throw new Error('No JSON');
+    const result=JSON.parse(raw.substring(s,e+1));
+    if(result.role)currentRole=result.role;
+    criteria=(result.criteria||[]).map(c=>({text:c.text,weight:c.weight||'Important',reasoning:c.reasoning||'',aiGenerated:true}));
+    renderCriteria();
+    document.getElementById('icpAutoNote').classList.add('visible');
+    btn.textContent='✓ ICP Generated — add more or edit below';
+  }catch(err){
+    showError('icpError','⚠ Could not generate ICP. Try again or add manually.');
+    btn.textContent='✨ Auto-generate Weighted ICP from Job Description';
+  }
+  btn.disabled=false;hideLoading();
+}
 
-      document.getElementById('icpAutoNote').classList.add('visible');
-      btn.textContent = '✓ ICP Generated — edit if needed';
-    } catch(err) {
-      showError('formError', '⚠ Could not generate ICP. Please fill in manually.');
-      btn.textContent = '✨ Auto-generate ICP from Job Description';
-    }
-    btn.disabled = false;
+// ── Loading steps animation ──
+let loadingInterval=null;
+function setLoadingSteps(states){
+  const ids=['ls1','ls2','ls3','ls4','ls5','ls6'];
+  states.forEach((s,i)=>{
+    const el=document.getElementById(ids[i]);
+    if(!el)return;
+    el.className='loading-step'+(s==='active'?' active':s==='done'?' done':'');
+  });
+}
+function animateLoadingSteps(){
+  const steps=['active','','','','',''];
+  let current=0;
+  loadingInterval=setInterval(()=>{
+    if(current<5){steps[current]='done';current++;steps[current]='active';}
+    setLoadingSteps(steps);
+  },2200);
+}
+function showLoadingSimple(title,sub){
+  document.getElementById('loadingOverlay').classList.add('visible');
+  document.getElementById('screenBtn').disabled=true;
+  animateLoadingSteps();
+}
+function hideLoading(){
+  document.getElementById('loadingOverlay').classList.remove('visible');
+  document.getElementById('screenBtn').disabled=false;
+  if(loadingInterval){clearInterval(loadingInterval);loadingInterval=null;}
+  setLoadingSteps(['','','','','','']);
+}
+
+// ── Main Screening ──
+async function runScreening(){
+  hideError('formError');
+  const jd=document.getElementById('jobDescription').value.trim();
+  const resume=getResumeText();
+  if(!jd){showError('formError','⚠ Please paste a Job Description.');return;}
+  if(!resume){showError('formError','⚠ No resume found. Upload a file or use Paste Text tab.');return;}
+  if(!criteria.length){showError('formError','⚠ Please add ICP criteria or click Auto-generate ICP first.');return;}
+
+  const dup=checkDuplicate(resume);
+  if(dup){
+    const el=document.getElementById('dupWarning');
+    document.getElementById('dupWarningText').textContent=`This resume is ${Math.round((dup.similarity||0.7)*100)}% similar to ${dup.candidateName||'a previously screened candidate'} screened on ${new Date(dup.screenedAt).toLocaleDateString()}. Previous score: ${dup.score}/100. This may be the same person with a tweaked resume.`;
+    el.classList.add('visible');
   }
 
-  // ── Main Screening ──
-  async function runScreening() {
-    hideError('formError');
-    const jd = document.getElementById('jobDescription').value.trim();
-    const resume = getResumeText();
-    const skill1 = document.getElementById('skill1').value.trim();
-    const skill2 = document.getElementById('skill2').value.trim();
+  const icpText=criteria.map((c,i)=>`${i+1}. [${c.weight.toUpperCase()}] ${c.text}${c.reasoning?' — Reason: '+c.reasoning:''}`).join('\n');
+  const criticals=criteria.filter(c=>c.weight==='Critical').map(c=>c.text).join(', ');
 
-    if (!jd) { showError('formError', '⚠ Please paste a Job Description.'); return; }
-    if (!resume) { showError('formError', '⚠ No resume found. Upload a file or switch to Paste Text tab.'); return; }
-    if (!skill1 && !skill2) { showError('formError', '⚠ Please add at least one must-have skill, or use Auto-generate ICP.'); return; }
+  showLoadingSimple('DEEP SCREENING','Reading context and intent...');
 
-    const icp = [
-      skill1 && `Must-have skill: ${skill1}`,
-      skill2 && `Must-have skill: ${skill2}`,
-      document.getElementById('skill3').value.trim() && `Must-have skill: ${document.getElementById('skill3').value.trim()}`,
-      document.getElementById('minYears').value.trim() && `Minimum experience: ${document.getElementById('minYears').value.trim()}`,
-      document.getElementById('industry').value.trim() && `Industry/domain: ${document.getElementById('industry').value.trim()}`,
-      document.getElementById('dealbreaker').value.trim() && `Deal-breaker (auto-fail if missing): ${document.getElementById('dealbreaker').value.trim()}`,
-      document.getElementById('niceToHave').value.trim() && `Nice-to-have: ${document.getElementById('niceToHave').value.trim()}`,
-    ].filter(Boolean).join('\n');
+  const prompt=`You are ScreenMind, the most intelligent AI resume screener ever built. Your superpower is CONTEXTUAL INTELLIGENCE — you understand that experienced professionals have skills implied by their career trajectory, seniority, company pedigree, and role scope, even when not explicitly stated.
 
-    showLoading('SCREENING IN PROGRESS', 'Analyzing resume against ICP...');
+IMPLICIT EXPERIENCE DETECTION: Never just keyword match. A Senior TA Manager at Salesforce scaling 500+ hires/quarter OBVIOUSLY has headcount forecasting experience — even if those exact words aren't in the resume. Use expertise to infer what someone at their level, at their companies, in their roles MUST have done. Mark as "inferred" not missing.
 
-    const prompt = `You are ScreenMind, an expert AI resume screener. Evaluate this candidate against the Ideal Candidate Profile with true depth — not just keywords, but real experience quality, genuine fit, and honest signal.
-
-CRITICAL: Your entire response must be a single raw JSON object only. No markdown, no code fences, no explanation. Start with { and end with }.
+CRITICAL: Return ONLY raw JSON. No markdown. No code fences. Start with { end with }.
 
 ## JOB DESCRIPTION
 ${jd}
 
-## IDEAL CANDIDATE PROFILE
-${icp}
+## ICP CRITERIA (weighted)
+${icpText}
+
+## CRITICAL criteria (only fail if GENUINELY absent even implicitly):
+${criticals}
 
 ## CANDIDATE RESUME
 ${resume}
 
-Return this exact JSON:
+Return:
 {
-  "score": <integer 0-100>,
-  "verdict": "<Strong Match | Good Match | Weak Match | Poor Match>",
-  "headline": "<one punchy sentence summarizing this candidate in recruiter terms>",
-  "summary": "<2-3 sentences of honest recruiter commentary on overall fit>",
-  "strengths": ["<strength 1>", "<strength 2>", "<strength 3>"],
-  "gaps": ["<gap 1>", "<gap 2>"],
-  "icp_breakdown": [{"criterion": "<ICP criterion>", "met": <true/false>, "note": "<evidence or gap>"}],
-  "dealbreaker_triggered": <true/false>,
-  "dealbreaker_reason": "<reason if triggered, else empty string>",
-  "recruiter_note": "<2-3 sentences written as a senior recruiter briefing a hiring manager — direct, specific, honest>",
-  "recommended_action": "<Advance to interview | Consider with reservations | Request more info | Pass>"
+  "candidateName": "extract from resume or Unknown",
+  "score": <0-100>,
+  "verdict": "Strong Match|Good Match|Weak Match|Poor Match",
+  "headline": "one punchy recruiter sentence for hiring manager",
+  "summary": "2-3 sentences honest specific recruiter commentary",
+  "strengths": ["specific strength with resume evidence","strength 2","strength 3"],
+  "gaps": ["genuine gap — only if truly missing even implicitly"],
+  "icp_breakdown": [{"criterion":"text","weight":"Critical|Important|Nice-to-have","met":true/false/"inferred","evidence":"specific evidence or inference","inference_note":"if inferred: why implied by background"}],
+  "dealbreaker_triggered": true/false,
+  "dealbreaker_reason": "only if genuinely absent considering implicit experience",
+  "recruiter_note": "3 sentences as senior recruiter briefing hiring manager — specific direct honest",
+  "recommended_action": "Advance to interview|Consider with reservations|Request more info|Pass",
+  "interview_questions": [
+    {"area":"what to probe","question":"specific question","why":"what gap or validation this addresses"},
+    {"area":"...","question":"...","why":"..."},
+    {"area":"...","question":"...","why":"..."},
+    {"area":"...","question":"...","why":"..."},
+    {"area":"...","question":"...","why":"..."}
+  ]
 }
 
-Scoring: 85-100 exceptional, 70-84 good, 50-69 partial, 30-49 weak, 0-29 poor or dealbreaker.
-If dealbreaker criterion is missing, set dealbreaker_triggered true and score below 30.`;
+Scoring: 85-100 exceptional, 70-84 good, 50-69 partial, 30-49 weak, 0-29 poor/dealbreaker.`;
 
-    updateLoadingStep('Running deep ICP analysis...');
+  try{
+    const response=await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(!response.ok){const e=await response.json();throw new Error(e.error||'Server error');}
+    const data=await response.json();const rawText=data.text||'';
+    let result;
+    try{
+      let clean=rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+      const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
+      if(s===-1)throw new Error('No JSON');
+      result=JSON.parse(clean.substring(s,e+1));
+    }catch(e){throw new Error('Could not parse response. Please try again.');}
 
-    try {
-      const response = await fetch(BACKEND, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      });
-      if (!response.ok) { const e = await response.json(); throw new Error(e.error || 'Server error'); }
-      const data = await response.json();
-      const rawText = data.text || '';
-
-      updateLoadingStep('Generating recruiter report...');
-
-      let result;
-      try {
-        let clean = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
-        const start = clean.indexOf('{'), end = clean.lastIndexOf('}');
-        if (start === -1 || end === -1) throw new Error('No JSON');
-        result = JSON.parse(clean.substring(start, end + 1));
-      } catch(e) {
-        throw new Error('Could not parse response. Please try again.');
-      }
-
-      hideLoading();
-      renderResults(result);
-    } catch(err) {
-      hideLoading();
-      showError('formError', '⚠ ' + err.message);
-    }
-  }
-
-  // ── Render Results ──
-  function renderResults(r) {
-    const score = r.score || 0;
-    const scoreColor = score >= 85 ? '#6ee7b7' : score >= 70 ? '#818cf8' : score >= 50 ? '#fbbf24' : '#f87171';
-    const circumference = 2 * Math.PI * 48;
-    const dashOffset = circumference - (score / 100) * circumference;
-    const verdictClass = { 'Strong Match': 'strong', 'Good Match': 'good', 'Weak Match': 'weak', 'Poor Match': 'poor' }[r.verdict] || 'weak';
-    const actionColor = { 'Advance to interview': 'var(--accent)', 'Consider with reservations': 'var(--accent2)', 'Request more info': 'var(--warn)', 'Pass': 'var(--danger)' }[r.recommended_action] || 'var(--muted)';
-
-    const strengths = (r.strengths || []).map(s => `<div class="breakdown-item"><span class="check">✓</span><span>${esc(s)}</span></div>`).join('');
-    const gaps = (r.gaps || []).map(g => `<div class="breakdown-item"><span class="cross">✗</span><span>${esc(g)}</span></div>`).join('');
-    const icpRows = (r.icp_breakdown || []).map(item => `
-      <div class="icp-row">
-        <div class="icp-row-label">${esc(item.criterion)}</div>
-        <div class="icp-row-value">${esc(item.note)}</div>
-        <div style="flex-shrink:0">${item.met ? '✅' : '❌'}</div>
-      </div>`).join('');
-
-    document.getElementById('resultsContent').innerHTML = `
-      ${r.dealbreaker_triggered ? `<div class="dealbreaker-alert">⛔ <b>Deal-breaker triggered:</b> ${esc(r.dealbreaker_reason)}</div>` : ''}
-      <div class="score-hero">
-        <div class="score-circle">
-          <svg viewBox="0 0 110 110" width="110" height="110">
-            <circle cx="55" cy="55" r="48" fill="none" stroke="var(--border)" stroke-width="7"/>
-            <circle cx="55" cy="55" r="48" fill="none" stroke="${scoreColor}" stroke-width="7"
-              stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" stroke-linecap="round"/>
-          </svg>
-          <div class="score-number" style="color:${scoreColor}">${score}</div>
-          <div class="score-label">/ 100</div>
-        </div>
-        <div class="score-verdict">
-          <div class="verdict-badge ${verdictClass}">${esc(r.verdict)}</div>
-          <div class="verdict-title">${esc(r.headline)}</div>
-          <div class="verdict-summary">${esc(r.summary)}</div>
-          <div class="action-chip" style="background:${actionColor}22;color:${actionColor};border:1px solid ${actionColor}44">
-            → ${esc(r.recommended_action)}
-          </div>
-        </div>
-      </div>
-      <div class="breakdown-grid">
-        <div class="breakdown-card"><h4>✅ Strengths</h4>${strengths || '<div class="breakdown-item" style="color:var(--muted)">None identified</div>'}</div>
-        <div class="breakdown-card"><h4>⚠ Gaps & Concerns</h4>${gaps || '<div class="breakdown-item" style="color:var(--muted)">No significant gaps</div>'}</div>
-      </div>
-      ${icpRows ? `<div class="icp-match-table"><h4>ICP Criteria Breakdown</h4>${icpRows}</div>` : ''}
-      <div class="recruiter-note">
-        <h4>💬 Recruiter Briefing Note</h4>
-        <p>${esc(r.recruiter_note)}</p>
-      </div>`;
-
-    document.getElementById('results-section').classList.add('visible');
-    document.getElementById('main-form').style.display = 'none';
-    document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function esc(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function clearForm() {
-    ['jobDescription','skill1','skill2','skill3','minYears','industry','dealbreaker','niceToHave','resumeText'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = '';
+    if(!currentRole&&jd)currentRole=jd.split('\n')[0].substring(0,60);
+    saveScreening({
+      id:Date.now(),candidateName:result.candidateName||'Unknown',
+      role:currentRole,score:result.score,verdict:result.verdict,
+      recommended_action:result.recommended_action,outcome:'pending',
+      screenedAt:Date.now(),resumeSnippet:resume.substring(0,600),
+      screenedBy:currentUser?currentUser.name:''
     });
-    document.getElementById('fileName').textContent = '';
-    document.getElementById('extractStatus').style.display = 'none';
-    document.getElementById('icpAutoNote').classList.remove('visible');
-    document.getElementById('autoIcpBtn').textContent = '✨ Auto-generate ICP from Job Description';
-    resumeContent = '';
-    switchTab('upload');
-    hideError('formError');
+
+    hideLoading();
+    renderResults(result);
+    document.getElementById('feedbackDone').classList.remove('visible');
+    document.querySelectorAll('.feedback-btn').forEach(b=>b.disabled=false);
+  }catch(err){hideLoading();showError('formError','⚠ '+err.message);}
+}
+
+// ── Render Results ──
+function renderResults(r){
+  const score=r.score||0;
+  const sc=score>=85?'#6ee7b7':score>=70?'#818cf8':score>=50?'#fbbf24':'#f87171';
+  const circ=2*Math.PI*48,dash=circ-(score/100)*circ;
+  const vc={'Strong Match':'strong','Good Match':'good','Weak Match':'weak','Poor Match':'poor'}[r.verdict]||'weak';
+  const ac={'Advance to interview':'var(--accent)','Consider with reservations':'var(--accent2)','Request more info':'var(--warn)','Pass':'var(--danger)'}[r.recommended_action]||'var(--muted)';
+  const strengths=(r.strengths||[]).map(s=>`<div class="breakdown-item"><span class="check">✓</span><span>${esc(s)}</span></div>`).join('');
+  const gaps=(r.gaps||[]).map(g=>`<div class="breakdown-item"><span class="cross">✗</span><span>${esc(g)}</span></div>`).join('');
+  const icpRows=(r.icp_breakdown||[]).map(item=>{
+    const met=item.met===true||item.met==='true';
+    const inf=item.met==='inferred'||item.met==='"inferred"';
+    const icon=met?'✅':inf?'🔵':'❌';
+    const wc=item.weight==='Critical'?'weight-critical':item.weight==='Important'?'weight-important':'weight-nicetoha';
+    return`<div class="icp-result-row">
+      <div class="icp-criterion-text">${esc(item.criterion)}</div>
+      <div class="icp-weight-cell"><span class="weight-badge ${wc}">${esc(item.weight||'')}</span></div>
+      <div class="icp-evidence">${esc(item.evidence||'')}${item.inference_note?`<span class="inferred">🔵 Inferred: ${esc(item.inference_note)}</span>`:''}</div>
+      <div class="icp-status">${icon}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('resultsContent').innerHTML=`
+    ${r.dealbreaker_triggered?`<div class="dealbreaker-alert">⛔ <b>Deal-breaker triggered:</b> ${esc(r.dealbreaker_reason)}</div>`:''}
+    <div class="score-hero">
+      <div class="score-circle">
+        <svg viewBox="0 0 110 110" width="110" height="110">
+          <circle cx="55" cy="55" r="48" fill="none" stroke="var(--border)" stroke-width="7"/>
+          <circle cx="55" cy="55" r="48" fill="none" stroke="${sc}" stroke-width="7" stroke-dasharray="${circ}" stroke-dashoffset="${dash}" stroke-linecap="round"/>
+        </svg>
+        <div class="score-number" style="color:${sc}">${score}</div>
+        <div class="score-label">/ 100</div>
+      </div>
+      <div class="score-verdict">
+        <div class="verdict-badge ${vc}">${esc(r.verdict)}</div>
+        <div class="verdict-title">${esc(r.headline)}</div>
+        <div class="verdict-summary">${esc(r.summary)}</div>
+        <div class="action-chip" style="background:${ac}22;color:${ac};border:1px solid ${ac}44">→ ${esc(r.recommended_action)}</div>
+      </div>
+    </div>
+    <div class="breakdown-grid">
+      <div class="breakdown-card"><h4>✅ Strengths</h4>${strengths||'<div style="color:var(--muted);font-size:13px;">None identified</div>'}</div>
+      <div class="breakdown-card"><h4>⚠ Genuine Gaps</h4>${gaps||'<div style="color:var(--muted);font-size:13px;">No significant gaps</div>'}</div>
+    </div>
+    ${icpRows?`<div class="icp-results-table">
+      <div class="table-header"><div>Criterion</div><div>Weight</div><div>Evidence / Reasoning</div><div style="text-align:center">Status</div></div>
+      ${icpRows}
+      <div style="padding:9px 16px;font-size:11px;color:var(--muted);font-family:var(--font-mono);border-top:1px solid var(--border);">✅ Explicit &nbsp;|&nbsp; 🔵 Inferred from context/seniority &nbsp;|&nbsp; ❌ Genuinely missing</div>
+    </div>`:''}
+    <div class="recruiter-note"><h4>💬 Recruiter Briefing Note</h4><p>${esc(r.recruiter_note)}</p></div>`;
+
+  if(r.interview_questions&&r.interview_questions.length){
+    const groups={};
+    r.interview_questions.forEach(q=>{const a=q.area||'General';if(!groups[a])groups[a]=[];groups[a].push(q);});
+    let qHtml='';
+    Object.entries(groups).forEach(([area,qs])=>{
+      qHtml+=`<div class="question-group"><div class="question-group-title">${esc(area)}</div>`;
+      qs.forEach((q,i)=>{qHtml+=`<div class="question-item"><span class="question-num">Q${i+1}</span><div><div>${esc(q.question)}</div><div class="question-why">↳ ${esc(q.why)}</div></div></div>`;});
+      qHtml+='</div>';
+    });
+    document.getElementById('copilotContent').innerHTML=qHtml;
+    document.getElementById('copilotSection').style.display='block';
   }
 
-  function newScreening() {
-    document.getElementById('results-section').classList.remove('visible');
-    document.getElementById('main-form').style.display = 'block';
-    clearForm();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  document.getElementById('results-section').style.display='block';
+  document.getElementById('view-screen').style.display='none';
+  document.getElementById('results-section').scrollIntoView({behavior:'smooth'});
+}
 
-  function showError(id, msg) { const el = document.getElementById(id); el.innerHTML = msg; el.classList.add('visible'); }
-  function hideError(id) { document.getElementById(id).classList.remove('visible'); }
-  function showLoading(title, sub) {
-    document.getElementById('loadingOverlay').classList.add('visible');
-    document.getElementById('loadingText').textContent = title;
-    document.getElementById('loadingStep').textContent = sub;
-    document.getElementById('screenBtn').disabled = true;
+// ── Feedback ──
+function recordOutcome(outcome){
+  updateLastOutcome(outcome);
+  document.getElementById('feedbackDone').classList.add('visible');
+  document.querySelectorAll('.feedback-btn').forEach(b=>b.disabled=true);
+}
+
+// ── Dashboard ──
+function renderDashboard(){
+  const screenings=loadScreenings();
+  const dash=document.getElementById('dashContent');
+  if(!screenings.length){
+    dash.innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><p>No screenings yet.<br>Screen your first candidate and record outcomes to see your analytics.</p></div>`;
+    return;
   }
-  function updateLoadingStep(msg) { document.getElementById('loadingStep').textContent = msg; }
-  function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('visible');
-    document.getElementById('screenBtn').disabled = false;
-  }
+  const total=screenings.length;
+  const advanced=screenings.filter(s=>s.outcome==='advanced').length;
+  const passed=screenings.filter(s=>s.outcome==='passed').length;
+  const pending=screenings.filter(s=>s.outcome==='pending').length;
+  const avgScore=Math.round(screenings.reduce((a,s)=>a+(s.score||0),0)/total);
+  const ratio=advanced>0?(total/advanced).toFixed(1):'—';
+
+  const metricHtml=advanced>0?`
+    <div class="metric-highlight">
+      <div class="metric-big">${ratio}:1</div>
+      <div class="metric-desc">Screen-to-Interview Ratio<br>${advanced} advanced to interview from ${total} screened by ${currentUser?currentUser.name:'you'}</div>
+      <div class="metric-sub">${ratio<=7?'🎯 On target — 7:1 or better is world-class':'📈 Keep screening to build your ratio data'}</div>
+    </div>`:`
+    <div class="metric-highlight">
+      <div style="font-size:36px;margin-bottom:10px">🎯</div>
+      <div class="metric-desc">Record outcomes after each screening to track your <b>screen-to-interview ratio</b>.<br>The target: <b>7:1</b> — proof that ScreenMind saves 80% of screening time without losing quality.</div>
+    </div>`;
+
+  const statsHtml=`<div class="dash-stats">
+    <div class="stat-card"><div class="stat-number" style="color:var(--accent2)">${total}</div><div class="stat-label">Total Screened</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:var(--accent)">${advanced}</div><div class="stat-label">Advanced</div></div>
+    <div class="stat-card"><div class="stat-number">${avgScore}</div><div class="stat-label">Avg Score</div></div>
+    <div class="stat-card"><div class="stat-number" style="color:var(--warn)">${pending}</div><div class="stat-label">Pending</div></div>
+  </div>`;
+
+  const maxV=Math.max(total,1);
+  const funnelHtml=`<div class="funnel-card">
+    <h4>📈 Screening Funnel</h4>
+    <div class="funnel-row"><div class="funnel-label">Screened</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%;background:var(--accent2)"></div></div><div class="funnel-count">${total}</div></div>
+    <div class="funnel-row"><div class="funnel-label">Advanced</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round((advanced/maxV)*100)}%;background:var(--accent)"></div></div><div class="funnel-count">${advanced}</div></div>
+    <div class="funnel-row"><div class="funnel-label">Passed</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round((passed/maxV)*100)}%;background:var(--danger);opacity:0.7"></div></div><div class="funnel-count">${passed}</div></div>
+    <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:10px;">This funnel becomes your investor proof-of-accuracy story over time.</div>
+  </div>`;
+
+  const rows=screenings.slice(0,30).map(s=>{
+    const oc=s.outcome==='advanced'?'outcome-advanced':s.outcome==='reserved'?'outcome-reserved':s.outcome==='passed'?'outcome-passed':'outcome-pending';
+    const ocL=s.outcome==='advanced'?'Advanced':s.outcome==='reserved'?'Reserved':s.outcome==='passed'?'Passed':'Pending';
+    const sc=s.score>=85?'#6ee7b7':s.score>=70?'#818cf8':s.score>=50?'#fbbf24':'#f87171';
+    const vc={'Strong Match':'strong','Good Match':'good','Weak Match':'weak','Poor Match':'poor'}[s.verdict]||'weak';
+    return`<div class="screening-row">
+      <div><div class="candidate-name">${esc(s.candidateName||'Unknown')}</div><div class="candidate-role">${esc(s.role||'')}</div></div>
+      <div style="font-family:var(--font-mono);font-size:13px;color:${sc};font-weight:600">${s.score||0}/100</div>
+      <div><span class="verdict-badge ${vc}" style="font-size:10px">${esc(s.verdict||'')}</span></div>
+      <div><span class="outcome-badge ${oc}">${ocL}</span></div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${new Date(s.screenedAt).toLocaleDateString()}</div>
+    </div>`;
+  }).join('');
+
+  const clearBtn=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">Showing last ${Math.min(screenings.length,30)} of ${screenings.length} screenings</div>
+    <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="if(confirm('Clear all screening history?')){localStorage.removeItem(getKey());renderDashboard();}">🗑 Clear history</button>
+  </div>`;
+
+  dash.innerHTML=metricHtml+statsHtml+funnelHtml+clearBtn+`<div class="screenings-table"><div class="table-head"><div>Candidate</div><div>Score</div><div>Verdict</div><div>Outcome</div><div>Date</div></div>${rows}</div>`;
+}
+
+// ── Utilities ──
+function switchTab(tab){
+  document.getElementById('uploadPanel').style.display=tab==='upload'?'block':'none';
+  document.getElementById('pastePanel').style.display=tab==='paste'?'block':'none';
+  document.getElementById('tabUpload').classList.toggle('active',tab==='upload');
+  document.getElementById('tabPaste').classList.toggle('active',tab==='paste');
+}
+function getResumeText(){return document.getElementById('uploadPanel').style.display!=='none'?resumeContent:document.getElementById('resumeText').value.trim();}
+function setupDragDrop(){
+  const drop=document.getElementById('fileDrop');
+  if(!drop)return;
+  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('dragover');});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('dragover'));
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)processFile(f);});
+}
+function handleFileSelect(input){if(input.files[0])processFile(input.files[0]);}
+function setExtractStatus(msg,color){const el=document.getElementById('extractStatus');el.style.display='block';el.style.color=color||'var(--muted)';el.textContent=msg;}
+async function processFile(file){
+  document.getElementById('fileName').textContent='✓ '+file.name;
+  const ext=file.name.split('.').pop().toLowerCase();
+  setExtractStatus('⏳ Extracting text...','var(--accent)');
+  try{
+    if(ext==='txt'){resumeContent=await file.text();setExtractStatus('✓ Extracted ('+resumeContent.length+' chars)','var(--accent)');}
+    else if(ext==='pdf'){
+      const ab=await file.arrayBuffer();
+      const lib=window['pdfjs-dist/build/pdf'];
+      lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const pdf=await lib.getDocument({data:ab}).promise;
+      let text='';for(let i=1;i<=pdf.numPages;i++){const p=await pdf.getPage(i);const c=await p.getTextContent();text+=c.items.map(x=>x.str).join(' ')+'\n';}
+      resumeContent=text.trim();setExtractStatus('✓ PDF extracted ('+pdf.numPages+' pages)','var(--accent)');
+    }else if(ext==='docx'){
+      const ab=await file.arrayBuffer();const r=await mammoth.extractRawText({arrayBuffer:ab});
+      resumeContent=r.value.trim();setExtractStatus('✓ DOCX extracted ('+resumeContent.length+' chars)','var(--accent)');
+    }else{setExtractStatus('⚠ Use Paste Text tab for this format','var(--warn)');resumeContent='';}
+    if(resumeContent){const dup=checkDuplicate(resumeContent);if(dup){const el=document.getElementById('dupWarning');document.getElementById('dupWarningText').textContent=`This resume is ${Math.round((dup.similarity||0.7)*100)}% similar to ${dup.candidateName||'a previously screened candidate'} (score: ${dup.score}/100, screened ${new Date(dup.screenedAt).toLocaleDateString()}).`;el.classList.add('visible');}}
+  }catch(err){setExtractStatus('⚠ Extraction failed — use Paste Text tab','var(--warn)');resumeContent='';}
+}
+function clearForm(){
+  ['jobDescription','resumeText','newCriterionText'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('fileName').textContent='';
+  document.getElementById('extractStatus').style.display='none';
+  document.getElementById('icpAutoNote').classList.remove('visible');
+  document.getElementById('autoIcpBtn').textContent='✨ Auto-generate Weighted ICP from Job Description';
+  document.getElementById('autoIcpBtn').disabled=false;
+  document.getElementById('dupWarning').classList.remove('visible');
+  criteria=[];renderCriteria();resumeContent='';
+  switchTab('upload');hideError('formError');hideError('icpError');
+}
+function newScreening(){
+  document.getElementById('results-section').style.display='none';
+  document.getElementById('view-screen').style.display='block';
+  document.getElementById('copilotSection').style.display='none';
+  clearForm();window.scrollTo({top:0,behavior:'smooth'});
+}
+function showError(id,msg){const el=document.getElementById(id);el.innerHTML=msg;el.classList.add('visible');}
+function hideError(id){document.getElementById(id).classList.remove('visible');}
+function getKey(){return'sm_screenings_'+(currentUser?currentUser.name.replace(/\s/g,''):'default');}
+function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
 </html>
