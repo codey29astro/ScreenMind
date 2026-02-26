@@ -8,7 +8,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
-:root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#2a2a3d;--accent:#6ee7b7;--accent2:#818cf8;--warn:#fbbf24;--danger:#f87171;--text:#e8e8f0;--muted:#6b6b8a;--font-display:'DM Serif Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;}
+:root{--bg:#0d0d14;--surface:#16161f;--surface2:#1e1e2a;--border:#2e2e42;--accent:#6ee7b7;--accent2:#a5b4fc;--warn:#fbbf24;--danger:#f87171;--text:#f0f0f8;--muted:#9ca3af;--font-display:'DM Serif Display',serif;--font-mono:'DM Mono',monospace;--font-body:'DM Sans',sans-serif;}
+body{font-size:15px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(110,231,183,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(110,231,183,0.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
@@ -86,13 +87,14 @@ label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bott
 /* ICP */
 .icp-auto-note{display:none;background:rgba(129,140,248,0.08);border:1px solid rgba(129,140,248,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent2);font-family:var(--font-mono);margin-bottom:14px;}
 .icp-auto-note.visible{display:block;}
-.criteria-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.criterion-row{display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;}
-.criterion-row.ai-generated{border-color:rgba(129,140,248,0.25);}
-.criterion-body{flex:1;}
-.criterion-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;}
-.criterion-text{font-size:13px;color:var(--text);font-weight:500;}
-.criterion-reasoning{font-size:11px;color:var(--muted);font-family:var(--font-mono);line-height:1.4;}
+.criteria-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.criterion-row{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;}
+.criterion-row.ai-generated{border-color:rgba(165,180,252,0.25);}
+.criterion-body{flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.criterion-text{font-size:13px;color:var(--text);font-weight:500;flex:1;min-width:0;}
+.criterion-reasoning{display:none;}
+.criterion-hint{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-style:dotted;flex-shrink:0;}
+.criterion-hint:hover{color:var(--accent2);}
 .weight-badge{padding:2px 7px;border-radius:4px;font-size:10px;font-family:var(--font-mono);font-weight:600;text-transform:uppercase;}
 .weight-critical{background:rgba(248,113,113,0.15);color:var(--danger);}
 .weight-important{background:rgba(251,191,36,0.15);color:var(--warn);}
@@ -249,13 +251,13 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
     <circle cx="50" cy="44" r="5" fill="url(#lg1)"/>
     <polyline points="35,44 42,51 65,37" fill="none" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
-  <div class="loading-steps">
-    <div class="loading-step" id="ls1"><div class="step-dot"></div>Reading job description</div>
-    <div class="loading-step" id="ls2"><div class="step-dot"></div>Building ICP context</div>
-    <div class="loading-step" id="ls3"><div class="step-dot"></div>Analyzing resume depth</div>
-    <div class="loading-step" id="ls4"><div class="step-dot"></div>Detecting implicit experience</div>
-    <div class="loading-step" id="ls5"><div class="step-dot"></div>Generating co-pilot questions</div>
-    <div class="loading-step" id="ls6"><div class="step-dot"></div>Compiling recruiter report</div>
+  <div class="loading-steps" id="loadingSteps">
+    <div class="loading-step" id="ls1"><div class="step-dot"></div><span id="ls1t">Reading job description</span></div>
+    <div class="loading-step" id="ls2"><div class="step-dot"></div><span id="ls2t">Building ICP context</span></div>
+    <div class="loading-step" id="ls3"><div class="step-dot"></div><span id="ls3t">Parsing resume content</span></div>
+    <div class="loading-step" id="ls4"><div class="step-dot"></div><span id="ls4t">Checking for duplicates</span></div>
+    <div class="loading-step" id="ls5"><div class="step-dot"></div><span id="ls5t">Detecting implicit experience</span></div>
+    <div class="loading-step" id="ls6"><div class="step-dot"></div><span id="ls6t">Generating co-pilot questions</span></div>
   </div>
 </div>
 
@@ -294,7 +296,7 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
       <div class="login-feature"><div class="login-feature-icon">🎯</div><div class="login-feature-text"><strong>ICP Auto-generation</strong>AI builds your ideal candidate profile from any JD</div></div>
       <div class="login-feature"><div class="login-feature-icon">🔵</div><div class="login-feature-text"><strong>Implicit Detection</strong>Finds experience even when not explicitly stated</div></div>
       <div class="login-feature"><div class="login-feature-icon">🎤</div><div class="login-feature-text"><strong>Interview Co-pilot</strong>5 targeted questions per candidate</div></div>
-      <div class="login-feature"><div class="login-feature-icon">📊</div><div class="login-feature-text"><strong>7:1 Ratio Tracker</strong>Prove your screening accuracy over time</div></div>
+      <div class="login-feature"><div class="login-feature-icon">📊</div><div class="login-feature-text"><strong>Accuracy Dashboard</strong>Track your screen-to-interview ratio over time</div></div>
     </div>
   </div>
 </div>
@@ -413,7 +415,7 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
         <button class="feedback-btn fb-reserve" onclick="recordOutcome('reserved')">🟡 Consider with Reservations</button>
         <button class="feedback-btn fb-pass" onclick="recordOutcome('passed')">❌ Pass</button>
       </div>
-      <div class="feedback-done" id="feedbackDone">✓ Outcome recorded — building your 7:1 accuracy story</div>
+      <div class="feedback-done" id="feedbackDone">✓ Outcome recorded — your screening accuracy data is building up</div>
     </div>
     <div class="new-screen-btn">
       <button class="btn btn-secondary" onclick="newScreening()">← Screen another candidate</button>
@@ -469,6 +471,9 @@ function switchView(v){
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.getElementById('nav-'+v).classList.add('active');
+  // Always hide results when switching tabs
+  document.getElementById('results-section').style.display='none';
+  if(v==='screen') document.getElementById('view-screen').style.display='block';
   if(v==='dashboard')renderDashboard();
 }
 
@@ -485,17 +490,24 @@ function renderCriteria(){
   list.innerHTML=criteria.map((c,i)=>`
     <div class="criterion-row ${c.aiGenerated?'ai-generated':''}">
       <div class="criterion-body">
-        <div class="criterion-top">
-          <span class="weight-badge weight-${c.weight.toLowerCase().replace(/[^a-z]/g,'')}">${c.weight==='Critical'?'🔴':c.weight==='Important'?'🟡':'🟢'} ${c.weight}</span>
-          <span class="criterion-text">${esc(c.text)}</span>
-          ${c.aiGenerated?'<span class="ai-tag">AI</span>':''}
-        </div>
-        ${c.reasoning?`<div class="criterion-reasoning">↳ ${esc(c.reasoning)}</div>`:''}
+        <span class="weight-badge weight-${c.weight.toLowerCase().replace(/[^a-z]/g,'')}">${c.weight==='Critical'?'🔴':c.weight==='Important'?'🟡':'🟢'} ${c.weight}</span>
+        <span class="criterion-text">${esc(c.text)}</span>
+        ${c.aiGenerated?'<span class="ai-tag">AI</span>':''}
+        ${c.reasoning?`<span class="criterion-hint" onclick="toggleReasoning(${i})" id="hint-${i}" title="${esc(c.reasoning)}">why?</span>`:''}
       </div>
+      <div id="reasoning-${i}" style="display:none;width:100%;font-size:11px;color:var(--muted);font-family:var(--font-mono);padding-top:5px;line-height:1.4;">${esc(c.reasoning)}</div>
       <button class="criterion-delete" onclick="removeCriterion(${i})">×</button>
     </div>`).join('');
 }
 function removeCriterion(i){criteria.splice(i,1);renderCriteria();}
+function toggleReasoning(i){
+  const el=document.getElementById('reasoning-'+i);
+  const hint=document.getElementById('hint-'+i);
+  if(!el)return;
+  const showing=el.style.display!=='none';
+  el.style.display=showing?'none':'block';
+  if(hint)hint.textContent=showing?'why?':'hide';
+}
 function addManualCriterion(){
   const text=document.getElementById('newCriterionText').value.trim();
   const weight=document.getElementById('newCriterionWeight').value;
@@ -529,7 +541,7 @@ async function autoGenerateICP(){
   const btn=document.getElementById('autoIcpBtn');
   btn.disabled=true;btn.textContent='⏳ Generating weighted ICP...';
   setLoadingSteps(['active','','','','','']);
-  showLoadingSimple('GENERATING ICP','Analyzing job description...');
+  showLoadingSimple('GENERATING ICP','Analyzing job description...',true);
 
   const prompt=`You are a world-class talent acquisition expert with 20+ years experience. Extract the most accurate Ideal Candidate Profile from this JD with weighted criteria and expert reasoning for each.
 
@@ -584,7 +596,12 @@ function animateLoadingSteps(){
     setLoadingSteps(steps);
   },2200);
 }
-function showLoadingSimple(title,sub){
+const ICP_STEPS=['Parsing job description','Identifying must-haves','Extracting deal-breakers','Weighing importance levels','Building ICP structure','Finalising criteria'];
+const SCREEN_STEPS=['Reading job description','Parsing resume content','Checking for duplicates','Detecting implicit experience','Scoring against ICP criteria','Generating co-pilot questions'];
+
+function showLoadingSimple(title,sub,isICP){
+  const steps=isICP?ICP_STEPS:SCREEN_STEPS;
+  steps.forEach((s,i)=>{const el=document.getElementById('ls'+(i+1)+'t');if(el)el.textContent=s;});
   document.getElementById('loadingOverlay').classList.add('visible');
   document.getElementById('screenBtn').disabled=true;
   animateLoadingSteps();
@@ -614,6 +631,7 @@ async function runScreening(){
 
   const icpText=criteria.map((c,i)=>`${i+1}. [${c.weight.toUpperCase()}] ${c.text}${c.reasoning?' — Reason: '+c.reasoning:''}`).join('\n');
   const criticals=criteria.filter(c=>c.weight==='Critical').map(c=>c.text).join(', ');
+  const allCriteriaNames=criteria.map(c=>c.text).join(' | ');
 
   showLoadingSimple('DEEP SCREENING','Reading context and intent...');
 
@@ -631,6 +649,8 @@ ${icpText}
 
 ## CRITICAL criteria (only fail if GENUINELY absent even implicitly):
 ${criticals}
+
+## YOU MUST evaluate and include ALL ${criteria.length} criteria in icp_breakdown: ${allCriteriaNames}
 
 ## CANDIDATE RESUME
 ${resume}
@@ -782,12 +802,12 @@ function renderDashboard(){
   const metricHtml=advanced>0?`
     <div class="metric-highlight">
       <div class="metric-big">${ratio}:1</div>
-      <div class="metric-desc">Screen-to-Interview Ratio<br>${advanced} advanced to interview from ${total} screened by ${currentUser?currentUser.name:'you'}</div>
-      <div class="metric-sub">${ratio<=7?'🎯 On target — 7:1 or better is world-class':'📈 Keep screening to build your ratio data'}</div>
+      <div class="metric-desc">Screen-to-Advance Ratio<br>${advanced} advanced to interview from ${total} screened by ${currentUser?currentUser.name:'you'}</div>
+      <div class="metric-sub">${ratio<=10?'📈 Great signal — keep recording outcomes to build your accuracy picture':'📈 Record outcomes after each screening to track your ratio'}</div>
     </div>`:`
     <div class="metric-highlight">
       <div style="font-size:36px;margin-bottom:10px">🎯</div>
-      <div class="metric-desc">Record outcomes after each screening to track your <b>screen-to-interview ratio</b>.<br>The target: <b>7:1</b> — proof that ScreenMind saves 80% of screening time without losing quality.</div>
+      <div class="metric-desc">Record your outcome after each screening to build your <b>screen-to-interview ratio</b>.<br>This becomes your personal proof of how much time ScreenMind saves you.</div>
     </div>`;
 
   const statsHtml=`<div class="dash-stats">
@@ -803,7 +823,7 @@ function renderDashboard(){
     <div class="funnel-row"><div class="funnel-label">Screened</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%;background:var(--accent2)"></div></div><div class="funnel-count">${total}</div></div>
     <div class="funnel-row"><div class="funnel-label">Advanced</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round((advanced/maxV)*100)}%;background:var(--accent)"></div></div><div class="funnel-count">${advanced}</div></div>
     <div class="funnel-row"><div class="funnel-label">Passed</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round((passed/maxV)*100)}%;background:var(--danger);opacity:0.7"></div></div><div class="funnel-count">${passed}</div></div>
-    <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:10px;">This funnel becomes your investor proof-of-accuracy story over time.</div>
+    <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:10px;">As you record outcomes, this funnel builds your proof-of-accuracy data.</div>
   </div>`;
 
   const rows=screenings.slice(0,30).map(s=>{
