@@ -398,6 +398,16 @@ label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bott
 .funnel-count{width:36px;text-align:right;font-family:var(--font-mono);font-size:12px;color:var(--text);flex-shrink:0;}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
 .empty-state .empty-icon{font-size:40px;margin-bottom:14px;}
+.saved-roles-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:none;}
+.saved-roles-bar.visible{display:block;}
+.saved-roles-title{font-size:11px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+.saved-roles-list{display:flex;gap:8px;flex-wrap:wrap;}
+.saved-role-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all 0.2s;}
+.saved-role-chip:hover{border-color:var(--accent);color:var(--accent);}
+.saved-role-chip .chip-del{color:var(--muted);font-size:14px;margin-left:2px;}
+.saved-role-chip .chip-del:hover{color:var(--danger);}
+.save-role-btn{background:rgba(245,158,11,0.1);color:var(--gold);border:1px solid rgba(245,158,11,0.3);font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;font-family:var(--font-body);font-weight:600;transition:all 0.2s;}
+.save-role-btn:hover{background:rgba(245,158,11,0.2);}
 footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;font-family:var(--font-mono);border-top:1px solid var(--border);margin-top:14px;}
 
 /* Mode toggle */
@@ -538,6 +548,16 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
 
   <!-- SCREEN VIEW -->
   <div class="view active" id="view-screen">
+
+    <!-- Saved Roles Bar -->
+    <div class="saved-roles-bar" id="savedRolesBar">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="saved-roles-title">📁 Saved Roles — click to reload JD + ICP instantly</div>
+        <button class="save-role-btn" onclick="saveCurrentRole()">💾 Save Current JD + ICP</button>
+      </div>
+      <div class="saved-roles-list" id="savedRolesList"></div>
+    </div>
+
     <div class="card">
       <div class="section-label">Step 1 · Role Definition</div>
       <div class="section-title">Job Description</div>
@@ -604,7 +624,7 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
         <div><label>GitHub / Portfolio</label><input type="text" id="githubInput" placeholder="github.com/username or paste README..." /></div>
         <div><label>LinkedIn About Section</label><input type="text" id="linkedinInput" placeholder="Paste their LinkedIn About section..." /></div>
       </div>
-      <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:10px;">💡 For tech roles: open GitHub profile, copy README. Can shift score 10-15 points for strong contributors.</div>
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:10px;">💡 Important: paste the actual TEXT content, not just a URL (ScreenMind can't visit URLs). For GitHub: open profile → copy README text. For LinkedIn: copy their About section. Pasting real content can shift score by 10-15 points for technical roles.</div>
     </div>
 
     <div class="action-row">
@@ -674,6 +694,7 @@ function showApp(){
   document.getElementById('app-view').style.display='block';
   document.getElementById('userName').textContent=currentUser.name.split(' ')[0];
   document.getElementById('userAvatar').textContent=currentUser.initial;
+  renderSavedRoles();
 }
 window.onload=()=>{
   const saved=localStorage.getItem('sm_user');
@@ -804,7 +825,12 @@ Return:
   ]
 }
 
-Rules: 6-10 criteria. 2-3 Critical, 3-4 Important, 1-2 Nice-to-have. Think beyond keywords — include leadership signals, domain depth, behavioral indicators. Be specific.`;
+Rules:
+- 6-10 criteria total. 2-3 Critical, 3-4 Important, 1-2 Nice-to-have.
+- For TECHNICAL roles: always include education as a criterion (CS degree / equivalent / self-taught with strong portfolio — and weight it appropriately). A Senior Staff Engineer from IIT/FAANG background is a different calibre signal than no CS fundamentals.
+- For LEADERSHIP roles: include team size managed and business outcome ownership as criteria.
+- For ALL roles: include one criterion around career trajectory and progression speed — are they growing fast enough for this level?
+- Think beyond keywords — include leadership signals, domain depth, behavioral indicators, education pedigree where relevant. Be specific.`;
 
   try{
     const r=await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
@@ -1035,7 +1061,7 @@ function buildNotePrompt(result, jd, isCandidateMode) {
     + 'WHAT THEY ARE MISSING:\n' + gapsList + '\n\n'
     + 'LEVEL: ' + (result.level_assessment||'At Level') + '\n\n'
     + 'ICP MATCH:\n' + icpSummary + '\n\n'
-    + 'FOR TECHNICAL ROLES: Translate resume language into technical reality. "6 years Java but no Python" means OOP fundamentals are solid but Python async patterns are a different muscle. "No Kotlin" for a backend JVM role is a significant gap — not a weekend learn. Make the HM understand the TECHNICAL REALITY.\n\n'
+    + 'TRANSLATE EXPERIENCE INTO WHAT IT REALLY MEANS — FOR ANY ROLE: Do not repeat what the resume says — decode it. If resume says Engineered API at Uber for 80% traffic: this means end-to-end microservice design, API gateway, high-traffic production. If 5 years Python at fintech: knows async frameworks FastAPI/Django, financial data pipelines. If Led AWS migration: knows IaC Terraform, VPCs, IAM. For sales: 8M ARR growth at Salesforce means enterprise cycle, MEDDIC, executive selling. For leadership: scaled hiring 50 to 400/quarter means workforce planning, TA ops at scale, C-suite partnership. EDUCATION MATTERS: CS degree from top institution signals strong fundamentals. No CS degree requires compensating portfolio evidence. For any role take the 2-3 most specific achievements and decode what they actually mean for THIS job. This is ScreenMind intelligence.\n\n'
     + 'Write a BULLET POINT recruiter briefing with these exact sections:\n'
     + '**HEADLINE:** One sharp sentence — name + strongest specific achievement + why it matters for THIS role\n'
     + '**WHY THIS SCORE (' + score + '/100):** 2-3 bullets explaining exactly what drove this score — what critical criteria were met, partially met, or failed. Justify the number.\n'
@@ -1363,6 +1389,73 @@ function renderCandidateExtras(r){
   div.innerHTML=candidateHtml;
   document.getElementById('resultsContent').insertAdjacentElement('afterend',div);
 }
+// ── Saved Roles (save JD + ICP per role, reload instantly) ──
+function getRolesKey(){return 'sm_roles_'+(currentUser?currentUser.name.replace(/\s/g,''):'default');}
+
+function loadSavedRoles(){
+  try{return JSON.parse(localStorage.getItem(getRolesKey())||'[]');}
+  catch(e){return [];}
+}
+
+function saveCurrentRole(){
+  const jd = document.getElementById('jobDescription').value.trim();
+  if(!jd){showError('formError','⚠ Paste a JD first before saving.');return;}
+  if(!criteria.length){showError('formError','⚠ Generate or add ICP criteria before saving.');return;}
+  const name = (currentRole || jd.split('\n')[0]).substring(0,50).trim();
+  const label = prompt('Name this role (e.g. "Senior Engineer - Stripe"):', name);
+  if(!label)return;
+  const roles = loadSavedRoles();
+  // Replace if same name exists
+  const idx = roles.findIndex(r=>r.label===label);
+  const entry = {label, jd, criteria, savedAt:Date.now()};
+  if(idx>=0) roles[idx]=entry; else roles.unshift(entry);
+  if(roles.length>20) roles.pop();
+  localStorage.setItem(getRolesKey(), JSON.stringify(roles));
+  renderSavedRoles();
+  // Show confirmation
+  const btn = document.querySelector('.save-role-btn');
+  if(btn){const orig=btn.textContent;btn.textContent='✓ Saved!';btn.style.color='var(--accent)';setTimeout(()=>{btn.textContent=orig;btn.style.color='';},1500);}
+}
+
+function loadRole(label){
+  const roles = loadSavedRoles();
+  const role = roles.find(r=>r.label===label);
+  if(!role)return;
+  document.getElementById('jobDescription').value = role.jd;
+  criteria = role.criteria.map(c=>({...c}));
+  currentRole = label;
+  renderCriteria();
+  document.getElementById('icpAutoNote').classList.add('visible');
+  // Scroll to resume section
+  document.getElementById('resumeStepLabel') && document.getElementById('resumeStepLabel').scrollIntoView({behavior:'smooth'});
+  // Flash confirmation
+  const bar = document.getElementById('savedRolesBar');
+  if(bar){bar.style.borderColor='var(--accent)';setTimeout(()=>{bar.style.borderColor='';},1000);}
+}
+
+function deleteRole(label, e){
+  e.stopPropagation();
+  if(!confirm('Delete saved role: '+label+'?'))return;
+  const roles = loadSavedRoles().filter(r=>r.label!==label);
+  localStorage.setItem(getRolesKey(), JSON.stringify(roles));
+  renderSavedRoles();
+}
+
+function renderSavedRoles(){
+  const roles = loadSavedRoles();
+  const bar = document.getElementById('savedRolesBar');
+  const list = document.getElementById('savedRolesList');
+  if(!bar||!list)return;
+  if(!roles.length){bar.classList.remove('visible');return;}
+  bar.classList.add('visible');
+  list.innerHTML = roles.map(r=>`
+    <div class="saved-role-chip" onclick="loadRole('${esc(r.label)}')">
+      <span>📋 ${esc(r.label)}</span>
+      <span style="font-size:10px;color:var(--muted);">${r.criteria?r.criteria.length:0} criteria</span>
+      <span class="chip-del" onclick="deleteRole('${esc(r.label)}',event)" title="Delete">×</span>
+    </div>`).join('');
+}
+
 </script>
 </body>
 </html>
