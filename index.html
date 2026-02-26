@@ -335,9 +335,11 @@ label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bott
 .recruiter-note h4{font-size:10px;font-family:var(--font-mono);color:var(--accent2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;}
 .recruiter-note p{font-size:14px;line-height:1.7;font-style:italic;}
 .recruiter-note .note-body{font-size:14px;line-height:1.8;}
-.recruiter-note .note-body strong{color:var(--accent2);display:block;margin-top:12px;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;font-family:var(--font-mono);}
-.recruiter-note .note-body .note-bullet{display:flex;gap:8px;margin-bottom:6px;padding-left:4px;}
-.recruiter-note .note-body .note-bullet::before{content:"→";color:var(--gold);flex-shrink:0;font-weight:700;}
+.note-section{margin-bottom:16px;}
+.note-section-title{font-size:11px;font-family:var(--font-mono);font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.note-para{font-size:14px;color:var(--text);line-height:1.75;margin-bottom:8px;}
+.note-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px;font-size:14px;line-height:1.65;color:var(--text);padding-left:4px;}
+.note-dot{color:var(--gold);font-size:9px;flex-shrink:0;margin-top:6px;}
 .dealbreaker-alert{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:13px 16px;margin-bottom:16px;color:var(--danger);font-size:13px;}
 
 /* Co-pilot */
@@ -587,6 +589,11 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
     </div>
 
     <div class="card">
+      <!-- Same role notice -->
+      <div id="sameRoleNotice" style="display:none;align-items:center;gap:10px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.25);border-radius:10px;padding:11px 16px;margin-bottom:14px;">
+        <span style="font-size:18px;">♻️</span>
+        <div style="font-size:13px;color:var(--accent);">JD &amp; ICP preserved — just upload the next candidate's resume below.</div>
+      </div>
       <div class="section-label" id="resumeStepLabel">Step 3 · Candidate Resume</div>
       <div class="section-title" id="resumeStepTitle">Upload Resume</div>
       <div class="section-desc" id="resumeStepDesc">PDF, DOCX, or TXT — ScreenMind extracts and understands context automatically.</div>
@@ -1062,15 +1069,14 @@ function buildNotePrompt(result, jd, isCandidateMode) {
     + 'LEVEL: ' + (result.level_assessment||'At Level') + '\n\n'
     + 'ICP MATCH:\n' + icpSummary + '\n\n'
     + 'TRANSLATE EXPERIENCE INTO WHAT IT REALLY MEANS — FOR ANY ROLE: Do not repeat what the resume says — decode it. If resume says Engineered API at Uber for 80% traffic: this means end-to-end microservice design, API gateway, high-traffic production. If 5 years Python at fintech: knows async frameworks FastAPI/Django, financial data pipelines. If Led AWS migration: knows IaC Terraform, VPCs, IAM. For sales: 8M ARR growth at Salesforce means enterprise cycle, MEDDIC, executive selling. For leadership: scaled hiring 50 to 400/quarter means workforce planning, TA ops at scale, C-suite partnership. EDUCATION MATTERS: CS degree from top institution signals strong fundamentals. No CS degree requires compensating portfolio evidence. For any role take the 2-3 most specific achievements and decode what they actually mean for THIS job. This is ScreenMind intelligence.\n\n'
-    + 'Write a BULLET POINT recruiter briefing with these exact sections:\n'
-    + '**HEADLINE:** One sharp sentence — name + strongest specific achievement + why it matters for THIS role\n'
-    + '**WHY THIS SCORE (' + score + '/100):** 2-3 bullets explaining exactly what drove this score — what critical criteria were met, partially met, or failed. Justify the number.\n'
-    + '**STRENGTHS:** 2-3 bullets — specific evidence from resume with numbers, companies, outcomes\n'
-    + '**GAPS & CONCERNS:** 2-3 bullets — what is missing, why it matters for this specific role, and how serious each gap is\n'
-    + '**RECOMMENDED NEXT STEP:** 1 bullet — exactly what type of interview to run (full loop / targeted technical screen / exploratory call / pass) and WHY based on the score\n'
-    + '**ONE THING TO PROBE:** 1 bullet — the single most important question to ask this candidate\n\n'
-    + 'BANNED WORDS (output is worthless if these appear): strong candidate, solid background, strong track record, proven experience, highly experienced, recommend advancing, further assess\n'
-    + 'Every bullet must cite specific data from the resume or ICP. No generic statements.';
+    + 'OUTPUT FORMAT — USE EXACTLY THESE SECTION HEADERS:\n'
+    + '**HEADLINE:** [One powerful sentence — candidate name + their single strongest credential (IIT/Stripe/FAANG etc counts heavily) + specific achievement + why it directly matters for THIS role]\n'
+    + '**WHY THIS SCORE (' + score + '/100):** [2-3 sentences in PROSE — not bullets — explaining exactly what drove this number. Name which Critical criteria were met or failed. If IIT/top-tier education is present, call it out as a strong signal. If FAANG/top company is in background, decode what that means technically. Justify the score so the HM understands the math.]\n'
+    + '**WHAT MAKES THEM COMPELLING:** [2-3 sentences of pure story-telling prose. This is where you decode their experience. If they built API infrastructure at Uber serving 80% traffic — say what that means: end-to-end microservice ownership, API gateway design, high-traffic production engineering, rate limiting, auth middleware. If they are from IIT + Stripe — say IIT signals strong CS fundamentals and Stripe engineering culture means payment systems at scale, financial data integrity, high-reliability systems. Make the HM see the REAL person behind the resume words.]\n'
+    + '**HONEST CONCERNS:** [1-2 sentences only — what is genuinely missing or worth probing. Be surgical: name the exact gap and its business impact for THIS role. Do not invent concerns if there are none.]\n'
+    + '**RECOMMENDATION:** [One decisive sentence. Advance to full loop / 30-min technical screen to validate X / Pass. State exactly why based on score and the single most important factor.]\n\n'
+    + 'WRITING STYLE: Write like a senior partner at an executive search firm briefing a CEO. Prose paragraphs under each header — NOT bullet points. Confident, specific, no hedging. Each section should read like it was written by someone who deeply understands both the candidate and the business need.\n'
+    + 'BANNED WORDS: strong candidate, solid background, proven experience, strong track record, highly experienced, recommend advancing, further assess. Zero tolerance.';
 }
 
 function score_guide_candidate(score) {
@@ -1082,34 +1088,33 @@ function score_guide_candidate(score) {
 
 // ── Format Note (converts markdown bullets to styled HTML) ──
 function formatNote(text){
-  if(!text)return '';
-  // Split into lines and process
-  const lines = text.split('\n');
-  let html = '';
-  for(let i=0;i<lines.length;i++){
-    const line = lines[i].trim();
-    if(!line)continue;
-    // Bold headers like **HEADLINE:** or **WHY THIS SCORE:**
-    if(line.startsWith('**') && line.includes('**')){
-      const header = line.replace(/\*\*/g,'').replace(/:.*$/,':');
-      const rest = line.replace(/^\*\*[^*]+\*\*:?\s*/,'');
-      html += '<strong>'+esc(header)+'</strong>';
-      if(rest) html += '<div class="note-bullet">'+esc(rest)+'</div>';
-    }
-    // Bullet lines starting with - or •
-    else if(line.startsWith('- ') || line.startsWith('\u2022 ') || line.startsWith('* ')){
-      html += '<div class="note-bullet">'+esc(line.substring(2))+'</div>';
-    }
-    // Numbered lines
-    else if(/^[0-9]+\./.test(line)){
-      html += '<div class="note-bullet">'+esc(line.replace(/^\d+\.\s*/,''))+'</div>';
-    }
-    // Regular sentence
-    else{
-      html += '<div style="margin-bottom:6px;">'+esc(line)+'</div>';
+  if(!text) return '';
+  const lines = text.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  var out = '';
+  var inSection = false;
+  for(var i=0;i<lines.length;i++){
+    var line = lines[i];
+    var headerMatch = line.match(/^\*\*(.+?)\*\*:?\s*(.*)/);
+    if(headerMatch){
+      if(inSection) out += '</div>';
+      var title = headerMatch[1].replace(/:/g,'');
+      var rest = headerMatch[2];
+      out += '<div class="note-section">';
+      out += '<div class="note-section-title">'+esc(title)+'</div>';
+      if(rest) out += '<div class="note-para">'+esc(rest)+'</div>';
+      inSection = true;
+    } else if(line.match(/^[-\u2022*]\s+/)){
+      var content = line.replace(/^[-\u2022*]\s+/,'');
+      out += '<div class="note-item"><span class="note-dot">\u25C6</span><span>'+esc(content)+'</span></div>';
+    } else if(line.match(/^[0-9]+\.\s+/)){
+      var content2 = line.replace(/^[0-9]+\.\s+/,'');
+      out += '<div class="note-item"><span class="note-dot">\u25C6</span><span>'+esc(content2)+'</span></div>';
+    } else {
+      out += '<div class="note-para">'+esc(line)+'</div>';
     }
   }
-  return html;
+  if(inSection) out += '</div>';
+  return out;
 }
 
 // ── Render Results ──
@@ -1310,7 +1315,26 @@ function newScreening(){
   document.getElementById('view-screen').style.display='block';
   document.getElementById('copilotSection').style.display='none';
   const ce=document.getElementById('candidateExtras');if(ce)ce.remove();
-  clearForm();window.scrollTo({top:0,behavior:'smooth'});
+  // Only clear resume — preserve JD + ICP for same-role screening
+  resumeContent='';
+  document.getElementById('fileName').textContent='';
+  document.getElementById('extractStatus').style.display='none';
+  document.getElementById('resumeText').value='';
+  document.getElementById('dupWarning').classList.remove('visible');
+  document.getElementById('feedbackDone').classList.remove('visible');
+  document.getElementById('formError').classList.remove('visible');
+  if(document.getElementById('githubInput')) document.getElementById('githubInput').value='';
+  if(document.getElementById('linkedinInput')) document.getElementById('linkedinInput').value='';
+  // Reset file input
+  const fi=document.getElementById('resumeFile');if(fi)fi.value='';
+  switchTab('upload');
+  // Show a "same role" notice
+  const notice=document.getElementById('sameRoleNotice');
+  if(notice && (document.getElementById('jobDescription').value.trim() || criteria.length)){
+    notice.style.display='flex';
+    setTimeout(()=>{notice.style.display='none';},4000);
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showError(id,msg){const el=document.getElementById(id);el.innerHTML=msg;el.classList.add('visible');}
 function hideError(id){document.getElementById(id).classList.remove('visible');}
