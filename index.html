@@ -590,6 +590,19 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
       </div>
     </div>
 
+    <!-- Step 4: Social Signal -->
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-label">Step 4 &nbsp;<span style="color:var(--muted);font-size:10px;font-family:var(--font-mono);text-transform:none;letter-spacing:0;">Optional but powerful</span></div>
+      <div class="section-title" style="font-size:17px;">GitHub &amp; Social Profiles</div>
+      <div class="section-desc" style="margin-bottom:14px;">Paste GitHub URL, LinkedIn summary, or portfolio text. ScreenMind factors this in as extra signal — especially powerful for technical roles.</div>
+      <hr class="divider">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label>GitHub / Portfolio</label><input type="text" id="githubInput" placeholder="github.com/username or paste README..." /></div>
+        <div><label>LinkedIn About Section</label><input type="text" id="linkedinInput" placeholder="Paste their LinkedIn About section..." /></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:10px;">💡 For tech roles: open GitHub profile, copy README. Can shift score 10-15 points for strong contributors.</div>
+    </div>
+
     <div class="action-row">
       <button class="btn btn-ghost" onclick="clearForm()">Clear all</button>
       <button class="btn btn-primary" id="screenBtn" onclick="runScreening()">⚡ Run ICP Screening</button>
@@ -859,14 +872,55 @@ async function runScreening(){
   }
 
   const icpText=criteria.map((c,i)=>`${i+1}. [${c.weight.toUpperCase()}] ${c.text}${c.reasoning?' — Reason: '+c.reasoning:''}`).join('\n');
+  const githubSignal = document.getElementById('githubInput')?document.getElementById('githubInput').value.trim():'';
+  const linkedinSignal = document.getElementById('linkedinInput')?document.getElementById('linkedinInput').value.trim():'';
+  const socialContext = [githubSignal&&`GitHub/Portfolio: ${githubSignal}`, linkedinSignal&&`LinkedIn/Social: ${linkedinSignal}`].filter(Boolean).join('\n');
   const criticals=criteria.filter(c=>c.weight==='Critical').map(c=>c.text).join(', ');
   const allCriteriaNames=criteria.map(c=>c.text).join(' | ');
 
   showLoadingSimple('DEEP SCREENING','Reading context and intent...');
 
-  const prompt=`You are ScreenMind, the most intelligent AI resume screener ever built. Your superpower is CONTEXTUAL INTELLIGENCE — you understand that experienced professionals have skills implied by their career trajectory, seniority, company pedigree, and role scope, even when not explicitly stated.
+  const prompt=`You are ScreenMind — the AI embodiment of a Seasoned Principal Recruiter with 20+ years spanning executive search, technical hiring, and talent strategy at companies like Google, Salesforce, and McKinsey. You think like a business partner, speak like a storyteller, and sell like a closer. You understand talent markets, compensation bands, career trajectories, and what makes humans tick — not just what their resume says.
 
-IMPLICIT EXPERIENCE DETECTION: Never just keyword match. A Senior TA Manager at Salesforce scaling 500+ hires/quarter OBVIOUSLY has headcount forecasting experience — even if those exact words aren't in the resume. Use expertise to infer what someone at their level, at their companies, in their roles MUST have done. Mark as "inferred" not missing.
+YOU ARE NOT A KEYWORD SCANNER. You are a trusted advisor who the CEO calls before making a critical hire.
+
+═══ CORE INTELLIGENCE RULES ═══
+
+RULE 1 — CONTEXTUAL INTELLIGENCE:
+Infer experience from career trajectory, seniority, company pedigree and role scope. A Senior TA Manager at Salesforce scaling 500+ hires/quarter OBVIOUSLY owns headcount forecasting, workforce planning, and C-suite partnering. A Staff Engineer at Meta OBVIOUSLY has experience with distributed systems at scale. Never penalise for unstated but obviously implied experience. Mark as inferred with precise reasoning.
+
+RULE 2 — LEVEL CALIBRATION (CRITICAL FOR TECHNICAL AND LEADERSHIP ROLES):
+Always assess not just whether the candidate fits the role, but whether they are above, at, or below the level required.
+- If they are ABOVE level: say so explicitly — "This candidate operates at Principal/Director level. Placing them here risks underutilisation."
+- If they are AT level: confirm with specific evidence
+- If they are BELOW level: be precise — "Strong Senior Software Engineer profile. Not yet at Staff level — lacks evidence of org-wide technical influence and cross-team architectural ownership. Would excel in a Senior SWE role. Recommend discussing scope expectations before advancing."
+- For technical roles: assess technical depth, system design scale, ownership scope, and team/org influence — not just years of experience
+- For leadership roles: assess team size managed, budget owned, business outcomes driven, and C-suite exposure
+
+RULE 3 — BUSINESS & MARKET CONTEXT:
+Think about this hire as a business decision. What is the cost of a wrong hire here? What does the talent market look like for this profile? Is this candidate rare or replaceable? What is their likely compensation expectation vs the role's band? Flag any business-level risks or opportunities.
+
+RULE 4 — STORYTELLING IN THE RECRUITER NOTE:
+The recruiter note is not a summary — it is a narrative that makes the Hiring Manager feel something. It should make them lean forward and say "get this person in." Or it should give them the honest picture that saves them 3 wasted interview rounds.
+
+RULE 5 — SPECIFICITY IS NON-NEGOTIABLE:
+Every claim must be backed by a specific fact from the resume. Numbers. Company names. Role titles. Timeframes. Outcomes. ZERO generic praise.
+BANNED: "strong track record", "proven experience", "highly experienced", "accomplished professional", "demonstrated ability", "strong background", "passionate about", "results-driven"
+These are failure words. Using them means the output is worthless.
+
+═══ RECRUITER NOTE — YOUR SIGNATURE OUTPUT ═══
+Write as a Principal Recruiter whispering to the Hiring Manager 5 minutes before the decision call.
+4 sentences. No more. No less:
+- S1: The single most compelling proof point — specific number or achievement + why it matters for THIS role right now
+- S2: Direct mapping of 1-2 resume facts to THIS JD's specific requirements — name the JD requirement, name the resume evidence
+- S3: One honest watch point — level calibration concern, motivation risk, scope mismatch, or something worth probing. Not a dealbreaker. Intellectual honesty.
+- S4: Decisive recommendation — confident, clear, no hedging
+
+GOOD EXAMPLE (technical): "Priya redesigned Flipkart's recommendation engine serving 400M users, cutting inference latency by 60% — exactly the scale your ML Platform team is building toward. Her 4 years at Flipkart ML plus her open-source transformer contributions map directly to the LLM fine-tuning depth this role demands. Watch point: she's never led a team larger than 3 — validate whether this IC-to-lead transition is something she genuinely wants before extending. Advance to technical screen."
+
+GOOD EXAMPLE (leadership): "Muralidhar scaled Salesforce India from 33 to 400 hires per quarter with the same lean team — that throughput is exactly what you need in Year 1 here. His TA 3.0 transformation cutting time-to-fill from 35 to 20 days maps directly to the hiring velocity problem you described in the intake call. Watch point: his most recent role was a 9-month startup stint — probe whether he's genuinely energised by early-stage chaos or looking for enterprise stability. Advance to HM screen."
+
+BAD EXAMPLE: "John is a highly experienced professional with a strong track record in talent acquisition. He has demonstrated ability in leading teams. Recommend advancing." — THIS IS A FAILURE OUTPUT.
 
 CRITICAL: Return ONLY raw JSON. No markdown. No code fences. Start with { end with }.
 
@@ -879,27 +933,48 @@ ${icpText}
 ## CRITICAL criteria (only fail if GENUINELY absent even implicitly):
 ${criticals}
 
-## YOU MUST evaluate and include ALL ${criteria.length} criteria in icp_breakdown: ${allCriteriaNames}
+## EVALUATE ALL ${criteria.length} ICP criteria: ${allCriteriaNames}
 
 ## CANDIDATE RESUME
 ${resume}
 
-Return:
+## ADDITIONAL SOCIAL/PORTFOLIO SIGNAL
+${socialContext || 'None provided'}
+
+Return this exact JSON:
 {
-  "candidateName": "extract from resume or Unknown",
+  "candidateName": "full name from resume",
   "score": <0-100>,
   "verdict": "Strong Match|Good Match|Weak Match|Poor Match",
-  "headline": "one punchy recruiter sentence for hiring manager",
-  "summary": "2-3 sentences honest specific recruiter commentary",
-  "strengths": ["specific strength with resume evidence","strength 2","strength 3"],
-  "gaps": ["genuine gap — only if truly missing even implicitly"],
-  "icp_breakdown": [{"criterion":"text","weight":"Critical|Important|Nice-to-have","met":true/false/"inferred","evidence":"specific evidence or inference","inference_note":"if inferred: why implied by background"}],
-  "dealbreaker_triggered": true/false,
-  "dealbreaker_reason": "only if genuinely absent considering implicit experience",
-  "recruiter_note": "3 sentences as senior recruiter briefing hiring manager — specific direct honest",
+  "level_assessment": "At Level|Above Level|Below Level — with one sentence of evidence",
+  "headline": "sharp sentence — candidate name + specific quantified achievement + direct relevance to THIS role",
+  "summary": "2-3 sentences. Every sentence cites actual numbers, companies, or outcomes. Zero filler. Include level assessment if relevant.",
+  "strengths": [
+    "cite specific resume evidence — number, company, outcome, timeframe",
+    "strength 2 with evidence",
+    "strength 3 with evidence"
+  ],
+  "gaps": ["specific gap — what exactly is missing and precisely why it matters for this role. Only include if genuinely missing even implicitly."],
+  "icp_breakdown": [
+    {
+      "criterion": "criterion text",
+      "weight": "Critical|Important|Nice-to-have",
+      "met": true,
+      "evidence": "specific resume fact or precise inference reasoning",
+      "inference_note": "if inferred: exact reason their background implies this"
+    }
+  ],
+  "dealbreaker_triggered": false,
+  "dealbreaker_reason": "",
+  "recruiter_note": "4 sentences exactly. S1: strongest proof point with specific number. S2: map resume facts to THIS JD requirements. S3: one honest watch point. S4: decisive recommendation. No filler. No banned phrases. Write like a Principal Recruiter whispering to the HM.",
+  "market_context": "1-2 sentences on talent market context — is this profile rare or common? What does compensation look like? Any business-level risk or opportunity the HM should know?",
   "recommended_action": "Advance to interview|Consider with reservations|Request more info|Pass",
   "interview_questions": [
-    {"area":"what to probe","question":"specific question","why":"what gap or validation this addresses"},
+    {
+      "area": "specific area tied to this candidate's actual profile or level gap",
+      "question": "precise question referencing something specific from their resume",
+      "why": "exactly what business risk or hiring decision this question de-risks"
+    },
     {"area":"...","question":"...","why":"..."},
     {"area":"...","question":"...","why":"..."},
     {"area":"...","question":"...","why":"..."},
@@ -907,7 +982,7 @@ Return:
   ]
 }
 
-Scoring: 85-100 exceptional, 70-84 good, 50-69 partial, 30-49 weak, 0-29 poor/dealbreaker.`;
+Scoring: 85-100 exceptional fit advance immediately, 70-84 strong worth interviewing, 50-69 partial consider with reservations, 30-49 weak or level mismatch, 0-29 poor fit or dealbreaker triggered.`;
 
   try{
     const response=await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
@@ -971,7 +1046,10 @@ function renderResults(r){
         <div class="score-label">/ 100</div>
       </div>
       <div class="score-verdict">
-        <div class="verdict-badge ${vc}">${esc(r.verdict)}</div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <div class="verdict-badge ${vc}">${esc(r.verdict)}</div>
+          ${r.level_assessment?`<div style="padding:4px 10px;border-radius:20px;font-size:11px;font-family:var(--font-mono);font-weight:600;background:${r.level_assessment.startsWith('At')?'rgba(96,165,250,0.12)':r.level_assessment.startsWith('Above')?'rgba(245,158,11,0.12)':'rgba(248,113,113,0.12)'};color:${r.level_assessment.startsWith('At')?'var(--accent)':r.level_assessment.startsWith('Above')?'var(--gold)':'var(--danger)'};">⚖ \${esc(r.level_assessment.split('—')[0].trim())}</div>`:''}
+        </div>
         <div class="verdict-title">${esc(r.headline)}</div>
         <div class="verdict-summary">${esc(r.summary)}</div>
         <div class="action-chip" style="background:${ac}22;color:${ac};border:1px solid ${ac}44">→ ${esc(r.recommended_action)}</div>
@@ -986,7 +1064,9 @@ function renderResults(r){
       ${icpRows}
       <div style="padding:9px 16px;font-size:11px;color:var(--muted);font-family:var(--font-mono);border-top:1px solid var(--border);">✅ Explicit &nbsp;|&nbsp; 🔵 Inferred from context/seniority &nbsp;|&nbsp; ❌ Genuinely missing</div>
     </div>`:''}
-    <div class="recruiter-note"><h4>💬 Recruiter Briefing Note</h4><p>${esc(r.recruiter_note)}</p></div>`;
+    <div class="recruiter-note"><h4>💬 Principal Recruiter Briefing Note</h4><p>${esc(r.recruiter_note)}</p></div>
+    ${r.market_context?`<div class="recruiter-note" style="border-left-color:var(--gold);margin-top:-10px;"><h4 style="color:var(--gold);">📊 Talent Market Context</h4><p style="font-style:normal;font-size:13px;color:var(--muted);">\${esc(r.market_context)}</p></div>`:''}
+    \`;
 
   if(r.interview_questions&&r.interview_questions.length){
     const groups={};
@@ -1115,7 +1195,7 @@ async function processFile(file){
   }catch(err){setExtractStatus('⚠ Extraction failed — use Paste Text tab','var(--warn)');resumeContent='';}
 }
 function clearForm(){
-  ['jobDescription','resumeText','newCriterionText'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['jobDescription','resumeText','newCriterionText','githubInput','linkedinInput'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fileName').textContent='';
   document.getElementById('extractStatus').style.display='none';
   document.getElementById('icpAutoNote').classList.remove('visible');
