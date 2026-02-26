@@ -848,6 +848,15 @@ function showLoadingSimple(title,sub,isICP){
   document.getElementById('screenBtn').disabled=true;
   animateLoadingSteps();
 }
+function updateLoadingStep(msg){
+  // Find active step and update its text
+  ['ls1t','ls2t','ls3t','ls4t','ls5t','ls6t'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.parentElement && el.parentElement.classList.contains('active')){
+      el.textContent=msg;
+    }
+  });
+}
 function hideLoading(){
   document.getElementById('loadingOverlay').classList.remove('visible');
   document.getElementById('screenBtn').disabled=false;
@@ -884,10 +893,28 @@ async function runScreening(){
 
 YOU ARE NOT A KEYWORD SCANNER. You are a trusted advisor who the CEO calls before making a critical hire.
 
+═══ SCORE-AWARE LANGUAGE RULES ═══
+NEVER say "strong candidate" for scores below 80. NEVER say "recommend advancing" without specifying what type of interview and why.
+Score language guide — use this exact language:
+- 85-100: "Exceptional fit — advance to full interview loop immediately"
+- 70-84: "Credible profile with [specific gap] — targeted screen to validate [X] before full loop"  
+- 50-69: "Partial fit — meaningful gaps in [specific areas] — exploratory call only to assess motivation and growth trajectory"
+- 30-49: "Significant mismatch on [specific criteria] — not recommended at this level"
+- 0-29: "Does not meet minimum criteria — Pass"
+
 ═══ CORE INTELLIGENCE RULES ═══
+
+RULE 0 — HARD FACTS THAT CANNOT EVER BE INFERRED (READ THIS FIRST):
+Specific programming languages (Python, Kotlin, Java, Go, Swift, C++, Ruby etc.), specific databases (PostgreSQL, MySQL, MongoDB, Redis etc.), specific cloud platforms (AWS, GCP, Azure), and specific frameworks (React, Django, Spring, FastAPI etc.) MUST appear EXPLICITLY in the resume to be marked as met. 
+- "software development experience" does NOT mean Python
+- "backend development" does NOT mean Kotlin  
+- "database work" does NOT mean PostgreSQL specifically
+- "cloud experience" does NOT mean AWS specifically
+If the exact language/tool/platform is NOT written anywhere in the resume — mark that criterion met: false. No exceptions. No inferences. This is the most important rule in this entire prompt. Violating it produces a dangerously wrong score.
 
 RULE 1 — CONTEXTUAL INTELLIGENCE:
 Infer experience from career trajectory, seniority, company pedigree and role scope. A Senior TA Manager at Salesforce scaling 500+ hires/quarter OBVIOUSLY owns headcount forecasting, workforce planning, and C-suite partnering. A Staff Engineer at Meta OBVIOUSLY has experience with distributed systems at scale. Never penalise for unstated but obviously implied experience. Mark as inferred with precise reasoning.
+IMPORTANT: Rule 0 overrides Rule 1 for all specific technical skills, languages, databases and platforms.
 
 RULE 2 — LEVEL CALIBRATION (CRITICAL FOR TECHNICAL AND LEADERSHIP ROLES):
 Always assess not just whether the candidate fits the role, but whether they are above, at, or below the level required.
@@ -947,7 +974,7 @@ Return this exact JSON:
   "score": <0-100>,
   "verdict": "Strong Match|Good Match|Weak Match|Poor Match",
   "level_assessment": "At Level|Above Level|Below Level — with one sentence of evidence",
-  "headline": "sharp sentence — candidate name + specific quantified achievement + direct relevance to THIS role",
+  "headline": "TEMPLATE: \'[CandidateName] — [SPECIFIC ACHIEVEMENT WITH NUMBER] — [ONE PHRASE on why relevant to THIS role or what the watch point is]\'. Example: \'Sunil — 6 years Scrum delivery at TCS across 4 enterprise products — lacks AWS/Python depth required here\'. Never write a vague headline.",'
   "summary": "2-3 sentences. Every sentence cites actual numbers, companies, or outcomes. Zero filler. Include level assessment if relevant.",
   "strengths": [
     "cite specific resume evidence — number, company, outcome, timeframe",
@@ -966,7 +993,7 @@ Return this exact JSON:
   ],
   "dealbreaker_triggered": false,
   "dealbreaker_reason": "",
-  "recruiter_note": "4 sentences exactly. S1: strongest proof point with specific number. S2: map resume facts to THIS JD requirements. S3: one honest watch point. S4: decisive recommendation. No filler. No banned phrases. Write like a Principal Recruiter whispering to the HM.",
+  "recruiter_note": "Fill in this EXACT template — replace every [BRACKET] with real data from the resume and JD. Do not deviate from this structure: '[CandidateName]\'s [SPECIFIC ACHIEVEMENT WITH NUMBER OR COMPANY from resume] directly maps to [SPECIFIC REQUIREMENT from JD] — this is their strongest proof point for this role. At [SCORE]/100, [STATE EXACTLY WHAT THEY HAVE vs WHAT IS MISSING — be surgical: name the specific skills/exp present and the specific gaps]. [ONE CONCRETE WATCH POINT: a specific thing worth probing — compensation expectation, level fit, motivation, a gap to validate — something the HM needs to know before investing interview time]. [DECISIVE ACTION: one of — Advance to full loop / Technical screen first to validate X / 30-min exploratory call only / Pass — with one sentence of exact reasoning tied to the score and gaps].' FAILURE MODE: If your output contains any of these phrases it is REJECTED and worthless — strong candidate, solid background, strong track record, proven experience, highly experienced, recommend advancing, further assess, I recommend.",
   "market_context": "1-2 sentences on talent market context — is this profile rare or common? What does compensation look like? Any business-level risk or opportunity the HM should know?",
   "recommended_action": "Advance to interview|Consider with reservations|Request more info|Pass",
   "interview_questions": [
@@ -982,7 +1009,14 @@ Return this exact JSON:
   ]
 }
 
-Scoring: 85-100 exceptional fit advance immediately, 70-84 strong worth interviewing, 50-69 partial consider with reservations, 30-49 weak or level mismatch, 0-29 poor fit or dealbreaker triggered.`;
+SCORING RULES — NON-NEGOTIABLE HARD CAPS:
+1. If ANY Critical criterion is genuinely missing (explicit languages/tools like Python, Kotlin, Java, AWS, PostgreSQL are NEVER inferred — they must appear in the resume or be scored as FAILED): score CANNOT exceed 45. Set dealbreaker_triggered to true.
+2. If 2 or more Critical criteria are missing: score CANNOT exceed 30.
+3. If ALL Critical criteria are met: score normally — 70-100 based on Important and Nice-to-have matches.
+4. NEVER infer specific programming languages, databases, or cloud platforms. "software experience" does NOT imply Python. "backend experience" does NOT imply Kotlin. "database experience" does NOT imply PostgreSQL specifically. These must be EXPLICITLY stated in the resume or marked FAILED.
+5. The score must MATHEMATICALLY reflect the ICP breakdown — if 2 out of 3 Critical criteria fail, the score cannot be above 40 regardless of how impressive the rest of the profile is.
+
+Scale: 85-100 all criteria met, exceptional fit. 70-84 strong fit, minor gaps only. 50-69 partial, missing Important criteria. 30-49 missing Critical criteria. 0-29 fundamentally wrong profile.`;
 
   try{
     const response=await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
@@ -1005,10 +1039,76 @@ Scoring: 85-100 exceptional fit advance immediately, 70-84 strong worth intervie
       screenedBy:currentUser?currentUser.name:''
     });
 
+    // ── Step 2: Dedicated recruiter note — its own focused call ──
+    updateLoadingStep('Crafting Principal Recruiter briefing note...');
+    try {
+      const score = result.score || 0;
+      const scoreLanguage = score>=85
+        ? 'EXCEPTIONAL FIT (85+). Language: Advance to full loop immediately.'
+        : score>=70
+        ? 'CREDIBLE PROFILE WITH GAPS (70-84). Language: targeted screen to validate specific gaps before full loop. Do NOT say strong candidate or recommend advancing.'
+        : score>=50
+        ? 'PARTIAL FIT (50-69). Language: exploratory call only to assess motivation and growth. Be honest about the gaps.'
+        : 'SIGNIFICANT MISMATCH (below 50). Language: not recommended at this level. Be direct and save the HM time.';
+
+      const notePrompt = `You are the most precise Principal Recruiter in the world. Your ONLY job right now is to write ONE recruiter briefing note for a Hiring Manager. This note will determine whether the HM invests their time interviewing this candidate.
+
+CANDIDATE: ${result.candidateName}
+ROLE: ${jd.split('\n')[0].substring(0,100)}
+SCORE: ${score}/100 — ${scoreLanguage}
+
+WHAT THEY HAVE (strengths from resume):
+${(result.strengths||[]).map((s,i)=>(i+1)+'. '+s).join('\n')}
+
+WHAT THEY ARE MISSING (genuine gaps):
+${(result.gaps||[]).length ? (result.gaps||[]).map((g,i)=>(i+1)+'. '+g).join('\n') : 'No significant gaps identified'}
+
+LEVEL ASSESSMENT: ${result.level_assessment || 'At Level'}
+
+ICP MATCH SUMMARY:
+${(result.icp_breakdown||[]).map(x=>`- [${x.weight}] ${x.criterion}: ${x.met===true?'✓ Met':x.met==='inferred'?'~ Inferred':'✗ Missing'} — ${x.evidence||''}`).join('\n')}
+
+FOR TECHNICAL ROLES — TRANSLATE RESUME ENGLISH INTO TECHNICAL REALITY:
+Do not just repeat what the resume says. Translate it. If resume says "built microservices" — say what that implies about their system design depth. If they have 6 years Java but zero Python — say "6 years Java production experience means OOP fundamentals are solid, but Python's dynamic typing, list comprehensions, and async patterns are a different muscle — this is a 3-6 month ramp, not a dealbreaker IF motivation is genuine." If they're missing Kotlin specifically — say "Kotlin absence is significant for Android/backend JVM work — this is not a weekend learn, it requires validated hands-on time." Make the HM feel they understand the TECHNICAL REALITY of this candidate, not just their resume words.
+
+YOUR TASK: Write EXACTLY 4 sentences. Fill every bracket with real data. No exceptions.
+
+SENTENCE 1 — PROOF POINT: "[CandidateName]'s [paste their single most impressive specific achievement with actual number or company name] directly maps to [paste the single most important requirement from this role]."
+
+SENTENCE 2 — HONEST PICTURE: "At ${score}/100, [name what is concretely present from the strengths list above] — but [name the specific missing skills or gaps that matter most for this role, be surgical]."
+
+SENTENCE 3 — WATCH POINT: "[One specific thing the HM must probe before investing full interview time — level fit, motivation, a specific skill gap, compensation expectation, or career trajectory concern — tied to something specific in their profile]."
+
+SENTENCE 4 — DECISIVE ACTION: "[Exactly one of: Advance to full loop / Schedule 30-min technical screen to validate [X] before full loop / Exploratory call only to assess [Y] / Pass] — [one sentence of precise reasoning tied to the score and the most important gap or strength]."
+
+ABSOLUTE RULES:
+- BANNED WORDS — if any of these appear your output is worthless: "strong candidate", "solid background", "strong track record", "proven experience", "highly experienced", "recommend advancing", "further assess", "I recommend", "strong profile"
+- Every bracket MUST be replaced with specific data from above
+- The score (${score}/100) MUST appear in sentence 2
+- The output is 4 sentences only. No intro. No sign-off. No preamble.
+
+Write the 4-sentence note now. Nothing else.`;
+
+      const noteResp = await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:notePrompt})});
+      if(noteResp.ok){
+        const noteData = await noteResp.json();
+        const rawNote = (noteData.text||'').trim();
+        // Clean up any preamble the AI might add
+        const cleaned = rawNote
+          .replace(/^(here is|here's|recruiter note:|briefing note:|output:|result:)[\s\S]*?(?=[A-Z"])/i,'')
+          .replace(/^["']|["']$/g,'')
+          .trim();
+        result.recruiter_note = cleaned || result.recruiter_note;
+      }
+    } catch(noteErr){
+      console.warn('Note refinement failed, using original:', noteErr);
+    }
+
     hideLoading();
     renderResults(result);
     document.getElementById('feedbackDone').classList.remove('visible');
     document.querySelectorAll('.feedback-btn').forEach(b=>b.disabled=false);
+    if(currentMode==='candidate'){renderCandidateExtras(result);}
   }catch(err){hideLoading();showError('formError','⚠ '+err.message);}
 }
 
