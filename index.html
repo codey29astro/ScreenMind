@@ -687,7 +687,7 @@ function renderCriteria(){
   const list=document.getElementById('criteriaList');
   if(!list)return;
   if(!criteria.length){
-    list.innerHTML='<div style="font-size:13px;color:var(--muted);padding:8px 2px;font-style:italic;">No criteria yet — auto-generate from JD above, or add manually below.</div>';
+    list.innerHTML='<div style="font-size:13px;color:var(--muted);padding:8px 4px;font-style:italic;border:1px dashed var(--border);border-radius:8px;text-align:center;padding:14px;">No criteria yet — auto-generate from JD above, or type below and click <b style="color:var(--accent)">+ Add</b></div>';
     return;
   }
   list.innerHTML=criteria.map((c,i)=>{
@@ -720,19 +720,32 @@ function toggleReasoning(i){
   if(hint)hint.textContent=showing?'why?':'hide';
 }
 function addManualCriterion(){
-  const text=document.getElementById('newCriterionText').value.trim();
-  const weight=document.getElementById('newCriterionWeight').value;
+  const inp=document.getElementById('newCriterionText');
+  const text=inp?inp.value.trim():'';
+  const weightEl=document.getElementById('newCriterionWeight');
+  const weight=weightEl?weightEl.value:'Important';
   if(!text){
-    const inp=document.getElementById('newCriterionText');
-    inp.style.borderColor='var(--danger)';
-    setTimeout(()=>inp.style.borderColor='',1500);
+    if(inp){inp.style.borderColor='var(--danger)';inp.focus();setTimeout(()=>inp.style.borderColor='',1800);}
     return;
   }
   criteria.push({text,weight,reasoning:'',aiGenerated:false});
-  document.getElementById('newCriterionText').value='';
+  if(inp)inp.value='';
   renderCriteria();
+  // Scroll criteria list into view and flash confirmation
+  const list=document.getElementById('criteriaList');
+  if(list){list.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  const btn=document.querySelector('[onclick="addManualCriterion()"]');
+  if(btn){
+    const orig=btn.textContent;btn.textContent='✓ Added!';btn.style.color='var(--gold)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.color='';},1200);
+  }
 }
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='newCriterionText')addManualCriterion();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && document.activeElement && document.activeElement.id==='newCriterionText'){
+    e.preventDefault();
+    addManualCriterion();
+  }
+});
 
 // ── Duplicate detection ──
 function checkDuplicate(resumeText){
