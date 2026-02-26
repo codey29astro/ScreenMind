@@ -1058,8 +1058,7 @@ function score_guide_candidate(score) {
 function formatNote(text){
   if(!text)return '';
   // Split into lines and process
-  const lines = text.split('
-');
+  const lines = text.split('\n');
   let html = '';
   for(let i=0;i<lines.length;i++){
     const line = lines[i].trim();
@@ -1141,7 +1140,7 @@ function renderResults(r){
     </div>`:''}
     <div class="recruiter-note"><h4>💬 Principal Recruiter Briefing Note</h4><div class="note-body">${formatNote(r.recruiter_note)}</div></div>
     ${r.market_context?`<div class="recruiter-note" style="border-left-color:var(--gold);margin-top:-10px;"><h4 style="color:var(--gold);">📊 Talent Market Context</h4><p style="font-style:normal;font-size:13px;color:var(--muted);">\${esc(r.market_context)}</p></div>`:''}
-    \`;
+    `;
 
   if(r.interview_questions&&r.interview_questions.length){
     const groups={};
