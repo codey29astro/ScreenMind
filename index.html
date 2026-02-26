@@ -334,6 +334,10 @@ label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bott
 .recruiter-note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:12px;padding:16px 20px;margin-bottom:18px;}
 .recruiter-note h4{font-size:10px;font-family:var(--font-mono);color:var(--accent2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;}
 .recruiter-note p{font-size:14px;line-height:1.7;font-style:italic;}
+.recruiter-note .note-body{font-size:14px;line-height:1.8;}
+.recruiter-note .note-body strong{color:var(--accent2);display:block;margin-top:12px;margin-bottom:4px;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;font-family:var(--font-mono);}
+.recruiter-note .note-body .note-bullet{display:flex;gap:8px;margin-bottom:6px;padding-left:4px;}
+.recruiter-note .note-body .note-bullet::before{content:"→";color:var(--gold);flex-shrink:0;font-weight:700;}
 .dealbreaker-alert{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:13px 16px;margin-bottom:16px;color:var(--danger);font-size:13px;}
 
 /* Co-pilot */
@@ -864,6 +868,7 @@ function hideLoading(){
   setLoadingSteps(['','','','','','']);
 }
 
+
 // ── Main Screening ──
 async function runScreening(){
   hideError('formError');
@@ -876,159 +881,37 @@ async function runScreening(){
   const dup=checkDuplicate(resume);
   if(dup){
     const el=document.getElementById('dupWarning');
-    document.getElementById('dupWarningText').textContent=`This resume is ${Math.round((dup.similarity||0.7)*100)}% similar to ${dup.candidateName||'a previously screened candidate'} screened on ${new Date(dup.screenedAt).toLocaleDateString()}. Previous score: ${dup.score}/100. This may be the same person with a tweaked resume.`;
+    document.getElementById('dupWarningText').textContent='This resume is '+Math.round((dup.similarity||0.7)*100)+'% similar to '+(dup.candidateName||'a previously screened candidate')+' screened on '+new Date(dup.screenedAt).toLocaleDateString()+'. Previous score: '+dup.score+'/100.';
     el.classList.add('visible');
   }
 
-  const icpText=criteria.map((c,i)=>`${i+1}. [${c.weight.toUpperCase()}] ${c.text}${c.reasoning?' — Reason: '+c.reasoning:''}`).join('\n');
+  const icpLines = criteria.map(function(c,i){
+    return (i+1)+'. ['+c.weight.toUpperCase()+'] '+c.text+(c.reasoning?' — Reason: '+c.reasoning:'');
+  });
+  const icpText = icpLines.join('\n');
+  const criticals = criteria.filter(function(c){return c.weight==='Critical';}).map(function(c){return c.text;}).join(', ');
+  const allCriteriaNames = criteria.map(function(c){return c.text;}).join(' | ');
   const githubSignal = document.getElementById('githubInput')?document.getElementById('githubInput').value.trim():'';
   const linkedinSignal = document.getElementById('linkedinInput')?document.getElementById('linkedinInput').value.trim():'';
-  const socialContext = [githubSignal&&`GitHub/Portfolio: ${githubSignal}`, linkedinSignal&&`LinkedIn/Social: ${linkedinSignal}`].filter(Boolean).join('\n');
-  const criticals=criteria.filter(c=>c.weight==='Critical').map(c=>c.text).join(', ');
-  const allCriteriaNames=criteria.map(c=>c.text).join(' | ');
+  const socialContext = [githubSignal&&('GitHub/Portfolio: '+githubSignal), linkedinSignal&&('LinkedIn/Social: '+linkedinSignal)].filter(Boolean).join('\n') || 'None provided';
+  const isCandidateMode = currentMode==='candidate';
 
-  showLoadingSimple('DEEP SCREENING','Reading context and intent...');
+  showLoadingSimple('DEEP SCREENING','Reading context and intent...',false);
 
-  const prompt=`You are ScreenMind — the AI embodiment of a Seasoned Principal Recruiter with 20+ years spanning executive search, technical hiring, and talent strategy at companies like Google, Salesforce, and McKinsey. You think like a business partner, speak like a storyteller, and sell like a closer. You understand talent markets, compensation bands, career trajectories, and what makes humans tick — not just what their resume says.
-
-YOU ARE NOT A KEYWORD SCANNER. You are a trusted advisor who the CEO calls before making a critical hire.
-
-═══ SCORE-AWARE LANGUAGE RULES ═══
-NEVER say "strong candidate" for scores below 80. NEVER say "recommend advancing" without specifying what type of interview and why.
-Score language guide — use this exact language:
-- 85-100: "Exceptional fit — advance to full interview loop immediately"
-- 70-84: "Credible profile with [specific gap] — targeted screen to validate [X] before full loop"  
-- 50-69: "Partial fit — meaningful gaps in [specific areas] — exploratory call only to assess motivation and growth trajectory"
-- 30-49: "Significant mismatch on [specific criteria] — not recommended at this level"
-- 0-29: "Does not meet minimum criteria — Pass"
-
-═══ CORE INTELLIGENCE RULES ═══
-
-RULE 0 — HARD FACTS THAT CANNOT EVER BE INFERRED (READ THIS FIRST):
-Specific programming languages (Python, Kotlin, Java, Go, Swift, C++, Ruby etc.), specific databases (PostgreSQL, MySQL, MongoDB, Redis etc.), specific cloud platforms (AWS, GCP, Azure), and specific frameworks (React, Django, Spring, FastAPI etc.) MUST appear EXPLICITLY in the resume to be marked as met. 
-- "software development experience" does NOT mean Python
-- "backend development" does NOT mean Kotlin  
-- "database work" does NOT mean PostgreSQL specifically
-- "cloud experience" does NOT mean AWS specifically
-If the exact language/tool/platform is NOT written anywhere in the resume — mark that criterion met: false. No exceptions. No inferences. This is the most important rule in this entire prompt. Violating it produces a dangerously wrong score.
-
-RULE 1 — CONTEXTUAL INTELLIGENCE:
-Infer experience from career trajectory, seniority, company pedigree and role scope. A Senior TA Manager at Salesforce scaling 500+ hires/quarter OBVIOUSLY owns headcount forecasting, workforce planning, and C-suite partnering. A Staff Engineer at Meta OBVIOUSLY has experience with distributed systems at scale. Never penalise for unstated but obviously implied experience. Mark as inferred with precise reasoning.
-IMPORTANT: Rule 0 overrides Rule 1 for all specific technical skills, languages, databases and platforms.
-
-RULE 2 — LEVEL CALIBRATION (CRITICAL FOR TECHNICAL AND LEADERSHIP ROLES):
-Always assess not just whether the candidate fits the role, but whether they are above, at, or below the level required.
-- If they are ABOVE level: say so explicitly — "This candidate operates at Principal/Director level. Placing them here risks underutilisation."
-- If they are AT level: confirm with specific evidence
-- If they are BELOW level: be precise — "Strong Senior Software Engineer profile. Not yet at Staff level — lacks evidence of org-wide technical influence and cross-team architectural ownership. Would excel in a Senior SWE role. Recommend discussing scope expectations before advancing."
-- For technical roles: assess technical depth, system design scale, ownership scope, and team/org influence — not just years of experience
-- For leadership roles: assess team size managed, budget owned, business outcomes driven, and C-suite exposure
-
-RULE 3 — BUSINESS & MARKET CONTEXT:
-Think about this hire as a business decision. What is the cost of a wrong hire here? What does the talent market look like for this profile? Is this candidate rare or replaceable? What is their likely compensation expectation vs the role's band? Flag any business-level risks or opportunities.
-
-RULE 4 — STORYTELLING IN THE RECRUITER NOTE:
-The recruiter note is not a summary — it is a narrative that makes the Hiring Manager feel something. It should make them lean forward and say "get this person in." Or it should give them the honest picture that saves them 3 wasted interview rounds.
-
-RULE 5 — SPECIFICITY IS NON-NEGOTIABLE:
-Every claim must be backed by a specific fact from the resume. Numbers. Company names. Role titles. Timeframes. Outcomes. ZERO generic praise.
-BANNED: "strong track record", "proven experience", "highly experienced", "accomplished professional", "demonstrated ability", "strong background", "passionate about", "results-driven"
-These are failure words. Using them means the output is worthless.
-
-═══ RECRUITER NOTE — YOUR SIGNATURE OUTPUT ═══
-Write as a Principal Recruiter whispering to the Hiring Manager 5 minutes before the decision call.
-4 sentences. No more. No less:
-- S1: The single most compelling proof point — specific number or achievement + why it matters for THIS role right now
-- S2: Direct mapping of 1-2 resume facts to THIS JD's specific requirements — name the JD requirement, name the resume evidence
-- S3: One honest watch point — level calibration concern, motivation risk, scope mismatch, or something worth probing. Not a dealbreaker. Intellectual honesty.
-- S4: Decisive recommendation — confident, clear, no hedging
-
-GOOD EXAMPLE (technical): "Priya redesigned Flipkart's recommendation engine serving 400M users, cutting inference latency by 60% — exactly the scale your ML Platform team is building toward. Her 4 years at Flipkart ML plus her open-source transformer contributions map directly to the LLM fine-tuning depth this role demands. Watch point: she's never led a team larger than 3 — validate whether this IC-to-lead transition is something she genuinely wants before extending. Advance to technical screen."
-
-GOOD EXAMPLE (leadership): "Muralidhar scaled Salesforce India from 33 to 400 hires per quarter with the same lean team — that throughput is exactly what you need in Year 1 here. His TA 3.0 transformation cutting time-to-fill from 35 to 20 days maps directly to the hiring velocity problem you described in the intake call. Watch point: his most recent role was a 9-month startup stint — probe whether he's genuinely energised by early-stage chaos or looking for enterprise stability. Advance to HM screen."
-
-BAD EXAMPLE: "John is a highly experienced professional with a strong track record in talent acquisition. He has demonstrated ability in leading teams. Recommend advancing." — THIS IS A FAILURE OUTPUT.
-
-CRITICAL: Return ONLY raw JSON. No markdown. No code fences. Start with { end with }.
-
-## JOB DESCRIPTION
-${jd}
-
-## ICP CRITERIA (weighted)
-${icpText}
-
-## CRITICAL criteria (only fail if GENUINELY absent even implicitly):
-${criticals}
-
-## EVALUATE ALL ${criteria.length} ICP criteria: ${allCriteriaNames}
-
-## CANDIDATE RESUME
-${resume}
-
-## ADDITIONAL SOCIAL/PORTFOLIO SIGNAL
-${socialContext || 'None provided'}
-
-Return this exact JSON:
-{
-  "candidateName": "full name from resume",
-  "score": <0-100>,
-  "verdict": "Strong Match|Good Match|Weak Match|Poor Match",
-  "level_assessment": "At Level|Above Level|Below Level — with one sentence of evidence",
-  "headline": "TEMPLATE: \'[CandidateName] — [SPECIFIC ACHIEVEMENT WITH NUMBER] — [ONE PHRASE on why relevant to THIS role or what the watch point is]\'. Example: \'Sunil — 6 years Scrum delivery at TCS across 4 enterprise products — lacks AWS/Python depth required here\'. Never write a vague headline.",'
-  "summary": "2-3 sentences. Every sentence cites actual numbers, companies, or outcomes. Zero filler. Include level assessment if relevant.",
-  "strengths": [
-    "cite specific resume evidence — number, company, outcome, timeframe",
-    "strength 2 with evidence",
-    "strength 3 with evidence"
-  ],
-  "gaps": ["specific gap — what exactly is missing and precisely why it matters for this role. Only include if genuinely missing even implicitly."],
-  "icp_breakdown": [
-    {
-      "criterion": "criterion text",
-      "weight": "Critical|Important|Nice-to-have",
-      "met": true,
-      "evidence": "specific resume fact or precise inference reasoning",
-      "inference_note": "if inferred: exact reason their background implies this"
-    }
-  ],
-  "dealbreaker_triggered": false,
-  "dealbreaker_reason": "",
-  "recruiter_note": "Fill in this EXACT template — replace every [BRACKET] with real data from the resume and JD. Do not deviate from this structure: '[CandidateName]\'s [SPECIFIC ACHIEVEMENT WITH NUMBER OR COMPANY from resume] directly maps to [SPECIFIC REQUIREMENT from JD] — this is their strongest proof point for this role. At [SCORE]/100, [STATE EXACTLY WHAT THEY HAVE vs WHAT IS MISSING — be surgical: name the specific skills/exp present and the specific gaps]. [ONE CONCRETE WATCH POINT: a specific thing worth probing — compensation expectation, level fit, motivation, a gap to validate — something the HM needs to know before investing interview time]. [DECISIVE ACTION: one of — Advance to full loop / Technical screen first to validate X / 30-min exploratory call only / Pass — with one sentence of exact reasoning tied to the score and gaps].' FAILURE MODE: If your output contains any of these phrases it is REJECTED and worthless — strong candidate, solid background, strong track record, proven experience, highly experienced, recommend advancing, further assess, I recommend.",
-  "market_context": "1-2 sentences on talent market context — is this profile rare or common? What does compensation look like? Any business-level risk or opportunity the HM should know?",
-  "recommended_action": "Advance to interview|Consider with reservations|Request more info|Pass",
-  "interview_questions": [
-    {
-      "area": "specific area tied to this candidate's actual profile or level gap",
-      "question": "precise question referencing something specific from their resume",
-      "why": "exactly what business risk or hiring decision this question de-risks"
-    },
-    {"area":"...","question":"...","why":"..."},
-    {"area":"...","question":"...","why":"..."},
-    {"area":"...","question":"...","why":"..."},
-    {"area":"...","question":"...","why":"..."}
-  ]
-}
-
-SCORING RULES — NON-NEGOTIABLE HARD CAPS:
-1. If ANY Critical criterion is genuinely missing (explicit languages/tools like Python, Kotlin, Java, AWS, PostgreSQL are NEVER inferred — they must appear in the resume or be scored as FAILED): score CANNOT exceed 45. Set dealbreaker_triggered to true.
-2. If 2 or more Critical criteria are missing: score CANNOT exceed 30.
-3. If ALL Critical criteria are met: score normally — 70-100 based on Important and Nice-to-have matches.
-4. NEVER infer specific programming languages, databases, or cloud platforms. "software experience" does NOT imply Python. "backend experience" does NOT imply Kotlin. "database experience" does NOT imply PostgreSQL specifically. These must be EXPLICITLY stated in the resume or marked FAILED.
-5. The score must MATHEMATICALLY reflect the ICP breakdown — if 2 out of 3 Critical criteria fail, the score cannot be above 40 regardless of how impressive the rest of the profile is.
-
-Scale: 85-100 all criteria met, exceptional fit. 70-84 strong fit, minor gaps only. 50-69 partial, missing Important criteria. 30-49 missing Critical criteria. 0-29 fundamentally wrong profile.`;
+  const mainPrompt = buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socialContext, criteria.length, isCandidateMode);
 
   try{
-    const response=await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const response = await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:mainPrompt})});
     if(!response.ok){const e=await response.json();throw new Error(e.error||'Server error');}
-    const data=await response.json();const rawText=data.text||'';
+    const data = await response.json();
+    const rawText = data.text||'';
     let result;
     try{
       let clean=rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
       const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
-      if(s===-1)throw new Error('No JSON');
+      if(s===-1)throw new Error('No JSON in response');
       result=JSON.parse(clean.substring(s,e+1));
-    }catch(e){throw new Error('Could not parse response. Please try again.');}
+    }catch(e){throw new Error('Could not parse AI response. Please try again.');}
 
     if(!currentRole&&jd)currentRole=jd.split('\n')[0].substring(0,60);
     saveScreening({
@@ -1039,77 +922,169 @@ Scale: 85-100 all criteria met, exceptional fit. 70-84 strong fit, minor gaps on
       screenedBy:currentUser?currentUser.name:''
     });
 
-    // ── Step 2: Dedicated recruiter note — its own focused call ──
-    updateLoadingStep('Crafting Principal Recruiter briefing note...');
-    try {
-      const score = result.score || 0;
-      const scoreLanguage = score>=85
-        ? 'EXCEPTIONAL FIT (85+). Language: Advance to full loop immediately.'
-        : score>=70
-        ? 'CREDIBLE PROFILE WITH GAPS (70-84). Language: targeted screen to validate specific gaps before full loop. Do NOT say strong candidate or recommend advancing.'
-        : score>=50
-        ? 'PARTIAL FIT (50-69). Language: exploratory call only to assess motivation and growth. Be honest about the gaps.'
-        : 'SIGNIFICANT MISMATCH (below 50). Language: not recommended at this level. Be direct and save the HM time.';
-
-      const notePrompt = `You are the most precise Principal Recruiter in the world. Your ONLY job right now is to write ONE recruiter briefing note for a Hiring Manager. This note will determine whether the HM invests their time interviewing this candidate.
-
-CANDIDATE: ${result.candidateName}
-ROLE: ${jd.split('\n')[0].substring(0,100)}
-SCORE: ${score}/100 — ${scoreLanguage}
-
-WHAT THEY HAVE (strengths from resume):
-${(result.strengths||[]).map((s,i)=>(i+1)+'. '+s).join('\n')}
-
-WHAT THEY ARE MISSING (genuine gaps):
-${(result.gaps||[]).length ? (result.gaps||[]).map((g,i)=>(i+1)+'. '+g).join('\n') : 'No significant gaps identified'}
-
-LEVEL ASSESSMENT: ${result.level_assessment || 'At Level'}
-
-ICP MATCH SUMMARY:
-${(result.icp_breakdown||[]).map(x=>`- [${x.weight}] ${x.criterion}: ${x.met===true?'✓ Met':x.met==='inferred'?'~ Inferred':'✗ Missing'} — ${x.evidence||''}`).join('\n')}
-
-FOR TECHNICAL ROLES — TRANSLATE RESUME ENGLISH INTO TECHNICAL REALITY:
-Do not just repeat what the resume says. Translate it. If resume says "built microservices" — say what that implies about their system design depth. If they have 6 years Java but zero Python — say "6 years Java production experience means OOP fundamentals are solid, but Python's dynamic typing, list comprehensions, and async patterns are a different muscle — this is a 3-6 month ramp, not a dealbreaker IF motivation is genuine." If they're missing Kotlin specifically — say "Kotlin absence is significant for Android/backend JVM work — this is not a weekend learn, it requires validated hands-on time." Make the HM feel they understand the TECHNICAL REALITY of this candidate, not just their resume words.
-
-YOUR TASK: Write EXACTLY 4 sentences. Fill every bracket with real data. No exceptions.
-
-SENTENCE 1 — PROOF POINT: "[CandidateName]'s [paste their single most impressive specific achievement with actual number or company name] directly maps to [paste the single most important requirement from this role]."
-
-SENTENCE 2 — HONEST PICTURE: "At ${score}/100, [name what is concretely present from the strengths list above] — but [name the specific missing skills or gaps that matter most for this role, be surgical]."
-
-SENTENCE 3 — WATCH POINT: "[One specific thing the HM must probe before investing full interview time — level fit, motivation, a specific skill gap, compensation expectation, or career trajectory concern — tied to something specific in their profile]."
-
-SENTENCE 4 — DECISIVE ACTION: "[Exactly one of: Advance to full loop / Schedule 30-min technical screen to validate [X] before full loop / Exploratory call only to assess [Y] / Pass] — [one sentence of precise reasoning tied to the score and the most important gap or strength]."
-
-ABSOLUTE RULES:
-- BANNED WORDS — if any of these appear your output is worthless: "strong candidate", "solid background", "strong track record", "proven experience", "highly experienced", "recommend advancing", "further assess", "I recommend", "strong profile"
-- Every bracket MUST be replaced with specific data from above
-- The score (${score}/100) MUST appear in sentence 2
-- The output is 4 sentences only. No intro. No sign-off. No preamble.
-
-Write the 4-sentence note now. Nothing else.`;
-
+    // ── Step 2: Dedicated recruiter note ──
+    updateLoadingStep('Crafting Principal Recruiter briefing...');
+    try{
+      const notePrompt = buildNotePrompt(result, jd, isCandidateMode);
       const noteResp = await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:notePrompt})});
       if(noteResp.ok){
         const noteData = await noteResp.json();
         const rawNote = (noteData.text||'').trim();
-        // Clean up any preamble the AI might add
-        const cleaned = rawNote
-          .replace(/^(here is|here's|recruiter note:|briefing note:|output:|result:)[\s\S]*?(?=[A-Z"])/i,'')
-          .replace(/^["']|["']$/g,'')
-          .trim();
-        result.recruiter_note = cleaned || result.recruiter_note;
+        const cleaned = rawNote.replace(/^(here is|here's|recruiter note:|briefing note:|note:|output:)\s*/i,'').trim();
+        if(cleaned.length > 30) result.recruiter_note = cleaned;
       }
-    } catch(noteErr){
-      console.warn('Note refinement failed, using original:', noteErr);
-    }
+    }catch(noteErr){console.warn('Note step failed, using original');}
 
     hideLoading();
     renderResults(result);
     document.getElementById('feedbackDone').classList.remove('visible');
-    document.querySelectorAll('.feedback-btn').forEach(b=>b.disabled=false);
-    if(currentMode==='candidate'){renderCandidateExtras(result);}
+    document.querySelectorAll('.feedback-btn').forEach(function(b){b.disabled=false;});
+    if(isCandidateMode){renderCandidateExtras(result);}
   }catch(err){hideLoading();showError('formError','⚠ '+err.message);}
+}
+
+function buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socialContext, criteriaCount, isCandidateMode) {
+  const modeInstruction = isCandidateMode
+    ? 'MODE: CANDIDATE SELF-ASSESSMENT. Be a brutally honest career coach — not a cheerleader. A liberal encouraging friend who says "you can do it!" is USELESS here. The candidate needs to know their REAL chances so they can make an informed decision. If they are missing critical skills, say so directly. False hope wastes their time and damages trust in this product.'
+    : 'MODE: RECRUITER SCREENING. You are screening on behalf of a demanding hiring organisation.';
+
+  return 'You are ScreenMind — the AI embodiment of a Seasoned Principal Recruiter with 20 years spanning executive search, technical hiring, and talent strategy.\n\n'
+    + modeInstruction + '\n\n'
+    + 'RULE 0 — HARD FACTS THAT CANNOT EVER BE INFERRED:\n'
+    + 'Specific programming languages (Python, Kotlin, Java, Go, Swift, C++ etc.), databases (PostgreSQL, MySQL, MongoDB etc.), cloud platforms (AWS, GCP, Azure), and frameworks (React, Django, Spring etc.) MUST appear EXPLICITLY in the resume. "software development" does NOT mean Python. "backend work" does NOT mean Kotlin. "database experience" does NOT mean PostgreSQL. If the exact name is not in the resume — mark met: false. This is the most important rule. Violating it produces a dangerously wrong score.\n\n'
+    + 'RULE 1 — CONTEXTUAL INTELLIGENCE:\n'
+    + 'Infer soft experience from career trajectory and seniority ONLY. A Salesforce Senior TA Manager obviously owns headcount forecasting. A Staff Engineer at Meta obviously has distributed systems depth. Rule 0 overrides Rule 1 for all specific technical skills.\n\n'
+    + 'RULE 2 — HARD SCORING CAPS:\n'
+    + 'If ANY Critical criterion is missing (technical languages/tools included): score CANNOT exceed 45. Set dealbreaker_triggered: true.\n'
+    + 'If 2+ Critical criteria are missing: score CANNOT exceed 30.\n'
+    + 'If all Critical criteria are met: score 70-100 based on Important/Nice-to-have matches.\n'
+    + 'The score must mathematically reflect the ICP breakdown.\n\n'
+    + 'RULE 3 — LEVEL CALIBRATION:\n'
+    + 'Always state if candidate is Above / At / Below level required. For technical roles assess system design scale, ownership scope, org influence. For leadership assess team size, budget, business outcomes.\n\n'
+    + 'CRITICAL: Return ONLY raw JSON. No markdown. No code fences. Start with { end with }.\n\n'
+    + '## JOB DESCRIPTION\n' + jd + '\n\n'
+    + '## ICP CRITERIA (weighted)\n' + icpText + '\n\n'
+    + '## CRITICAL criteria (fail only if genuinely absent even implicitly):\n' + criticals + '\n\n'
+    + '## EVALUATE ALL ' + criteriaCount + ' criteria: ' + allCriteriaNames + '\n\n'
+    + '## CANDIDATE RESUME\n' + resume + '\n\n'
+    + '## ADDITIONAL SIGNAL\n' + socialContext + '\n\n'
+    + 'Return this JSON:\n'
+    + '{\n'
+    + '  "candidateName": "full name from resume",\n'
+    + '  "score": 0,\n'
+    + '  "verdict": "Strong Match|Good Match|Weak Match|Poor Match",\n'
+    + '  "level_assessment": "At Level|Above Level|Below Level — one sentence of evidence",\n'
+    + '  "headline": "candidate name + specific achievement with number + relevance to THIS role",\n'
+    + '  "summary": "2-3 sentences citing actual numbers companies outcomes. Zero filler.",\n'
+    + '  "strengths": ["cite specific resume evidence with numbers/companies","strength 2","strength 3"],\n'
+    + '  "gaps": ["specific gap — what exactly is missing and why it matters for THIS role"],\n'
+    + '  "icp_breakdown": [{"criterion":"text","weight":"Critical|Important|Nice-to-have","met":true,"evidence":"specific resume fact or inference reasoning","inference_note":"if inferred: exact reason"}],\n'
+    + '  "dealbreaker_triggered": false,\n'
+    + '  "dealbreaker_reason": "",\n'
+    + '  "market_context": "1-2 sentences — is this profile rare or common in market? compensation expectation? business risk?",\n'
+    + '  "recommended_action": "Advance to interview|Consider with reservations|Request more info|Pass",\n'
+    + '  "interview_questions": [{"area":"specific area","question":"precise question referencing resume","why":"what business risk this de-risks"},{"area":"","question":"","why":""},{"area":"","question":"","why":""},{"area":"","question":"","why":""},{"area":"","question":"","why":""}]\n'
+    + '}\n\n'
+    + 'Scoring guide: 85-100 all criteria met exceptional. 70-84 strong minor gaps only. 50-69 partial missing Important criteria. 30-49 missing Critical criteria. 0-29 fundamentally wrong profile or dealbreaker.';
+}
+
+function buildNotePrompt(result, jd, isCandidateMode) {
+  const score = result.score||0;
+  const name = result.candidateName||'Candidate';
+  const role = jd.split('\n')[0].substring(0,100);
+
+  const scoreGuide = score>=85
+    ? 'EXCEPTIONAL (85+): This person should be in front of the HM this week. Say so with confidence.'
+    : score>=70
+    ? 'CREDIBLE WITH GAPS (70-84): Worth a targeted screen to validate specific gaps. Do NOT say strong candidate or recommend advancing without specifying exactly what to validate.'
+    : score>=50
+    ? 'PARTIAL FIT (50-69): Significant gaps exist. Be honest. Exploratory call only. Specify exactly what is missing.'
+    : 'SIGNIFICANT MISMATCH (below 50): Save the HM time. Be direct. Specify exactly what critical criteria are missing.';
+
+  const strengthsList = (result.strengths||[]).map(function(s,i){return (i+1)+'. '+s;}).join('\n');
+  const gapsList = (result.gaps||[]).length ? (result.gaps||[]).map(function(g,i){return (i+1)+'. '+g;}).join('\n') : 'No significant gaps';
+
+  const icpSummary = (result.icp_breakdown||[]).map(function(x){
+    const status = x.met===true ? 'MET' : x.met==='inferred' ? 'INFERRED' : 'MISSING';
+    return '- ['+x.weight+'] '+x.criterion+': '+status+' — '+(x.evidence||'');
+  }).join('\n');
+
+  if(isCandidateMode){
+    return 'You are a brutally honest career coach — NOT a supportive friend. Your job is to give this job seeker the TRUTH about their application so they can make a smart decision.\n\n'
+      + 'CANDIDATE: ' + name + '\n'
+      + 'APPLYING FOR: ' + role + '\n'
+      + 'MATCH SCORE: ' + score + '/100\n'
+      + score_guide_candidate(score) + '\n\n'
+      + 'WHAT THEY HAVE:\n' + strengthsList + '\n\n'
+      + 'WHAT THEY ARE MISSING:\n' + gapsList + '\n\n'
+      + 'ICP MATCH:\n' + icpSummary + '\n\n'
+      + 'Write a BULLET POINT assessment with these exact sections:\n'
+      + '**VERDICT:** One sentence — should they apply or not, and why (mention the score)\n'
+      + '**WHAT WORKS FOR YOU:** 2-3 bullets — specific strengths from their profile with evidence\n'
+      + '**HONEST GAPS:** 2-3 bullets — exactly what is missing and what it means for their chances\n'
+      + '**BEFORE YOU APPLY:** 2-3 bullets — specific things to add to resume or cover letter to improve chances\n'
+      + '**INTERVIEW PREP PRIORITY:** 1-2 bullets — the first things they must be ready to answer\n\n'
+      + 'Be a tough but fair coach. If they are missing critical skills, say it directly. Do not soften bad news. They need truth to make a good career decision.';
+  }
+
+  return 'You are a Seasoned Principal Recruiter writing a briefing note for a Hiring Manager who has 10 minutes to make a decision.\n\n'
+    + 'CANDIDATE: ' + name + '\n'
+    + 'ROLE: ' + role + '\n'
+    + 'SCORE: ' + score + '/100 — ' + scoreGuide + '\n\n'
+    + 'WHAT THEY HAVE:\n' + strengthsList + '\n\n'
+    + 'WHAT THEY ARE MISSING:\n' + gapsList + '\n\n'
+    + 'LEVEL: ' + (result.level_assessment||'At Level') + '\n\n'
+    + 'ICP MATCH:\n' + icpSummary + '\n\n'
+    + 'FOR TECHNICAL ROLES: Translate resume language into technical reality. "6 years Java but no Python" means OOP fundamentals are solid but Python async patterns are a different muscle. "No Kotlin" for a backend JVM role is a significant gap — not a weekend learn. Make the HM understand the TECHNICAL REALITY.\n\n'
+    + 'Write a BULLET POINT recruiter briefing with these exact sections:\n'
+    + '**HEADLINE:** One sharp sentence — name + strongest specific achievement + why it matters for THIS role\n'
+    + '**WHY THIS SCORE (' + score + '/100):** 2-3 bullets explaining exactly what drove this score — what critical criteria were met, partially met, or failed. Justify the number.\n'
+    + '**STRENGTHS:** 2-3 bullets — specific evidence from resume with numbers, companies, outcomes\n'
+    + '**GAPS & CONCERNS:** 2-3 bullets — what is missing, why it matters for this specific role, and how serious each gap is\n'
+    + '**RECOMMENDED NEXT STEP:** 1 bullet — exactly what type of interview to run (full loop / targeted technical screen / exploratory call / pass) and WHY based on the score\n'
+    + '**ONE THING TO PROBE:** 1 bullet — the single most important question to ask this candidate\n\n'
+    + 'BANNED WORDS (output is worthless if these appear): strong candidate, solid background, strong track record, proven experience, highly experienced, recommend advancing, further assess\n'
+    + 'Every bullet must cite specific data from the resume or ICP. No generic statements.';
+}
+
+function score_guide_candidate(score) {
+  if(score>=80) return 'HIGH FIT: They have a genuine shot. Tell them what to strengthen to seal it.';
+  if(score>=60) return 'MODERATE FIT: Real gaps exist. Be honest about what could hold them back.';
+  return 'LOW FIT: They are likely to be screened out. Tell them exactly why and what to do about it.';
+}
+
+
+// ── Format Note (converts markdown bullets to styled HTML) ──
+function formatNote(text){
+  if(!text)return '';
+  // Split into lines and process
+  const lines = text.split('
+');
+  let html = '';
+  for(let i=0;i<lines.length;i++){
+    const line = lines[i].trim();
+    if(!line)continue;
+    // Bold headers like **HEADLINE:** or **WHY THIS SCORE:**
+    if(line.startsWith('**') && line.includes('**')){
+      const header = line.replace(/\*\*/g,'').replace(/:.*$/,':');
+      const rest = line.replace(/^\*\*[^*]+\*\*:?\s*/,'');
+      html += '<strong>'+esc(header)+'</strong>';
+      if(rest) html += '<div class="note-bullet">'+esc(rest)+'</div>';
+    }
+    // Bullet lines starting with - or •
+    else if(line.startsWith('- ') || line.startsWith('\u2022 ') || line.startsWith('* ')){
+      html += '<div class="note-bullet">'+esc(line.substring(2))+'</div>';
+    }
+    // Numbered lines
+    else if(/^[0-9]+\./.test(line)){
+      html += '<div class="note-bullet">'+esc(line.replace(/^\d+\.\s*/,''))+'</div>';
+    }
+    // Regular sentence
+    else{
+      html += '<div style="margin-bottom:6px;">'+esc(line)+'</div>';
+    }
+  }
+  return html;
 }
 
 // ── Render Results ──
@@ -1164,7 +1139,7 @@ function renderResults(r){
       ${icpRows}
       <div style="padding:9px 16px;font-size:11px;color:var(--muted);font-family:var(--font-mono);border-top:1px solid var(--border);">✅ Explicit &nbsp;|&nbsp; 🔵 Inferred from context/seniority &nbsp;|&nbsp; ❌ Genuinely missing</div>
     </div>`:''}
-    <div class="recruiter-note"><h4>💬 Principal Recruiter Briefing Note</h4><p>${esc(r.recruiter_note)}</p></div>
+    <div class="recruiter-note"><h4>💬 Principal Recruiter Briefing Note</h4><div class="note-body">${formatNote(r.recruiter_note)}</div></div>
     ${r.market_context?`<div class="recruiter-note" style="border-left-color:var(--gold);margin-top:-10px;"><h4 style="color:var(--gold);">📊 Talent Market Context</h4><p style="font-style:normal;font-size:13px;color:var(--muted);">\${esc(r.market_context)}</p></div>`:''}
     \`;
 
