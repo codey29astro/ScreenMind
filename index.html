@@ -52,7 +52,16 @@ function renderCandidateExtras(r){
 
   // Interview prep from co-pilot questions
   const qs=r.interview_questions||[];
-  const prepQs=qs.map((q,i)=>`<div class="prep-item"><span class="prep-num">Q${i+1}</span><div><div style="font-weight:600;margin-bottom:3px;">${esc(q.question)}</div><div style="font-size:12px;color:var(--muted);">↳ Prep tip: ${esc(q.why)} — Think of 1-2 specific examples from your experience that address this.</div></div></div>`).join('');
+  const prepQs=qs.map((q,i)=>`<div class="prep-item">
+    <span class="prep-num">Q${i+1}</span>
+    <div style="flex:1;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:6px;">${esc(q.question)}</div>
+      <div style="background:rgba(167,139,250,0.08);border-radius:6px;padding:7px 10px;display:flex;gap:6px;align-items:flex-start;">
+        <span style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:1px;">HOW TO PREP</span>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">${esc(q.why)} — Prepare 1-2 specific examples from your own experience.</div>
+      </div>
+    </div>
+  </div>`).join('');
 
   const candidateHtml=`
     <div class="apply-verdict ${applyClass}">
@@ -64,9 +73,12 @@ function renderCandidateExtras(r){
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Add these to your resume or address them in your cover note before applying:</p>
       ${tips}
     </div>`:''}
-    ${prepQs?`<div class="prep-section">
-      <div class="prep-title">🎤 Interview Prep — Questions They Will Ask You</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Based on your profile gaps, these are the questions the interviewer is most likely to ask. Prepare your answers now:</p>
+    ${prepQs?`<div class="prep-section" style="border-color:rgba(167,139,250,0.3);">
+      <div class="prep-title" style="color:var(--accent2);">🧠 Your Interview Prep Guide <span style="font-size:12px;font-family:var(--font-body);font-weight:400;color:var(--muted);">— for YOU, not the recruiter</span></div>
+      <div style="background:rgba(167,139,250,0.08);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--muted);line-height:1.6;">
+        These are the same questions the <b style="color:var(--text);">interviewer will use to evaluate you</b> — but reframed so YOU can prepare your answers. 
+        For each question, think of 1-2 specific examples from your experience. The prep tip tells you exactly what the interviewer is trying to find out.
+      </div>
       ${prepQs}
     </div>`:''}`;
 
@@ -126,7 +138,16 @@ function renderCandidateExtras(r){
 
   // Interview prep from co-pilot questions
   const qs=r.interview_questions||[];
-  const prepQs=qs.map((q,i)=>`<div class="prep-item"><span class="prep-num">Q${i+1}</span><div><div style="font-weight:600;margin-bottom:3px;">${esc(q.question)}</div><div style="font-size:12px;color:var(--muted);">↳ Prep tip: ${esc(q.why)} — Think of 1-2 specific examples from your experience that address this.</div></div></div>`).join('');
+  const prepQs=qs.map((q,i)=>`<div class="prep-item">
+    <span class="prep-num">Q${i+1}</span>
+    <div style="flex:1;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:6px;">${esc(q.question)}</div>
+      <div style="background:rgba(167,139,250,0.08);border-radius:6px;padding:7px 10px;display:flex;gap:6px;align-items:flex-start;">
+        <span style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:1px;">HOW TO PREP</span>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">${esc(q.why)} — Prepare 1-2 specific examples from your own experience.</div>
+      </div>
+    </div>
+  </div>`).join('');
 
   const candidateHtml=`
     <div class="apply-verdict ${applyClass}">
@@ -138,9 +159,12 @@ function renderCandidateExtras(r){
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Add these to your resume or address them in your cover note before applying:</p>
       ${tips}
     </div>`:''}
-    ${prepQs?`<div class="prep-section">
-      <div class="prep-title">🎤 Interview Prep — Questions They Will Ask You</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Based on your profile gaps, these are the questions the interviewer is most likely to ask. Prepare your answers now:</p>
+    ${prepQs?`<div class="prep-section" style="border-color:rgba(167,139,250,0.3);">
+      <div class="prep-title" style="color:var(--accent2);">🧠 Your Interview Prep Guide <span style="font-size:12px;font-family:var(--font-body);font-weight:400;color:var(--muted);">— for YOU, not the recruiter</span></div>
+      <div style="background:rgba(167,139,250,0.08);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--muted);line-height:1.6;">
+        These are the same questions the <b style="color:var(--text);">interviewer will use to evaluate you</b> — but reframed so YOU can prepare your answers. 
+        For each question, think of 1-2 specific examples from your experience. The prep tip tells you exactly what the interviewer is trying to find out.
+      </div>
       ${prepQs}
     </div>`:''}`;
 
@@ -435,6 +459,51 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
 .apply-icon{font-size:28px;flex-shrink:0;}
 .apply-title{font-family:var(--font-display);font-size:18px;margin-bottom:3px;}
 .apply-desc{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* ── Intake Intelligence ── */
+.intake-wrap{margin-bottom:18px;}
+.intake-card{background:var(--surface);border:1px solid rgba(245,158,11,0.35);border-radius:16px;overflow:hidden;position:relative;}
+.intake-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--accent));}
+.intake-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none;transition:background 0.2s;}
+.intake-header:hover{background:rgba(245,158,11,0.04);}
+.intake-header-left{display:flex;align-items:center;gap:12px;}
+.intake-title{font-family:var(--font-display);font-size:17px;}
+.intake-subtitle{font-size:11px;font-family:var(--font-mono);color:var(--gold);margin-top:2px;}
+.intake-chevron{font-size:16px;color:var(--muted);transition:transform 0.25s;}
+.intake-chevron.open{transform:rotate(180deg);}
+.intake-body{display:none;padding:0 20px 20px;}
+.intake-body.open{display:block;}
+.intake-accuracy{display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:10px 14px;margin-bottom:18px;}
+.intake-accuracy-label{font-size:12px;font-family:var(--font-mono);color:var(--gold);font-weight:700;white-space:nowrap;}
+.intake-accuracy-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.intake-accuracy-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent));border-radius:4px;transition:width 0.5s ease;}
+.intake-accuracy-pct{font-size:12px;font-family:var(--font-mono);color:var(--text);font-weight:700;white-space:nowrap;}
+.intake-sec{margin-bottom:22px;}
+.intake-sec-title{font-size:10px;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid rgba(245,158,11,0.2);}
+.intake-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.intake-grid-1{display:grid;grid-template-columns:1fr;gap:14px;}
+.ifield{display:flex;flex-direction:column;gap:4px;}
+.ifield label{font-size:13px;font-weight:600;color:var(--text);}
+.ifield .ihint{font-size:11px;font-family:var(--font-mono);color:var(--muted);line-height:1.45;}
+.ifield .iwarn{font-size:10px;color:var(--danger);font-family:var(--font-mono);}
+.ifield textarea{min-height:72px;resize:vertical;font-size:13px;}
+.ifield input[type=text]{font-size:13px;}
+.ifield select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:13px;padding:9px 11px;outline:none;cursor:pointer;width:100%;}
+.intake-action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.intake-btn{padding:8px 16px;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;}
+.intake-btn-save{background:linear-gradient(135deg,var(--gold),#e08600);color:#0c0c15;}
+.intake-btn-save:hover{opacity:0.9;}
+.intake-btn-download{background:var(--surface2);border:1px solid var(--border);color:var(--text);}
+.intake-btn-download:hover{border-color:var(--accent);color:var(--accent);}
+.intake-btn-upload{background:var(--surface2);border:1px solid var(--border);color:var(--text);}
+.intake-btn-upload:hover{border-color:var(--gold);color:var(--gold);}
+.intake-version-row{display:flex;align-items:center;gap:10px;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15);border-radius:8px;padding:8px 14px;margin-top:12px;font-size:12px;font-family:var(--font-mono);}
+.intake-version-list{display:flex;gap:8px;flex-wrap:wrap;}
+.intake-version-chip{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.intake-version-chip:hover{border-color:var(--accent);color:var(--accent);}
+.intake-version-chip.current{border-color:var(--gold);color:var(--gold);}
+.intake-locked-notice{display:none;align-items:center;gap:8px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--font-mono);color:var(--accent);margin-top:10px;}
+.intake-locked-notice.visible{display:flex;}
 </style>
 </head>
 <body>
@@ -551,13 +620,15 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
   <!-- SCREEN VIEW -->
   <div class="view active" id="view-screen">
 
-    <!-- Saved Roles Bar -->
-    <div class="saved-roles-bar" id="savedRolesBar">
+    <!-- Saved Roles Bar — always visible -->
+    <div class="saved-roles-bar" id="savedRolesBar" style="display:block;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="saved-roles-title">📁 Saved Roles — click to reload JD + ICP instantly</div>
-        <button class="save-role-btn" onclick="saveCurrentRole()">💾 Save Current JD + ICP</button>
+        <div class="saved-roles-title">📁 Saved Roles — paste JD + generate ICP, then save for instant reload</div>
+        <button class="save-role-btn" onclick="saveCurrentRole()">💾 Save This Role</button>
       </div>
-      <div class="saved-roles-list" id="savedRolesList"></div>
+      <div class="saved-roles-list" id="savedRolesList">
+        <div id="savedRolesEmpty" style="font-size:12px;color:var(--muted);font-family:var(--font-mono);font-style:italic;">No saved roles yet — paste a JD, generate ICP, then click 💾 Save This Role</div>
+      </div>
     </div>
 
     <div class="card">
@@ -566,6 +637,118 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
       <div class="section-desc" id="jdDesc">Paste the full JD — ScreenMind reads context and intent, not just keywords.</div>
       <hr class="divider">
       <textarea id="jobDescription" rows="7" placeholder="Paste the complete job description here — title, responsibilities, requirements, everything..."></textarea>
+    </div>
+
+    <!-- INTAKE INTELLIGENCE -->
+    <div style="margin-bottom:18px;">
+      <div style="background:var(--surface);border:1px solid rgba(245,158,11,0.35);border-radius:16px;overflow:hidden;position:relative;" id="intakeCard">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--accent));"></div>
+        <div onclick="toggleIntake()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:22px;">🧠</span>
+            <div>
+              <div style="font-family:var(--font-display);font-size:17px;">Intake Intelligence</div>
+              <div style="font-size:11px;font-family:var(--font-mono);color:var(--gold);margin-top:2px;">OPTIONAL · Fill live with HM · Download · Upload HM version · Version-controlled source of truth</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="intakeBadge" style="display:none;background:rgba(245,158,11,0.12);color:var(--gold);font-size:10px;font-family:var(--font-mono);padding:3px 9px;border-radius:10px;border:1px solid rgba(245,158,11,0.3);">● ACTIVE</span>
+            <span id="intakeChevron" style="font-size:16px;color:var(--muted);transition:transform 0.25s;">▾</span>
+          </div>
+        </div>
+        <div id="intakeBody" style="display:none;padding:0 20px 20px;">
+
+          <!-- Accuracy bar -->
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:10px 14px;margin-bottom:18px;">
+            <span style="font-size:16px;">🎯</span>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-family:var(--font-mono);color:var(--gold);font-weight:700;">Screening Accuracy Boost — <span id="intakePct">0% of intake filled</span></div>
+              <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:2px;">Each section adds context the JD never captures — pushing AI accuracy toward 90%+</div>
+            </div>
+            <div style="width:120px;height:7px;background:var(--border);border-radius:4px;overflow:hidden;"><div id="intakeFill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--accent));border-radius:4px;transition:width 0.5s;"></div></div>
+          </div>
+
+          <!-- S1: WHY -->
+          <div style="margin-bottom:22px;">
+            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid rgba(245,158,11,0.2);">📌 Section 1 — WHY: Business Context &amp; Urgency</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Business objective this role serves</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">What product/revenue goal depends on this hire?</div><textarea id="if_biz_obj" rows="3" placeholder="e.g. Scale APAC enterprise sales to $5M ARR by Q3. This AE owns mid-market top of funnel..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">New headcount or backfill?</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">If backfill — what happened? What won't you repeat?</div><div style="font-size:10px;color:var(--danger);font-family:var(--font-mono);margin-bottom:4px;">⚠ Red flag: "wasn't a culture fit" with no specifics</div><textarea id="if_backfill" rows="3" placeholder="Backfill. Last hire left after 9 months — unclear territory + no onboarding plan. This time: 90-day plan ready..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Success at 30 / 60 / 90 days</label><div style="font-size:10px;color:var(--danger);font-family:var(--font-mono);margin-bottom:4px;">⚠ Red flag: "they'll figure it out" = no plan = attrition risk</div><textarea id="if_milestones" rows="3" placeholder="30d: onboarded + 2 discovery calls. 60d: 3 deals in pipeline. 90d: 1 closed, on track for quota..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Cost of NOT hiring in 90 days</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">Quantify the urgency to prioritise this req.</div><textarea id="if_urgency" rows="3" placeholder="Product launch blocked. Need API owner before July 15 or Q3 delayed = $800K impact..." oninput="intakeChanged()"></textarea></div>
+            </div>
+          </div>
+
+          <!-- S2: WHAT -->
+          <div style="margin-bottom:22px;">
+            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid rgba(245,158,11,0.2);">🧠 Section 2 — WHAT: Skills, Signals &amp; Fit</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Day-1 non-negotiables vs coachable</label><div style="font-size:10px;color:var(--danger);font-family:var(--font-mono);margin-bottom:4px;">⚠ Red flag: listing everything as must-have = search will fail</div><textarea id="if_musthave" rows="3" placeholder="Must-have day 1: Python + PostgreSQL in prod, REST API design. Coachable: internal stack, Kotlin (6-month ramp ok)..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Describe your best current performer in this function</label><div style="font-size:10px;color:var(--danger);font-family:var(--font-mono);margin-bottom:4px;">⚠ Red flag: "smart, hardworking, passionate" = unmeasurable = wrong hire</div><textarea id="if_top_performer" rows="3" placeholder="Owns problems end-to-end, pushes back on unclear scope, ships without being chased. Has built one 0-to-1 feature..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Culture / style that WON'T work here</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">As important as what works. Honest answer = better screen.</div><textarea id="if_culture_mis" rows="3" placeholder="People who need hand-holding or wait for direction. We move fast — if you need 3 sign-offs to ship, you'll be frustrated..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Background / company signals that excite you</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">High-growth SaaS? FAANG? Domain expertise? Be honest.</div><textarea id="if_pedigree" rows="3" placeholder="Ideally 2+ yrs at SaaS $50M+ ARR. FAANG is a plus. IIT/NIT signals strong fundamentals for senior eng roles..." oninput="intakeChanged()"></textarea></div>
+            </div>
+          </div>
+
+          <!-- S3: HOW -->
+          <div style="margin-bottom:22px;">
+            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid rgba(245,158,11,0.2);">⚙️ Section 3 — HOW: Process, Compensation &amp; Timeline</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Interview stages + owners</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">Who interviews? What does each stage evaluate?</div><textarea id="if_process" rows="3" placeholder="Stage 1: Recruiter screen (culture, 30 min). Stage 2: HM (leadership, 45 min). Stage 3: Technical panel (2 hrs). Stage 4: Exec (30 min)..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Real compensation band (not the posting range)</label><div style="font-size:10px;color:var(--danger);font-family:var(--font-mono);margin-bottom:4px;">⚠ Red flag: "competitive" with no number = late-stage drop = NPS killer</div><textarea id="if_comp" rows="3" placeholder="Base: ₹28-35L. ESOP: 0.1% over 4yr cliff. No flex above ₹32L without CHRO sign-off. Bonus: 15% of base..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Target start date &amp; notice period reality</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">If you need someone in 30 days but market notice is 90 days — solve this now.</div><textarea id="if_timeline" rows="3" placeholder="Need start by Aug 1. Market notice at this level: 60-90 days. Will consider buyout for right candidate..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Decision maker &amp; approval chain</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">Who is the final yes? Any gatekeepers or committee votes?</div><textarea id="if_decision" rows="3" placeholder="HM is final decision. CHRO approves above band. VP Eng has veto on senior tech hires. No committee..." oninput="intakeChanged()"></textarea></div>
+            </div>
+          </div>
+
+          <!-- S4: RISKS -->
+          <div style="margin-bottom:22px;">
+            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid rgba(245,158,11,0.2);">⚠️ Section 4 — RISKS: Deal-Breakers &amp; Honest Concerns</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Explicit deal-breakers (beyond the JD)</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">What immediately disqualifies someone the JD doesn't say?</div><textarea id="if_dealbreakers" rows="3" placeholder="Anyone from direct competitor under NDA. No one who has led teams smaller than 8. No remote-only for this role..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Known risks in this search</label><div style="font-size:10px;color:var(--danger);font-family:var(--font-mono);margin-bottom:4px;">⚠ Red flag: "this should be easy to fill" for niche senior role</div><textarea id="if_risks" rows="3" placeholder="Python + Kotlin at senior level is rare — realistically 90-day search. Budget 15% below market. Need to sell ESOP story..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">Questions the recruiter should ask but nobody has</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">The most important questions are the ones nobody asks.</div><textarea id="if_unanswered" rows="3" placeholder="Why have 3 people left this team in 12 months? Is the product stable enough to attract talent at this comp?..." oninput="intakeChanged()"></textarea></div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">HM's biggest concern about filling this role</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">What keeps the HM up at night? Knowing this = better candidate pitch.</div><textarea id="if_hm_concern" rows="3" placeholder="Worried about comp attractiveness. Team is stretched — needs someone who ramps fast with minimal handholding..." oninput="intakeChanged()"></textarea></div>
+            </div>
+          </div>
+
+          <!-- S5: LOCK -->
+          <div style="margin-bottom:16px;">
+            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid rgba(245,158,11,0.2);">✅ Section 5 — ALIGNMENT: Lock &amp; Agree (your source of truth)</div>
+            <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:5px;">HM Name</label><input type="text" id="if_hm_name" placeholder="Hiring Manager full name" oninput="intakeChanged()"></div>
+                <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:5px;">Date of Intake Meeting</label><input type="text" id="if_date" placeholder="e.g. Feb 28, 2026" oninput="intakeChanged()"></div>
+              </div>
+              <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:3px;">HM Confirmation Statement</label><div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:4px;">This is your professional armour. Once confirmed — any req change must be documented as a new version in ScreenMind.</div><textarea id="if_signoff" rows="2" placeholder="I, [HM Name], confirm the above accurately represents requirements for this role as of [Date]. Any changes will be versioned." oninput="intakeChanged()"></textarea></div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:14px;border-top:1px solid var(--border);">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="saveIntake()" style="background:linear-gradient(135deg,var(--gold),#e08600);color:#0c0c15;padding:9px 18px;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:700;cursor:pointer;border:none;">💾 Save &amp; Lock Version</button>
+              <button onclick="downloadIntake()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;">⬇ Download for HM</button>
+              <button onclick="document.getElementById('intakeUpload').click()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:8px;font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;">⬆ Upload HM Version</button>
+              <input type="file" id="intakeUpload" accept=".txt,.md" style="display:none;" onchange="uploadIntake(event)">
+            </div>
+            <div style="font-size:11px;font-family:var(--font-mono);color:var(--muted);" id="intakeLastSaved"></div>
+          </div>
+
+          <!-- Version history -->
+          <div id="intakeVersionRow" style="display:none;align-items:center;gap:10px;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.15);border-radius:8px;padding:8px 14px;margin-top:12px;font-size:12px;font-family:var(--font-mono);">
+            <span style="color:var(--accent);font-weight:700;">🕐 VERSION HISTORY:</span>
+            <div id="intakeVersionList" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+            <span style="color:var(--muted);font-size:10px;margin-left:auto;">Click to restore — your armour if HM changes the req</span>
+          </div>
+
+          <!-- Locked notice -->
+          <div id="intakeLockedNotice" style="display:none;align-items:center;gap:8px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--font-mono);color:var(--accent);margin-top:10px;">
+            🔒 Locked by <span id="intakeLockName" style="font-weight:700;"></span> on <span id="intakeLockDate"></span> — any req change must be saved as a new version
+          </div>
+
+        </div>
+      </div>
     </div>
 
     <div class="card green">
@@ -646,8 +829,11 @@ footer{text-align:center;padding:24px 0 14px;color:var(--muted);font-size:12px;f
     <div id="resultsContent"></div>
     <div class="copilot-section" id="copilotSection" style="display:none;">
       <div class="copilot-header">
-        <div class="copilot-title">🎯 Interview Co-pilot</div>
-        <span class="copilot-badge">AI GENERATED</span>
+        <div>
+          <div class="copilot-title">🎯 Interview Co-pilot <span style="font-size:13px;font-family:var(--font-body);font-weight:400;color:var(--muted);">— for the Recruiter &amp; Hiring Manager</span></div>
+          <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;">These questions are designed to evaluate this specific candidate against the ICP. Each question probes a competency or gap identified in the screening. Use these in the interview to validate your score.</div>
+        </div>
+        <span class="copilot-badge">RECRUITER TOOL</span>
       </div>
       <div id="copilotContent"></div>
     </div>
@@ -702,6 +888,7 @@ function showApp(){
   document.getElementById('userName').textContent=currentUser.name.split(' ')[0];
   document.getElementById('userAvatar').textContent=currentUser.initial;
   renderSavedRoles();
+  loadIntakeFromStorage();
 }
 window.onload=()=>{
   const saved=localStorage.getItem('sm_user');
@@ -711,13 +898,21 @@ window.onload=()=>{
 
 // ── View ──
 function switchView(v){
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  // Reset ALL inline display styles first — CSS class handles visibility
+  document.querySelectorAll('.view').forEach(el=>{
+    el.classList.remove('active');
+    el.style.display='';
+  });
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
-  document.getElementById('nav-'+v).classList.add('active');
-  // Always hide results when switching tabs
+  // Hide results section whenever switching tabs
   document.getElementById('results-section').style.display='none';
-  if(v==='screen') document.getElementById('view-screen').style.display='block';
+  // Hide co-pilot too
+  const cp=document.getElementById('copilotSection');if(cp)cp.style.display='none';
+  // Activate selected view
+  const target=document.getElementById('view-'+v);
+  if(target){target.classList.add('active');target.style.display='block';}
+  const navTarget=document.getElementById('nav-'+v);
+  if(navTarget)navTarget.classList.add('active');
   if(v==='dashboard')renderDashboard();
 }
 
@@ -927,11 +1122,12 @@ async function runScreening(){
   const githubSignal = document.getElementById('githubInput')?document.getElementById('githubInput').value.trim():'';
   const linkedinSignal = document.getElementById('linkedinInput')?document.getElementById('linkedinInput').value.trim():'';
   const socialContext = [githubSignal&&('GitHub/Portfolio: '+githubSignal), linkedinSignal&&('LinkedIn/Social: '+linkedinSignal)].filter(Boolean).join('\n') || 'None provided';
+  const intakeContext = getIntakeContext();
   const isCandidateMode = currentMode==='candidate';
 
   showLoadingSimple('DEEP SCREENING','Reading context and intent...',false);
 
-  const mainPrompt = buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socialContext, criteria.length, isCandidateMode);
+  const mainPrompt = buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socialContext, criteria.length, isCandidateMode, intakeContext);
 
   try{
     const response = await fetch(BACKEND,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:mainPrompt})});
@@ -976,7 +1172,7 @@ async function runScreening(){
   }catch(err){hideLoading();showError('formError','⚠ '+err.message);}
 }
 
-function buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socialContext, criteriaCount, isCandidateMode) {
+function buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socialContext, criteriaCount, isCandidateMode, intakeContext) {
   const modeInstruction = isCandidateMode
     ? 'MODE: CANDIDATE SELF-ASSESSMENT. Be a brutally honest career coach — not a cheerleader. A liberal encouraging friend who says "you can do it!" is USELESS here. The candidate needs to know their REAL chances so they can make an informed decision. If they are missing critical skills, say so directly. False hope wastes their time and damages trust in this product.'
     : 'MODE: RECRUITER SCREENING. You are screening on behalf of a demanding hiring organisation.';
@@ -1001,6 +1197,7 @@ function buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socia
     + '## EVALUATE ALL ' + criteriaCount + ' criteria: ' + allCriteriaNames + '\n\n'
     + '## CANDIDATE RESUME\n' + resume + '\n\n'
     + '## ADDITIONAL SIGNAL\n' + socialContext + '\n\n'
+    + (intakeContext ? intakeContext + '\n\n' : '')
     + 'Return this JSON:\n'
     + '{\n'
     + '  "candidateName": "full name from resume",\n'
@@ -1178,8 +1375,22 @@ function renderResults(r){
     r.interview_questions.forEach(q=>{const a=q.area||'General';if(!groups[a])groups[a]=[];groups[a].push(q);});
     let qHtml='';
     Object.entries(groups).forEach(([area,qs])=>{
-      qHtml+=`<div class="question-group"><div class="question-group-title">${esc(area)}</div>`;
-      qs.forEach((q,i)=>{qHtml+=`<div class="question-item"><span class="question-num">Q${i+1}</span><div><div>${esc(q.question)}</div><div class="question-why">↳ ${esc(q.why)}</div></div></div>`;});
+      qHtml+=`<div class="question-group">
+        <div class="question-group-title">
+          <span style="color:var(--accent2);">▸ COMPETENCY:</span> ${esc(area)}
+        </div>`;
+      qs.forEach((q,i)=>{
+        qHtml+=`<div class="question-item">
+          <span class="question-num">Q${i+1}</span>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:14px;margin-bottom:6px;">${esc(q.question)}</div>
+            <div style="display:flex;gap:6px;align-items:flex-start;background:rgba(129,140,248,0.06);border-radius:6px;padding:7px 10px;">
+              <span style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:1px;">WHAT TO EVALUATE</span>
+              <div class="question-why" style="margin:0;">${esc(q.why)}</div>
+            </div>
+          </div>
+        </div>`;
+      });
       qHtml+='</div>';
     });
     document.getElementById('copilotContent').innerHTML=qHtml;
@@ -1387,7 +1598,16 @@ function renderCandidateExtras(r){
 
   // Interview prep from co-pilot questions
   const qs=r.interview_questions||[];
-  const prepQs=qs.map((q,i)=>`<div class="prep-item"><span class="prep-num">Q${i+1}</span><div><div style="font-weight:600;margin-bottom:3px;">${esc(q.question)}</div><div style="font-size:12px;color:var(--muted);">↳ Prep tip: ${esc(q.why)} — Think of 1-2 specific examples from your experience that address this.</div></div></div>`).join('');
+  const prepQs=qs.map((q,i)=>`<div class="prep-item">
+    <span class="prep-num">Q${i+1}</span>
+    <div style="flex:1;">
+      <div style="font-weight:600;font-size:14px;margin-bottom:6px;">${esc(q.question)}</div>
+      <div style="background:rgba(167,139,250,0.08);border-radius:6px;padding:7px 10px;display:flex;gap:6px;align-items:flex-start;">
+        <span style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:1px;">HOW TO PREP</span>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">${esc(q.why)} — Prepare 1-2 specific examples from your own experience.</div>
+      </div>
+    </div>
+  </div>`).join('');
 
   const candidateHtml=`
     <div class="apply-verdict ${applyClass}">
@@ -1399,9 +1619,12 @@ function renderCandidateExtras(r){
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Add these to your resume or address them in your cover note before applying:</p>
       ${tips}
     </div>`:''}
-    ${prepQs?`<div class="prep-section">
-      <div class="prep-title">🎤 Interview Prep — Questions They Will Ask You</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Based on your profile gaps, these are the questions the interviewer is most likely to ask. Prepare your answers now:</p>
+    ${prepQs?`<div class="prep-section" style="border-color:rgba(167,139,250,0.3);">
+      <div class="prep-title" style="color:var(--accent2);">🧠 Your Interview Prep Guide <span style="font-size:12px;font-family:var(--font-body);font-weight:400;color:var(--muted);">— for YOU, not the recruiter</span></div>
+      <div style="background:rgba(167,139,250,0.08);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--muted);line-height:1.6;">
+        These are the same questions the <b style="color:var(--text);">interviewer will use to evaluate you</b> — but reframed so YOU can prepare your answers. 
+        For each question, think of 1-2 specific examples from your experience. The prep tip tells you exactly what the interviewer is trying to find out.
+      </div>
       ${prepQs}
     </div>`:''}`;
 
@@ -1431,7 +1654,7 @@ function saveCurrentRole(){
   const roles = loadSavedRoles();
   // Replace if same name exists
   const idx = roles.findIndex(r=>r.label===label);
-  const entry = {label, jd, criteria, savedAt:Date.now()};
+  const entry = {label, jd, criteria, intake:getIntakeData(), savedAt:Date.now()};
   if(idx>=0) roles[idx]=entry; else roles.unshift(entry);
   if(roles.length>20) roles.pop();
   localStorage.setItem(getRolesKey(), JSON.stringify(roles));
@@ -1447,14 +1670,28 @@ function loadRole(label){
   if(!role)return;
   document.getElementById('jobDescription').value = role.jd;
   criteria = role.criteria.map(c=>({...c}));
+  if(role.intake) setIntakeData(role.intake);
   currentRole = label;
   renderCriteria();
   document.getElementById('icpAutoNote').classList.add('visible');
-  // Scroll to resume section
-  document.getElementById('resumeStepLabel') && document.getElementById('resumeStepLabel').scrollIntoView({behavior:'smooth'});
-  // Flash confirmation
-  const bar = document.getElementById('savedRolesBar');
-  if(bar){bar.style.borderColor='var(--accent)';setTimeout(()=>{bar.style.borderColor='';},1000);}
+  // Clear previous resume
+  resumeContent='';
+  const fi=document.getElementById('resumeFile');if(fi)fi.value='';
+  document.getElementById('resumeText').value='';
+  switchTab('upload');
+  // Show loaded confirmation on chip
+  renderSavedRoles();
+  // Scroll to resume upload
+  setTimeout(()=>{
+    const el=document.getElementById('resumeStepLabel');
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+  // Flash bar border
+  const bar=document.getElementById('savedRolesBar');
+  if(bar){
+    bar.style.borderColor='var(--accent)';bar.style.boxShadow='0 0 0 2px rgba(96,165,250,0.15)';
+    setTimeout(()=>{bar.style.borderColor='';bar.style.boxShadow='';},1500);
+  }
 }
 
 function deleteRole(label, e){
@@ -1467,17 +1704,300 @@ function deleteRole(label, e){
 
 function renderSavedRoles(){
   const roles = loadSavedRoles();
-  const bar = document.getElementById('savedRolesBar');
   const list = document.getElementById('savedRolesList');
-  if(!bar||!list)return;
-  if(!roles.length){bar.classList.remove('visible');return;}
-  bar.classList.add('visible');
+  if(!list)return;
+  if(!roles.length){
+    list.innerHTML='<div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);font-style:italic;">No saved roles yet — paste a JD, generate ICP, then click 💾 Save This Role</div>';
+    return;
+  }
   list.innerHTML = roles.map(r=>`
     <div class="saved-role-chip" onclick="loadRole('${esc(r.label)}')">
-      <span>📋 ${esc(r.label)}</span>
-      <span style="font-size:10px;color:var(--muted);">${r.criteria?r.criteria.length:0} criteria</span>
-      <span class="chip-del" onclick="deleteRole('${esc(r.label)}',event)" title="Delete">×</span>
+      <span style="font-size:13px;">📋</span>
+      <span style="font-weight:600;">${esc(r.label)}</span>
+      <span style="font-size:10px;color:var(--muted);background:var(--surface);padding:2px 6px;border-radius:10px;">${r.criteria?r.criteria.length:0} criteria</span>
+      <span class="chip-del" onclick="deleteRole('${esc(r.label)}',event)" title="Delete this role">×</span>
     </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// INTAKE INTELLIGENCE
+// ══════════════════════════════════════════════════
+
+const INTAKE_FIELDS = [
+  'if_biz_obj','if_backfill','if_milestones','if_urgency',
+  'if_musthave','if_top_performer','if_culture_mis','if_pedigree',
+  'if_process','if_comp','if_timeline','if_decision',
+  'if_dealbreakers','if_risks','if_unanswered','if_hm_concern',
+  'if_hm_name','if_date','if_signoff'
+];
+
+function toggleIntake(){
+  const body = document.getElementById('intakeBody');
+  const chevron = document.getElementById('intakeChevron');
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  chevron.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function intakeChanged(){
+  // Count filled fields
+  let filled = 0;
+  INTAKE_FIELDS.forEach(function(id){
+    const el = document.getElementById(id);
+    if(el && el.value && el.value.trim().length > 3) filled++;
+  });
+  const pct = Math.round((filled / INTAKE_FIELDS.length) * 100);
+  const el = document.getElementById('intakeFill');
+  const pt = document.getElementById('intakePct');
+  const badge = document.getElementById('intakeBadge');
+  if(el) el.style.width = pct + '%';
+  if(pt){
+    if(pct === 0) pt.textContent = '0% of intake filled';
+    else if(pct < 30) pt.textContent = pct + '% filled — base accuracy boost';
+    else if(pct < 60) pt.textContent = pct + '% filled — good context added';
+    else if(pct < 90) pt.textContent = pct + '% filled — strong signal for AI';
+    else pt.textContent = pct + '% filled — maximum accuracy unlocked 🎯';
+  }
+  if(badge) badge.style.display = filled > 0 ? 'inline-block' : 'none';
+}
+
+function getIntakeData(){
+  const data = {};
+  INTAKE_FIELDS.forEach(function(id){
+    const el = document.getElementById(id);
+    data[id] = el ? el.value.trim() : '';
+  });
+  return data;
+}
+
+function setIntakeData(data){
+  INTAKE_FIELDS.forEach(function(id){
+    const el = document.getElementById(id);
+    if(el && data[id] !== undefined) el.value = data[id];
+  });
+  intakeChanged();
+}
+
+function getIntakeKey(){
+  return 'sm_intake_' + (currentUser ? currentUser.name.replace(/\s/g,'') : 'default');
+}
+
+function getIntakeVersionKey(){
+  return 'sm_intake_versions_' + (currentUser ? currentUser.name.replace(/\s/g,'') : 'default');
+}
+
+function saveIntake(){
+  const data = getIntakeData();
+  const hmName = data.if_hm_name || 'HM';
+  const date = data.if_date || new Date().toLocaleDateString();
+  // Save current version
+  const versionKey = getIntakeVersionKey();
+  let versions = [];
+  try { versions = JSON.parse(localStorage.getItem(versionKey) || '[]'); } catch(e){}
+  const version = {
+    label: date + ' — ' + hmName,
+    savedAt: Date.now(),
+    data: data
+  };
+  versions.unshift(version);
+  if(versions.length > 10) versions.pop();
+  localStorage.setItem(versionKey, JSON.stringify(versions));
+  // Save as current
+  localStorage.setItem(getIntakeKey(), JSON.stringify(data));
+  // Show locked notice
+  const notice = document.getElementById('intakeLockedNotice');
+  const lockName = document.getElementById('intakeLockName');
+  const lockDate = document.getElementById('intakeLockDate');
+  if(notice && lockName && lockDate){
+    lockName.textContent = hmName;
+    lockDate.textContent = date;
+    notice.style.display = 'flex';
+  }
+  // Update last saved
+  const ls = document.getElementById('intakeLastSaved');
+  if(ls) ls.textContent = 'Last saved: ' + new Date().toLocaleTimeString();
+  // Render version history
+  renderIntakeVersions();
+  // Confirm button flash
+  const btn = event && event.target ? event.target : null;
+  if(btn){ const orig=btn.innerHTML; btn.innerHTML='✓ Locked!'; btn.style.background='var(--accent)'; setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';},1500); }
+}
+
+function renderIntakeVersions(){
+  const versionKey = getIntakeVersionKey();
+  let versions = [];
+  try { versions = JSON.parse(localStorage.getItem(versionKey) || '[]'); } catch(e){}
+  const row = document.getElementById('intakeVersionRow');
+  const list = document.getElementById('intakeVersionList');
+  if(!row || !list) return;
+  if(!versions.length){ row.style.display='none'; return; }
+  row.style.display = 'flex';
+  list.innerHTML = versions.map(function(v, i){
+    return '<span onclick="restoreIntakeVersion('+i+')" style="background:var(--surface2);border:1px solid '+(i===0?'var(--gold)':'var(--border)')+';border-radius:12px;padding:3px 10px;font-size:11px;cursor:pointer;color:'+(i===0?'var(--gold)':'var(--muted)')+';">'+esc(v.label)+(i===0?' (current)':'')+'</span>';
+  }).join('');
+}
+
+function restoreIntakeVersion(idx){
+  const versionKey = getIntakeVersionKey();
+  let versions = [];
+  try { versions = JSON.parse(localStorage.getItem(versionKey) || '[]'); } catch(e){}
+  if(!versions[idx]) return;
+  if(!confirm('Restore version: "'+versions[idx].label+'"?\n\nThis will replace the current intake with this saved version. Your current version is already saved in history.')) return;
+  setIntakeData(versions[idx].data);
+  intakeChanged();
+  renderIntakeVersions();
+}
+
+function downloadIntake(){
+  const data = getIntakeData();
+  const jd = document.getElementById('jobDescription') ? document.getElementById('jobDescription').value.trim() : '';
+  const role = currentRole || 'Role';
+  let txt = '═══════════════════════════════════════════════════\n';
+  txt += 'SCREENMIND INTAKE INTELLIGENCE FORM\n';
+  txt += 'Role: ' + role + '\n';
+  txt += 'HM: ' + (data.if_hm_name||'_________________') + '   Date: ' + (data.if_date||'_________________') + '\n';
+  txt += '═══════════════════════════════════════════════════\n\n';
+  txt += '📌 SECTION 1 — WHY: Business Context & Urgency\n';
+  txt += '─────────────────────────────────────────────────\n';
+  txt += 'Business objective this role serves:\n' + (data.if_biz_obj||'[HM to fill]') + '\n\n';
+  txt += 'New headcount or backfill? What happened last time?\n' + (data.if_backfill||'[HM to fill]') + '\n\n';
+  txt += 'Success at 30 / 60 / 90 days:\n' + (data.if_milestones||'[HM to fill]') + '\n\n';
+  txt += 'Cost / risk of NOT hiring in 90 days:\n' + (data.if_urgency||'[HM to fill]') + '\n\n';
+  txt += '🧠 SECTION 2 — WHAT: Skills, Signals & Fit\n';
+  txt += '─────────────────────────────────────────────────\n';
+  txt += 'Day-1 non-negotiables vs coachable:\n' + (data.if_musthave||'[HM to fill]') + '\n\n';
+  txt += 'Describe your best current performer in this function:\n' + (data.if_top_performer||'[HM to fill]') + '\n\n';
+  txt += 'Culture / working style that WON\'T work here:\n' + (data.if_culture_mis||'[HM to fill]') + '\n\n';
+  txt += 'Background / company signals that excite you:\n' + (data.if_pedigree||'[HM to fill]') + '\n\n';
+  txt += '⚙️ SECTION 3 — HOW: Process, Compensation & Timeline\n';
+  txt += '─────────────────────────────────────────────────\n';
+  txt += 'Interview stages + owners:\n' + (data.if_process||'[HM to fill]') + '\n\n';
+  txt += 'Real compensation band (not the posting range):\n' + (data.if_comp||'[HM to fill]') + '\n\n';
+  txt += 'Target start date & notice period reality:\n' + (data.if_timeline||'[HM to fill]') + '\n\n';
+  txt += 'Decision maker & approval chain:\n' + (data.if_decision||'[HM to fill]') + '\n\n';
+  txt += '⚠️ SECTION 4 — RISKS: Deal-Breakers & Concerns\n';
+  txt += '─────────────────────────────────────────────────\n';
+  txt += 'Explicit deal-breakers (beyond the JD):\n' + (data.if_dealbreakers||'[HM to fill]') + '\n\n';
+  txt += 'Known risks in this search:\n' + (data.if_risks||'[HM to fill]') + '\n\n';
+  txt += 'Questions the recruiter should ask but nobody has:\n' + (data.if_unanswered||'[HM to fill]') + '\n\n';
+  txt += "HM's biggest concern about filling this role:\n" + (data.if_hm_concern||'[HM to fill]') + '\n\n';
+  txt += '✅ SECTION 5 — ALIGNMENT: Lock & Agree\n';
+  txt += '─────────────────────────────────────────────────\n';
+  txt += 'HM confirmation statement:\n' + (data.if_signoff||'I, [HM Name], confirm the above accurately represents requirements for this role as of [Date]. Any changes will be documented as a new version in ScreenMind.') + '\n\n';
+  txt += 'HM Signature: _________________   Date: _________________\n\n';
+  txt += '═══════════════════════════════════════════════════\n';
+  txt += 'Generated by ScreenMind · screenmind.ai\n';
+  txt += 'This document is a version-controlled source of truth.\n';
+  txt += 'Any change to requirements must be documented and re-signed.\n';
+  txt += '═══════════════════════════════════════════════════\n';
+
+  const blob = new Blob([txt], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ScreenMind_Intake_' + role.replace(/[^a-z0-9]/gi,'_').substring(0,30) + '_' + new Date().toISOString().split('T')[0] + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function uploadIntake(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const text = e.target.result;
+    // Parse the text format back into fields
+    // Simple approach: look for field headers and extract content
+    const parseField = function(header, nextHeader){
+      const start = text.indexOf(header + '\n');
+      if(start === -1) return '';
+      const contentStart = start + header.length + 1;
+      const end = nextHeader ? text.indexOf(nextHeader + '\n', contentStart) : text.length;
+      return text.substring(contentStart, end === -1 ? text.length : end).trim();
+    };
+    // Map headers to field IDs
+    const mappings = [
+      ['Business objective this role serves:', 'if_biz_obj'],
+      ['New headcount or backfill? What happened last time?', 'if_backfill'],
+      ['Success at 30 / 60 / 90 days:', 'if_milestones'],
+      ['Cost / risk of NOT hiring in 90 days:', 'if_urgency'],
+      ['Day-1 non-negotiables vs coachable:', 'if_musthave'],
+      ['Describe your best current performer in this function:', 'if_top_performer'],
+      ["Culture / working style that WON'T work here:", 'if_culture_mis'],
+      ['Background / company signals that excite you:', 'if_pedigree'],
+      ['Interview stages + owners:', 'if_process'],
+      ['Real compensation band (not the posting range):', 'if_comp'],
+      ['Target start date & notice period reality:', 'if_timeline'],
+      ['Decision maker & approval chain:', 'if_decision'],
+      ['Explicit deal-breakers (beyond the JD):', 'if_dealbreakers'],
+      ['Known risks in this search:', 'if_risks'],
+      ['Questions the recruiter should ask but nobody has:', 'if_unanswered'],
+      ["HM's biggest concern about filling this role:", 'if_hm_concern'],
+    ];
+    mappings.forEach(function(m, i){
+      const nextHeader = i < mappings.length - 1 ? mappings[i+1][0] : null;
+      const val = parseField(m[0], nextHeader);
+      const el = document.getElementById(m[1]);
+      if(el && val && val !== '[HM to fill]') el.value = val;
+    });
+    // Extract HM name and date
+    const hmLine = text.match(/HM:\s*([^\s].*?)\s+Date:/);
+    const dateLine = text.match(/Date:\s*(.+)/);
+    if(hmLine && document.getElementById('if_hm_name')) document.getElementById('if_hm_name').value = hmLine[1].trim();
+    if(dateLine && document.getElementById('if_date')) document.getElementById('if_date').value = dateLine[1].trim();
+    intakeChanged();
+    // Open the intake body to show filled fields
+    const body = document.getElementById('intakeBody');
+    const chevron = document.getElementById('intakeChevron');
+    if(body) body.style.display = 'block';
+    if(chevron) chevron.style.transform = 'rotate(180deg)';
+    alert('✓ HM intake uploaded successfully. Review the fields and click Save & Lock Version.');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function getIntakeContext(){
+  // Returns formatted intake context for the AI prompt
+  const data = getIntakeData();
+  const filled = INTAKE_FIELDS.filter(function(id){ return data[id] && data[id].length > 3; });
+  if(filled.length < 3) return ''; // Not enough intake to be useful
+  let ctx = '\n\n## INTAKE INTELLIGENCE (from recruiter-HM intake meeting)\n';
+  if(data.if_biz_obj) ctx += 'BUSINESS OBJECTIVE: ' + data.if_biz_obj + '\n';
+  if(data.if_backfill) ctx += 'ROLE CONTEXT (backfill/new + history): ' + data.if_backfill + '\n';
+  if(data.if_milestones) ctx += 'SUCCESS MILESTONES (30/60/90 days): ' + data.if_milestones + '\n';
+  if(data.if_musthave) ctx += 'DAY-1 NON-NEGOTIABLES vs COACHABLE: ' + data.if_musthave + '\n';
+  if(data.if_top_performer) ctx += 'TOP PERFORMER PROFILE: ' + data.if_top_performer + '\n';
+  if(data.if_culture_mis) ctx += 'CULTURE MISMATCH (what WON\'T work): ' + data.if_culture_mis + '\n';
+  if(data.if_pedigree) ctx += 'DESIRED BACKGROUND SIGNALS: ' + data.if_pedigree + '\n';
+  if(data.if_comp) ctx += 'REAL COMPENSATION BAND: ' + data.if_comp + '\n';
+  if(data.if_dealbreakers) ctx += 'DEAL-BREAKERS BEYOND JD: ' + data.if_dealbreakers + '\n';
+  if(data.if_risks) ctx += 'KNOWN SEARCH RISKS: ' + data.if_risks + '\n';
+  if(data.if_hm_concern) ctx += 'HM\'S BIGGEST CONCERN: ' + data.if_hm_concern + '\n';
+  ctx += '\nUSE THIS INTAKE DATA TO: refine your scoring, flag intake deal-breakers, personalise the recruiter note with business context, and make interview questions ultra-specific to this role\'s actual needs.\n';
+  return ctx;
+}
+
+function loadIntakeFromStorage(){
+  try {
+    const saved = localStorage.getItem(getIntakeKey());
+    if(saved){
+      const data = JSON.parse(saved);
+      setIntakeData(data);
+      renderIntakeVersions();
+      // Show locked notice if signoff present
+      if(data.if_signoff && data.if_hm_name){
+        const notice = document.getElementById('intakeLockedNotice');
+        const lockName = document.getElementById('intakeLockName');
+        const lockDate = document.getElementById('intakeLockDate');
+        if(notice && lockName && lockDate){
+          lockName.textContent = data.if_hm_name;
+          lockDate.textContent = data.if_date || 'date not set';
+          notice.style.display = 'flex';
+        }
+      }
+    }
+  } catch(e){}
 }
 
 </script>
