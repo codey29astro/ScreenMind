@@ -19,20 +19,16 @@ function setMode(m){
   const rsTitle=document.getElementById('resumeStepTitle');
   const screenBtn=document.getElementById('screenBtn');
   if(m==='candidate'){
-    if(banner)banner.style.display='block';
-    if(jdDesc)jdDesc.textContent='Paste the job description you want to apply for — ScreenMind will analyse your fit honestly.';
-    if(rsLabel)rsLabel.textContent='Step 2 · Your Resume';
-    if(rsTitle)rsTitle.textContent='Upload Your Resume';
-    if(screenBtn)screenBtn.innerHTML='🎯 Check My Fit &amp; Interview Prep';
+    document.body.classList.add('candidate-mode');
+    if(banner)banner.style.display='none'; // hero is now inside form
+    if(jdDesc)jdDesc.textContent='Paste the job description you want to apply for — be honest with yourself about your fit.';
     document.body.style.setProperty('--accent','#e9a93e');
     document.body.style.setProperty('--accent-glow','rgba(233,169,62,0.1)');
     document.body.style.setProperty('--accent2','#34d399');
   } else {
+    document.body.classList.remove('candidate-mode');
     if(banner)banner.style.display='none';
     if(jdDesc)jdDesc.textContent='Paste the full JD — ScreenMind reads context and intent, not just keywords.';
-    if(rsLabel)rsLabel.textContent='Step 3 · Candidate Resume';
-    if(rsTitle)rsTitle.textContent='Upload Resume';
-    if(screenBtn)screenBtn.innerHTML='⚡ Run ICP Screening';
     document.body.style.setProperty('--accent','#5b8def');
     document.body.style.setProperty('--accent-glow','rgba(91,141,239,0.12)');
     document.body.style.setProperty('--accent2','#9b7ff4');
@@ -351,14 +347,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .login-feature-text strong{display:block;color:var(--text);font-weight:600;margin-bottom:2px;}
 
 /* ══ APP SHELL — SIDEBAR LAYOUT ══ */
-#app-view{display:none;min-height:100vh;}
-.app-layout{display:flex;min-height:100vh;}
+#app-view{display:none;min-height:100vh;} #app-view.visible{display:flex;min-height:100vh;}
+.app-layout{display:flex;min-height:100vh;width:100%;}
 
 /* Sidebar */
 .sidebar{width:220px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;padding:0;}
-.sidebar-logo{padding:20px 20px 0;border-bottom:1px solid var(--border);}
-.sidebar-logo-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.sidebar-logo-tag{font-size:9px;font-family:var(--font-mono);color:var(--muted);letter-spacing:0.1em;padding-bottom:16px;margin-top:2px;}
+.sidebar-logo{padding:18px 16px 0;border-bottom:1px solid var(--border);overflow:hidden;}
+.sidebar-logo-name{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;overflow:hidden;}
+.sidebar-logo-tag{font-size:9px;font-family:var(--font-mono);color:var(--muted);letter-spacing:0.08em;padding-bottom:14px;margin-top:2px;white-space:nowrap;overflow:hidden;}
 .sidebar-mode{padding:12px 14px;margin:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;gap:4px;}
 .mode-btn{width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:var(--text-2);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
 .mode-btn:hover{background:var(--surface3);color:var(--text);}
@@ -378,7 +374,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .beta-badge{background:rgba(233,169,62,0.12);color:var(--gold);font-size:9px;font-family:var(--font-mono);padding:2px 7px;border-radius:4px;border:1px solid rgba(233,169,62,0.2);letter-spacing:0.1em;display:inline-block;margin-bottom:6px;}
 
 /* Main content area */
-.main-content{margin-left:220px;flex:1;min-height:100vh;padding:28px 32px;}
+.main-content{margin-left:220px;flex:1;min-height:100vh;padding:28px 32px;overflow-y:auto;max-width:calc(100vw - 220px);}
 .main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
 .main-title{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-0.02em;}
 .main-subtitle{font-size:13px;color:var(--text-2);margin-top:2px;}
@@ -624,12 +620,121 @@ footer{text-align:center;padding:24px 0 14px;font-size:11px;font-family:var(--fo
   .table-header,.icp-result-row{grid-template-columns:1fr 70px;}
   .table-header div:nth-child(3),.icp-result-row>div:nth-child(3){display:none;}
 }
+
+/* ══ MISSING CSS — Resume Upload, Buttons, Tabs, Dashboard ══ */
+
+/* Buttons */
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-2);padding:10px 18px;border-radius:var(--r);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--border-strong);color:var(--text);}
+.btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text-2);padding:10px 18px;border-radius:var(--r);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.action-row{display:flex;gap:10px;justify-content:flex-end;margin-top:8px;}
+
+/* Resume upload tabs */
+.tab-row{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:3px;gap:3px;margin-bottom:14px;}
+.tab-btn{flex:1;padding:9px 14px;border-radius:7px;border:none;background:transparent;color:var(--text-2);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.tab-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.tab-btn:hover:not(.active){color:var(--text);}
+
+/* File drop zone */
+.file-drop{border:2px dashed var(--border);border-radius:var(--r-lg);padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.25s;background:var(--surface2);position:relative;}
+.file-drop:hover,.file-drop.drag-over{border-color:var(--accent);background:var(--accent-glow);transform:translateY(-1px);}
+.file-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.file-icon{font-size:36px;margin-bottom:12px;display:block;}
+.file-text{font-size:14px;color:var(--text);line-height:1.5;}
+.file-text strong{color:var(--accent);}
+.file-name{font-size:12px;font-family:var(--font-mono);color:var(--success);margin-top:10px;padding:6px 12px;background:rgba(52,211,153,0.08);border-radius:6px;display:none;}
+.file-name.visible{display:inline-block;}
+.extract-status{font-size:12px;font-family:var(--font-mono);color:var(--success);margin-top:8px;display:none;}
+.extract-status.visible{display:block;}
+
+/* Feedback section */
+.feedback-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;margin-top:14px;}
+.feedback-title{font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:12px;}
+.new-screen-btn{margin-top:14px;}
+
+/* ══ DASHBOARD ══ */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 16px;transition:border-color 0.2s;}
+.stat-card:hover{border-color:var(--border-strong);}
+.stat-number{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-0.02em;line-height:1;}
+.stat-label{font-size:12px;color:var(--text-2);margin-top:4px;}
+.metric-highlight{background:linear-gradient(135deg,rgba(91,141,239,0.06),rgba(155,127,244,0.04));border:1px solid rgba(91,141,239,0.15);border-radius:var(--r-xl);padding:24px;margin-bottom:20px;text-align:center;}
+.metric-big{font-family:var(--font-display);font-size:52px;font-weight:800;letter-spacing:-0.04em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:6px;}
+.metric-desc{font-size:14px;color:var(--text-2);line-height:1.6;}
+.metric-sub{font-size:12px;font-family:var(--font-mono);color:var(--muted);margin-top:8px;}
+.funnel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;}
+.funnel-card h4{font-size:13px;font-weight:700;margin-bottom:16px;color:var(--text-2);}
+.funnel-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.funnel-label{font-size:12px;font-family:var(--font-mono);color:var(--muted);width:64px;flex-shrink:0;}
+.funnel-bar-wrap{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.funnel-bar{height:100%;border-radius:4px;transition:width 0.6s ease;}
+.funnel-count{font-size:13px;font-family:var(--font-mono);font-weight:700;width:24px;text-align:right;color:var(--text);}
+.history-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px;}
+.history-table-header{display:grid;grid-template-columns:1fr 80px 120px 100px;padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:10px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.history-row{display:grid;grid-template-columns:1fr 80px 120px 100px;padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;transition:background 0.15s;align-items:center;}
+.history-row:last-child{border-bottom:none;}
+.history-row:hover{background:rgba(255,255,255,0.02);}
+.outcome-advanced{color:var(--success);font-size:11px;font-family:var(--font-mono);font-weight:700;}
+.outcome-passed{color:var(--danger);font-size:11px;font-family:var(--font-mono);font-weight:700;}
+.outcome-reserved{color:var(--gold);font-size:11px;font-family:var(--font-mono);font-weight:700;}
+.outcome-pending{color:var(--muted);font-size:11px;font-family:var(--font-mono);}
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-state p{font-size:14px;line-height:1.7;}
+
+/* ══ RECRUITER vs CANDIDATE SECTIONS ══ */
+.recruiter-only{display:block;}
+.candidate-only{display:none;}
+body.candidate-mode .recruiter-only{display:none;}
+body.candidate-mode .candidate-only{display:block;}
+body.candidate-mode .card.green{display:none;}
+body.candidate-mode #savedRolesBar{display:none !important;}
+body.candidate-mode .intake-wrap{display:none;}
+
+/* Candidate-specific hero in form */
+.cand-form-hero{display:none;background:linear-gradient(135deg,rgba(233,169,62,0.06),rgba(52,211,153,0.04));border:1px solid rgba(233,169,62,0.2);border-radius:var(--r-xl);padding:22px 24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.cand-form-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),#34d399);}
+body.candidate-mode .cand-form-hero{display:block;}
+
+/* ICP weight badge classes */
+.weight-critical{background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2);}
+.weight-important{background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.2);}
+.weight-nicetoha{background:rgba(52,211,153,0.08);color:#34d399;border:1px solid rgba(52,211,153,0.15);}
+.inferred{display:block;font-size:11px;color:var(--accent);margin-top:3px;}
+.icp-criterion-text{font-size:13px;line-height:1.45;}
+.icp-weight-cell{display:flex;align-items:flex-start;padding-top:2px;}
+.icp-evidence{font-size:12px;color:var(--text-2);line-height:1.45;}
+.icp-status{text-align:center;font-size:16px;}
+
+/* Score hero */
+.score-hero{display:flex;align-items:flex-start;gap:20px;padding:20px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-lg);margin-bottom:14px;position:relative;overflow:hidden;}
+.score-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--gold));}
+.score-circle{position:relative;width:100px;height:100px;flex-shrink:0;}
+.score-number{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-display);font-size:26px;font-weight:800;line-height:1;text-align:center;}
+.score-label{font-size:9px;font-family:var(--font-mono);color:var(--muted);}
+.score-verdict{flex:1;}
+.verdict-title{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:6px;letter-spacing:-0.01em;line-height:1.35;}
+.verdict-summary{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:10px;}
+.verdict-badge{font-size:11px;font-family:var(--font-mono);font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:0.05em;}
+.verdict-strong{background:rgba(52,211,153,0.1);color:#34d399;border:1px solid rgba(52,211,153,0.2);}
+.verdict-good{background:rgba(91,141,239,0.1);color:var(--accent);border:1px solid rgba(91,141,239,0.2);}
+.verdict-weak{background:rgba(251,191,36,0.08);color:#fbbf24;border:1px solid rgba(251,191,36,0.18);}
+.verdict-poor{background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.18);}
+
+/* Note body */
+.note-body{font-size:14px;color:var(--text);line-height:1.75;}
+.recruiter-note{background:var(--surface2);border-left:3px solid var(--accent2);border-radius:0 var(--r) var(--r) 0;padding:16px 18px;}
+
+/* Dup warning */
+.dup-warning-text{font-size:13px;line-height:1.5;}
+
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
-  <svg class="loading-logo" viewBox="0 0 100 100">
+<div id="loadingScreen">
+  <svg class="loading-spinner" viewBox="0 0 100 100" width="60" height="60">
     <defs>
       <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" style="stop-color:#60a5fa"/>
@@ -765,9 +870,22 @@ footer{text-align:center;padding:24px 0 14px;font-size:11px;font-family:var(--fo
       </div>
     </div>
 
+    <!-- CANDIDATE HERO — only visible in candidate mode -->
+    <div class="cand-form-hero">
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-0.02em;">🎯 Career Match Intelligence</div>
+      <div style="font-size:14px;color:var(--text-2);line-height:1.65;margin-bottom:14px;">Paste the JD you want to apply for. Upload your resume. Get a brutally honest match score, gap analysis, and interview prep guide — in 30 seconds.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;background:rgba(233,169,62,0.08);border:1px solid rgba(233,169,62,0.2);border-radius:20px;padding:5px 12px;font-size:12px;font-family:var(--font-mono);color:var(--gold);">① Paste JD</div>
+        <div style="display:flex;align-items:center;gap:6px;background:rgba(233,169,62,0.08);border:1px solid rgba(233,169,62,0.2);border-radius:20px;padding:5px 12px;font-size:12px;font-family:var(--font-mono);color:var(--gold);">② Upload your resume</div>
+        <div style="display:flex;align-items:center;gap:6px;background:rgba(233,169,62,0.08);border:1px solid rgba(233,169,62,0.2);border-radius:20px;padding:5px 12px;font-size:12px;font-family:var(--font-mono);color:var(--gold);">③ Get honest verdict + prep</div>
+      </div>
+    </div>
+
     <div class="card">
-      <div class="section-label">Step 1 · Role Definition</div>
-      <div class="section-title">Job Description</div>
+      <div class="section-label recruiter-only">Step 1 · Role Definition</div>
+      <div class="section-label candidate-only" style="color:var(--gold);">Step 1 · The Job You Want</div>
+      <div class="section-title recruiter-only">Job Description</div>
+      <div class="section-title candidate-only">Paste the Job Description</div>
       <div class="section-desc" id="jdDesc">Paste the full JD — ScreenMind reads context and intent, not just keywords.</div>
       <hr class="divider">
       <textarea id="jobDescription" rows="7" placeholder="Paste the complete job description here — title, responsibilities, requirements, everything..."></textarea>
@@ -911,9 +1029,16 @@ footer{text-align:center;padding:24px 0 14px;font-size:11px;font-family:var(--fo
         <span style="font-size:18px;">♻️</span>
         <div style="font-size:13px;color:var(--accent);">JD &amp; ICP preserved — just upload the next candidate's resume below.</div>
       </div>
-      <div class="section-label" id="resumeStepLabel">Step 3 · Candidate Resume</div>
-      <div class="section-title" id="resumeStepTitle">Upload Resume</div>
-      <div class="section-desc" id="resumeStepDesc">PDF, DOCX, or TXT — ScreenMind extracts and understands context automatically.</div>
+      <div class="recruiter-only" style="margin-bottom:2px;">
+        <div class="section-label">Step 3 · Candidate Resume</div>
+        <div class="section-title">Upload Resume</div>
+        <div class="section-desc">PDF, DOCX, or TXT — ScreenMind extracts and understands context, not just keywords.</div>
+      </div>
+      <div class="candidate-only" style="margin-bottom:2px;">
+        <div class="section-label" style="color:var(--gold);">Step 2 · Your Resume</div>
+        <div class="section-title" style="font-size:20px;">Upload <em>Your</em> Resume</div>
+        <div class="section-desc" style="color:var(--text-2);">This is YOUR resume — not a candidate's. ScreenMind will compare it against the JD you pasted above.</div>
+      </div>
       <hr class="divider">
       <div class="dup-warning" id="dupWarning">
         <span style="font-size:20px;flex-shrink:0">⚠️</span>
@@ -924,11 +1049,17 @@ footer{text-align:center;padding:24px 0 14px;font-size:11px;font-family:var(--fo
         <button class="tab-btn" id="tabPaste" onclick="switchTab('paste')">📋 Paste Text</button>
       </div>
       <div id="uploadPanel">
-        <div class="file-drop" id="fileDrop">
+        <div class="file-drop" id="fileDrop" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleFileDrop(event)">
           <input type="file" id="resumeFile" accept=".txt,.pdf,.doc,.docx" onchange="handleFileSelect(this)" />
-          <div class="file-icon">📄</div>
-          <div class="file-text">Drop resume here or <strong>click to upload</strong></div>
-          <div class="file-text" style="font-size:11px;margin-top:3px;">PDF · DOCX · TXT — all supported</div>
+          <span class="file-icon">📄</span>
+          <div class="recruiter-only">
+            <div class="file-text">Drop candidate resume here or <strong>click to upload</strong></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:5px;font-family:var(--font-mono);">PDF · DOCX · TXT · Supports most resume formats</div>
+          </div>
+          <div class="candidate-only">
+            <div class="file-text">Drop <strong>your</strong> resume here or <strong>click to upload</strong></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:5px;font-family:var(--font-mono);">PDF · DOCX · TXT · Your resume, not someone else's</div>
+          </div>
           <div class="file-name" id="fileName"></div>
         </div>
         <div class="extract-status" id="extractStatus"></div>
@@ -953,7 +1084,8 @@ footer{text-align:center;padding:24px 0 14px;font-size:11px;font-family:var(--fo
 
     <div class="action-row">
       <button class="btn btn-ghost" onclick="clearForm()">Clear all</button>
-      <button class="btn btn-primary" id="screenBtn" onclick="runScreening()">⚡ Run ICP Screening</button>
+      <button class="btn btn-primary recruiter-only" id="screenBtn" onclick="runScreening()" style="min-width:180px;">⚡ Run ICP Screening</button>
+      <button class="btn candidate-only" id="screenBtnCand" onclick="runScreening()" style="min-width:220px;padding:13px 24px;font-size:15px;background:linear-gradient(135deg,var(--gold),#34d399);color:#0a0a0f;font-weight:800;border:none;border-radius:var(--r);cursor:pointer;transition:all 0.2s;">🎯 Check My Fit &amp; Get Prep Guide</button>
     </div>
     <div class="error-msg" id="formError"></div>
   </div>
@@ -1187,13 +1319,13 @@ function doLogin(){
 }
 function doLogout(){
   localStorage.removeItem('sm_user');
-  document.getElementById('app-view').style.display='none';
+  document.getElementById('app-view').classList.remove('visible'); document.getElementById('app-view').style.display='none';
   document.getElementById('login-view').style.display='flex';
   currentUser=null;
 }
 function showApp(){
   document.getElementById('login-view').style.display='none';
-  document.getElementById('app-view').style.display='block';
+  document.getElementById('app-view').classList.add('visible'); document.getElementById('app-view').style.display='';
   document.getElementById('userName').textContent=currentUser.name.split(' ')[0];
   document.getElementById('userAvatar').textContent=currentUser.initial;
   initSupabase();
@@ -1381,7 +1513,7 @@ const SCREEN_STEPS=['Reading job description','Parsing resume content','Checking
 function showLoadingSimple(title,sub,isICP){
   const steps=isICP?ICP_STEPS:SCREEN_STEPS;
   steps.forEach((s,i)=>{const el=document.getElementById('ls'+(i+1)+'t');if(el)el.textContent=s;});
-  document.getElementById('loadingOverlay').classList.add('visible');
+  document.getElementById('loadingScreen').classList.add('visible');
   document.getElementById('screenBtn').disabled=true;
   animateLoadingSteps();
 }
@@ -1395,7 +1527,7 @@ function updateLoadingStep(msg){
   });
 }
 function hideLoading(){
-  document.getElementById('loadingOverlay').classList.remove('visible');
+  document.getElementById('loadingScreen').classList.remove('visible');
   document.getElementById('screenBtn').disabled=false;
   if(loadingInterval){clearInterval(loadingInterval);loadingInterval=null;}
   setLoadingSteps(['','','','','','']);
@@ -1825,12 +1957,11 @@ function renderDashboard(){
     const ocL=s.outcome==='advanced'?'Advanced':s.outcome==='reserved'?'Reserved':s.outcome==='passed'?'Passed':'Pending';
     const sc=s.score>=85?'#60a5fa':s.score>=70?'#818cf8':s.score>=50?'#fbbf24':'#f87171';
     const vc={'Strong Match':'strong','Good Match':'good','Weak Match':'weak','Poor Match':'poor'}[s.verdict]||'weak';
-    return`<div class="screening-row">
-      <div><div class="candidate-name">${esc(s.candidateName||'Unknown')}</div><div class="candidate-role">${esc(s.role||'')}</div></div>
-      <div style="font-family:var(--font-mono);font-size:13px;color:${sc};font-weight:600">${s.score||0}/100</div>
-      <div><span class="verdict-badge ${vc}" style="font-size:10px">${esc(s.verdict||'')}</span></div>
-      <div><span class="outcome-badge ${oc}">${ocL}</span></div>
-      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${new Date(s.screenedAt).toLocaleDateString()}</div>
+    return`<div class="history-row">
+      <div><div style="font-size:13px;font-weight:600;">${esc(s.candidateName||'Unknown')}</div><div style="font-size:11px;color:var(--text-2);font-family:var(--font-mono);margin-top:2px;">${esc(s.role||'')} · ${new Date(s.screenedAt).toLocaleDateString()}</div></div>
+      <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:${sc}">${s.score||0}</div>
+      <div><span class="verdict-badge verdict-${vc}" style="font-size:10px">${esc(s.verdict||'')}</span></div>
+      <div><span class="${oc}">${ocL}</span></div>
     </div>`;
   }).join('');
 
@@ -1839,7 +1970,11 @@ function renderDashboard(){
     <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="if(confirm('Clear all screening history?')){localStorage.removeItem(getKey());renderDashboard();}">🗑 Clear history</button>
   </div>`;
 
-  dash.innerHTML=metricHtml+statsHtml+funnelHtml+clearBtn+`<div class="screenings-table"><div class="table-head"><div>Candidate</div><div>Score</div><div>Verdict</div><div>Outcome</div><div>Date</div></div>${rows}</div>`;
+  dash.innerHTML=metricHtml+statsHtml+funnelHtml+clearBtn+`
+    <div class="history-table">
+      <div class="history-table-header"><div>Candidate</div><div>Score</div><div>Verdict</div><div>Outcome</div></div>
+      ${rows}
+    </div>`;
 }
 
 // ── Utilities ──
@@ -1850,6 +1985,12 @@ function switchTab(tab){
   document.getElementById('tabPaste').classList.toggle('active',tab==='paste');
 }
 function getResumeText(){return document.getElementById('uploadPanel').style.display!=='none'?resumeContent:document.getElementById('resumeText').value.trim();}
+function handleFileDrop(event){
+  event.preventDefault();
+  event.currentTarget.classList.remove('drag-over');
+  const f=event.dataTransfer?.files[0];
+  if(f)processFile(f);
+}
 function setupDragDrop(){
   const drop=document.getElementById('fileDrop');
   if(!drop)return;
@@ -1858,9 +1999,9 @@ function setupDragDrop(){
   drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)processFile(f);});
 }
 function handleFileSelect(input){if(input.files[0])processFile(input.files[0]);}
-function setExtractStatus(msg,color){const el=document.getElementById('extractStatus');el.style.display='block';el.style.color=color||'var(--muted)';el.textContent=msg;}
+function setExtractStatus(msg,color){const el=document.getElementById('extractStatus');el.style.display='block';el.classList.add('visible');el.style.color=color||'var(--success)';el.textContent=msg;}
 async function processFile(file){
-  document.getElementById('fileName').textContent='✓ '+file.name;
+  const fn=document.getElementById('fileName');fn.textContent='✓ '+file.name;fn.classList.add('visible');
   const ext=file.name.split('.').pop().toLowerCase();
   setExtractStatus('⏳ Extracting text...','var(--accent)');
   try{
