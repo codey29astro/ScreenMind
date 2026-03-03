@@ -653,37 +653,37 @@ body.candidate-mode .cand-form-hero{display:block;}
 /* ════════════════════════════════════════
    LANDING PAGE (added — no existing CSS touched)
 ════════════════════════════════════════ */
-#login-view{min-height:100vh;display:flex;align-items:stretch;padding:0;}
-.lp-wrap{display:flex;width:100%;min-height:100vh;}
+#login-view{height:100vh;display:flex;align-items:stretch;padding:0;overflow:hidden;}
+.lp-wrap{display:flex;width:100%;height:100%;}
 
 /* LEFT */
-.lp-hero{flex:1;padding:32px 52px 32px 52px;display:flex;flex-direction:column;justify-content:flex-start;justify-content:center;position:relative;overflow:hidden;border-right:1px solid var(--border);min-height:100vh;}
-.lp-hero-watermark{position:absolute;top:50%;left:42%;transform:translate(-50%,-50%);width:600px;height:600px;opacity:0.12;pointer-events:none;z-index:0;}
+.lp-hero{flex:1;padding:24px 48px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;position:relative;border-right:1px solid var(--border);}
+.lp-hero-watermark{position:absolute;top:50%;left:42%;transform:translate(-50%,-50%);width:580px;height:580px;opacity:0.18;pointer-events:none;z-index:0;filter:drop-shadow(0 0 40px rgba(233,169,62,0.3)) drop-shadow(0 0 80px rgba(91,141,239,0.2));}
 .lp-hero>*{position:relative;z-index:1;}
 .lp-hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,169,62,0.07) 0%,transparent 70%);pointer-events:none;}
 .lp-hero::after{content:'';position:absolute;bottom:-150px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(91,141,239,0.07) 0%,transparent 70%);pointer-events:none;}
 
-.lp-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.lp-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .lp-logo-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,#e9a93e 0%,#5b8def 60%,#9b7ff4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .lp-beta-pill{background:rgba(233,169,62,0.12);color:var(--gold);font-size:9px;font-family:var(--font-mono);padding:2px 7px;border-radius:4px;border:1px solid rgba(233,169,62,0.25);letter-spacing:0.1em;}
 
-.lp-headline{font-family:var(--font-display);font-size:40px;font-weight:800;line-height:1.15;letter-spacing:-0.03em;margin-bottom:14px;color:var(--text);}
-.lp-sub{font-size:14px;color:var(--text-2);line-height:1.7;max-width:480px;margin-bottom:24px;}
+.lp-headline{font-family:var(--font-display);font-size:34px;font-weight:800;line-height:1.12;letter-spacing:-0.03em;margin-bottom:10px;color:var(--text);}
+.lp-sub{font-size:13px;color:var(--text-2);line-height:1.65;max-width:480px;margin-bottom:16px;}
 
-.lp-features{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.lp-features{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
 .lp-feature{display:flex;align-items:flex-start;gap:14px;}
-.lp-feat-icon{font-size:16px;width:34px;height:34px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.lp-feat-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
-.lp-feat-desc{font-size:12px;color:var(--text-2);line-height:1.55;}
+.lp-feat-icon{font-size:14px;width:30px;height:30px;background:var(--surface);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.lp-feat-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.lp-feat-desc{font-size:11px;color:var(--text-2);line-height:1.5;}
 
 .lp-stats{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
-.lp-stat{flex:1;padding:14px 16px;text-align:center;}
+.lp-stat{flex:1;padding:10px 12px;text-align:center;}
 .lp-stat-div{width:1px;background:var(--border);align-self:stretch;}
-.lp-stat-num{font-family:var(--font-display);font-size:22px;font-weight:800;background:linear-gradient(135deg,#e9a93e,#5b8def);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:3px;}
+.lp-stat-num{font-family:var(--font-display);font-size:20px;font-weight:800;background:linear-gradient(135deg,#e9a93e,#5b8def);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:2px;}
 .lp-stat-lbl{font-size:10px;color:var(--muted);font-family:var(--font-mono);line-height:1.4;}
 
 /* RIGHT */
-.lp-form-col{width:420px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:36px 32px;background:var(--surface);position:sticky;top:0;height:100vh;overflow-y:auto;}
+.lp-form-col{width:420px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:36px 32px;background:var(--surface);height:100%;overflow-y:auto;}
 .lp-form-box{width:100%;}
 .lp-form-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
 .lp-form-sub{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:24px;}
@@ -707,11 +707,12 @@ body.candidate-mode .cand-form-hero{display:block;}
 .lp-fine{font-size:11px;color:var(--muted);text-align:center;font-family:var(--font-mono);margin-top:16px;}
 
 @media(max-width:860px){
-  .lp-wrap{flex-direction:column;}
-  .lp-hero{padding:32px 24px;border-right:none;border-bottom:1px solid var(--border);}
+  #login-view{height:auto;overflow:visible;}
+  .lp-wrap{flex-direction:column;height:auto;}
+  .lp-hero{padding:32px 24px;border-right:none;border-bottom:1px solid var(--border);height:auto;overflow:visible;}
   .lp-headline{font-size:28px;}
   .lp-stats{display:none;}
-  .lp-form-col{width:100%;padding:28px 24px;}
+  .lp-form-col{width:100%;padding:28px 24px;height:auto;}
 }
 
 /* ── Candidate mode polish ── */
@@ -787,7 +788,7 @@ body.candidate-mode .score-card::before{
       </div>
 
       <h1 class="lp-headline">Stop reading resumes.<br>Start making decisions.</h1>
-      <p class="lp-sub">ScreenMind turns any job description into a weighted candidate scorecard — in 30 seconds. Built by a recruiter, powered by AI.</p>
+      <p class="lp-sub">18 years of recruiting intelligence. Now available to every recruiter, in 30 seconds.</p>
 
       <div class="lp-features">
         <div class="lp-feature">
