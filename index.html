@@ -43,8 +43,8 @@ function setMode(m){
   --surface:#0e0e1b;
   --surface2:#141424;
   --surface3:#1c1c2e;
-  --border:rgba(255,255,255,0.07);
-  --border-strong:rgba(255,255,255,0.14);
+  --border:rgba(255,255,255,0.1);
+  --border-strong:rgba(255,255,255,0.2);
   --accent:#5b8def;
   --accent-glow:rgba(91,141,239,0.12);
   --gold:#e9a93e;
@@ -54,8 +54,8 @@ function setMode(m){
   --danger:#f87171;
   --success:#34d399;
   --text:#ededf5;
-  --text-2:#9898b0;
-  --muted:#52526a;
+  --text-2:#b8b8cc;
+  --muted:#72728a;
   --font-display:'Syne',sans-serif;
   --font-mono:'JetBrains Mono',monospace;
   --font-body:'Plus Jakarta Sans',sans-serif;
@@ -145,15 +145,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ══ VIEWS ══ */
 .view{display:none;}
-.view.active{display:block;}
 
 /* ══ CARDS ══ */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;margin-bottom:16px;position:relative;}
 .card.green{border-color:rgba(52,211,153,0.12);background:linear-gradient(180deg,var(--surface),rgba(52,211,153,0.02));}
 .card.blue{border-color:rgba(91,141,239,0.15);background:linear-gradient(180deg,var(--surface),rgba(91,141,239,0.02));}
-.section-label{font-size:10px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;font-weight:600;}
+.section-label{font-size:10px;font-family:var(--font-mono);color:var(--text-2);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;font-weight:700;}
 .section-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:4px;letter-spacing:-0.01em;}
-.section-desc{font-size:13px;color:var(--text-2);margin-bottom:12px;line-height:1.5;}
+.section-desc{font-size:13px;color:var(--text-2);margin-bottom:12px;line-height:1.6;}
 .divider{border:none;border-top:1px solid var(--border);margin:14px 0;}
 
 /* ══ FORM ELEMENTS ══ */
@@ -567,8 +566,19 @@ body.candidate-mode .cand-form-hero{display:block;}
   <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="sidebar-logo-name">ScreenMind</div>
-      <div class="sidebar-logo-tag">// AI RECRUITING INTELLIGENCE</div>
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;">
+        <svg viewBox="0 0 36 36" width="32" height="32" style="flex-shrink:0;">
+          <defs><linearGradient id="slg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5b8def"/><stop offset="100%" style="stop-color:#9b7ff4"/></linearGradient></defs>
+          <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="url(#slg)" stroke-width="2"/>
+          <circle cx="18" cy="18" r="6" fill="none" stroke="url(#slg)" stroke-width="2"/>
+          <circle cx="18" cy="18" r="2.5" fill="url(#slg)"/>
+          <polyline points="11,18 14.5,21.5 25,14" fill="none" stroke="url(#slg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <div class="sidebar-logo-name">ScreenMind</div>
+          <div class="sidebar-logo-tag">AI RECRUITING INTELLIGENCE</div>
+        </div>
+      </div>
     </div>
 
     <!-- Mode toggle -->
@@ -621,12 +631,12 @@ body.candidate-mode .cand-form-hero{display:block;}
   </div>
 
   <!-- SCREEN VIEW -->
-  <div class="view active" id="view-screen">
+  <div class="view active" id="view-screen" style="display:block;">
 
     <!-- Saved Roles Bar — always visible -->
     <div class="saved-roles-bar" id="savedRolesBar" style="display:block;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="saved-roles-title">📁 Saved Roles — paste JD + generate ICP, then save for instant reload</div>
+        <div class="saved-roles-title">📁 Saved Roles</div>
         <button class="save-role-btn" onclick="saveCurrentRole()">💾 Save This Role</button>
       </div>
       <div class="saved-roles-list" id="savedRolesList">
@@ -656,7 +666,7 @@ body.candidate-mode .cand-form-hero{display:block;}
     </div>
 
     <!-- INTAKE INTELLIGENCE -->
-    <div style="margin-bottom:18px;">
+    <div class="intake-wrap" style="margin-bottom:18px;">
       <div style="background:var(--surface);border:1px solid rgba(245,158,11,0.35);border-radius:16px;overflow:hidden;position:relative;" id="intakeCard">
         <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--accent));"></div>
         <div onclick="toggleIntake()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none;">
@@ -882,7 +892,7 @@ body.candidate-mode .cand-form-hero{display:block;}
   </div>
 
   <!-- BULK SCREENING VIEW -->
-  <div class="view" id="view-bulk">
+  <div class="view" id="view-bulk" style="display:none;">
     <div style="margin-bottom:20px;">
       <div style="font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;">Bulk Screening</div>
       <div style="font-size:13px;color:var(--text-2);">Upload up to 20 resumes — ScreenMind screens all against your active JD and ICP, then ranks them instantly.</div>
@@ -915,7 +925,7 @@ body.candidate-mode .cand-form-hero{display:block;}
   </div>
 
   <!-- DASHBOARD -->
-  <div class="view" id="view-dashboard">
+  <div class="view" id="view-dashboard" style="display:none;">
     <div id="dashContent"></div>
   </div>
 
@@ -1098,19 +1108,35 @@ function showApp(){
   loadIntakeFromStorage();
 }
 window.onload=()=>{
+  // Always show login — clean experience every time
+  // (saved session available but user must click in)
+  document.getElementById('login-view').style.display='flex';
+  document.getElementById('app-view').style.display='none';
   const saved=localStorage.getItem('sm_user');
-  if(saved){currentUser=JSON.parse(saved);showApp();}
+  if(saved){
+    const u=JSON.parse(saved);
+    // Pre-fill name so returning user just clicks enter
+    const nameEl=document.getElementById('loginName');
+    const roleEl=document.getElementById('loginRole');
+    if(nameEl && u.name) nameEl.value=u.name;
+    if(roleEl && u.role) roleEl.value=u.role;
+  }
   setupDragDrop();
 };
 
 // ── View ──
 function switchView(v){
-  document.querySelectorAll('.view').forEach(el=>{el.classList.remove('active');el.style.display='';});
+  // Hide ALL views explicitly
+  ['screen','bulk','dashboard'].forEach(function(name){
+    const el=document.getElementById('view-'+name);
+    if(el){el.style.display='none';el.classList.remove('active');}
+  });
   document.querySelectorAll('.nav-item,.nav-tab').forEach(el=>el.classList.remove('active'));
   document.getElementById('results-section').style.display='none';
   const cp=document.getElementById('copilotSection');if(cp)cp.style.display='none';
+  // Show only the target view
   const target=document.getElementById('view-'+v);
-  if(target){target.classList.add('active');target.style.display='block';}
+  if(target){target.style.display='block';target.classList.add('active');}
   const navTarget=document.getElementById('nav-'+v);
   if(navTarget)navTarget.classList.add('active');
   if(v==='dashboard')renderDashboard();
