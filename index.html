@@ -35,243 +35,7 @@ function setMode(m){
   }
 }
 
-function renderCandidateExtras(r){
-  const score=r.score||0;
-  const gaps=r.gaps||[];
-  const strengths=r.strengths||[];
-  const qs=r.interview_questions||[];
 
-  // ── Verdict ──
-  const applyClass=score>=70?'go':score>=45?'maybe':'no';
-  const applyIcon=score>=70?'🚀':score>=45?'🤔':'⚠️';
-  const applyTitle=score>=70?'Strong Fit — Apply with Confidence':score>=45?'Possible Fit — Apply Strategically':'Significant Gaps — Strengthen First';
-  const applyDesc=score>=70
-    ?`Your profile aligns well with this role. You have ${strengths.length} strong signals. Apply and use this prep guide to ace the interview.`
-    :score>=45
-    ?`You meet the core criteria but have ${gaps.length} gap${gaps.length>1?'s':''} to address. Apply, but be honest about these in your cover note and interview.`
-    :`There are ${gaps.length} significant gaps between your profile and this role. Address these first — or target a more junior version of this role.`;
-
-  // ── Gap Analysis ── 
-  const gapItems=gaps.map((g,i)=>`
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;">
-      <div style="display:flex;align-items:flex-start;gap:10px;">
-        <span style="background:rgba(248,113,113,0.12);color:var(--danger);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--font-mono);font-weight:700;flex-shrink:0;margin-top:1px;">${i+1}</span>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${esc(g)}</div>
-          <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.12);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text-2);line-height:1.5;">
-            <span style="color:#34d399;font-weight:700;font-size:10px;font-family:var(--font-mono);">HOW TO FIX →</span> Add a specific project, metric, or achievement that demonstrates this skill. Even a side project counts. Mention it explicitly in your cover note.
-          </div>
-        </div>
-      </div>
-    </div>`).join('');
-
-  // ── Interview Prep ──
-  const prepItems=qs.map((q,i)=>`
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;">
-      <div style="display:flex;align-items:flex-start;gap:10px;">
-        <span style="background:rgba(233,169,62,0.12);color:var(--gold);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--font-mono);font-weight:700;flex-shrink:0;margin-top:1px;">Q${i+1}</span>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:600;margin-bottom:8px;line-height:1.4;">${esc(q.question)}</div>
-          <div style="background:rgba(233,169,62,0.06);border-left:3px solid var(--gold);padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:8px;">
-            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);font-weight:700;margin-bottom:3px;">WHAT THEY'RE REALLY ASKING</div>
-            <div style="font-size:12px;color:var(--text-2);line-height:1.5;">${esc(q.why)}</div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);">💡 Prepare 1-2 specific examples with measurable outcomes (numbers, dates, results)</div>
-        </div>
-      </div>
-    </div>`).join('');
-
-  // ── Cover Letter hint ──
-  const coverHint = score>=50 ? `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:14px;">
-      <div style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:10px;">✉ Cover Note Strategy</div>
-      <div style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:10px;">
-        Your cover note should directly address your <strong style="color:var(--text);">${strengths.length} strengths</strong> and pre-empt your <strong style="color:var(--danger);">${gaps.length} gaps</strong>. Don't wait for the interviewer to find the gaps — own them first.
-      </div>
-      <div style="background:var(--surface2);border-radius:var(--r);padding:12px 14px;font-size:13px;font-style:italic;color:var(--text-2);line-height:1.65;">
-        "I bring [top strength from your resume]. While I'm still building experience in [biggest gap], I've [what you've done to address it — course, project, etc.] and am committed to [how you'll ramp]."
-      </div>
-    </div>` : '';
-
-  const candidateHtml=`
-    <div style="margin-bottom:14px;">
-      <div style="font-family:var(--font-display);font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.02em;">Your Career Match Report</div>
-      <div style="font-size:13px;color:var(--text-2);">Honest AI analysis — not flattery. Use this to decide whether to apply and how to prepare.</div>
-    </div>
-
-    <div class="apply-verdict ${applyClass}" style="margin-bottom:14px;">
-      <span class="apply-icon">${applyIcon}</span>
-      <div>
-        <div class="apply-title">${applyTitle}</div>
-        <div class="apply-desc">${applyDesc}</div>
-      </div>
-    </div>
-
-    ${gapItems?`<div class="result-section">
-      <div class="result-section-header" onclick="toggleSection(this)">
-        <div class="result-section-title">🔍 Gap Analysis — What to Fix Before Applying</div>
-        <span class="result-section-chevron open">▾</span>
-      </div>
-      <div class="result-section-body open">${gapItems}</div>
-    </div>`:''}
-
-    ${coverHint}
-
-    ${prepItems?`<div class="result-section">
-      <div class="result-section-header" onclick="toggleSection(this)">
-        <div class="result-section-title" style="color:var(--gold);">🎯 Interview Prep Guide — ${qs.length} Questions to Master</div>
-        <span class="result-section-chevron open">▾</span>
-      </div>
-      <div class="result-section-body open">
-        <div style="background:rgba(233,169,62,0.06);border:1px solid rgba(233,169,62,0.15);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--text-2);line-height:1.6;">
-          🧠 <strong style="color:var(--text);">These are the real questions this interviewer will ask you</strong> — based on your specific gaps in THIS role. For each one, prepare a STAR answer (Situation, Task, Action, Result) with real numbers.
-        </div>
-        ${prepItems}
-      </div>
-    </div>`:''}
-  `;
-
-  const existing=document.getElementById('candidateExtras');
-  if(existing)existing.remove();
-  const div=document.createElement('div');
-  div.id='candidateExtras';
-  div.innerHTML=candidateHtml;
-  document.getElementById('resultsContent').insertAdjacentElement('afterend',div);
-}
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js">
-// ── Mode (Recruiter / Candidate) ──
-let currentMode='recruiter';
-function setMode(m){
-  currentMode=m;
-  document.getElementById('mode-recruiter').className='mode-btn'+(m==='recruiter'?' mode-active':'');
-  document.getElementById('mode-candidate').className='mode-btn'+(m==='candidate'?' mode-active':'');
-  const banner=document.getElementById('candidateBanner');
-  const screenBtn=document.getElementById('screenBtn');
-  const jdDesc=document.getElementById('jdDesc');
-  const rsLabel=document.getElementById('resumeStepLabel');
-  const rsTitle=document.getElementById('resumeStepTitle');
-  const rsDesc=document.getElementById('resumeStepDesc');
-  if(m==='candidate'){
-    banner.classList.add('visible');
-    screenBtn.innerHTML='🎯 Check My Fit &amp; Interview Prep';
-    jdDesc.textContent='Paste the job description you want to apply for — ScreenMind will assess your real chances.';
-    rsLabel.textContent='Step 3 · Your Resume';
-    rsTitle.textContent='Upload Your Resume';
-    rsDesc.textContent='Upload your resume — ScreenMind will honestly evaluate your fit and tell you what to strengthen.';
-  } else {
-    banner.classList.remove('visible');
-    screenBtn.innerHTML='⚡ Run ICP Screening';
-    jdDesc.textContent='Paste the full JD — ScreenMind reads context and intent, not just keywords.';
-    rsLabel.textContent='Step 3 · Candidate Resume';
-    rsTitle.textContent='Upload Resume';
-    rsDesc.textContent='PDF, DOCX, or TXT — ScreenMind extracts and understands context automatically.';
-  }
-}
-
-function renderCandidateExtras(r){
-  const score=r.score||0;
-  const gaps=r.gaps||[];
-  const strengths=r.strengths||[];
-  const qs=r.interview_questions||[];
-
-  // ── Verdict ──
-  const applyClass=score>=70?'go':score>=45?'maybe':'no';
-  const applyIcon=score>=70?'🚀':score>=45?'🤔':'⚠️';
-  const applyTitle=score>=70?'Strong Fit — Apply with Confidence':score>=45?'Possible Fit — Apply Strategically':'Significant Gaps — Strengthen First';
-  const applyDesc=score>=70
-    ?`Your profile aligns well with this role. You have ${strengths.length} strong signals. Apply and use this prep guide to ace the interview.`
-    :score>=45
-    ?`You meet the core criteria but have ${gaps.length} gap${gaps.length>1?'s':''} to address. Apply, but be honest about these in your cover note and interview.`
-    :`There are ${gaps.length} significant gaps between your profile and this role. Address these first — or target a more junior version of this role.`;
-
-  // ── Gap Analysis ── 
-  const gapItems=gaps.map((g,i)=>`
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;">
-      <div style="display:flex;align-items:flex-start;gap:10px;">
-        <span style="background:rgba(248,113,113,0.12);color:var(--danger);width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--font-mono);font-weight:700;flex-shrink:0;margin-top:1px;">${i+1}</span>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:6px;">${esc(g)}</div>
-          <div style="background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.12);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--text-2);line-height:1.5;">
-            <span style="color:#34d399;font-weight:700;font-size:10px;font-family:var(--font-mono);">HOW TO FIX →</span> Add a specific project, metric, or achievement that demonstrates this skill. Even a side project counts. Mention it explicitly in your cover note.
-          </div>
-        </div>
-      </div>
-    </div>`).join('');
-
-  // ── Interview Prep ──
-  const prepItems=qs.map((q,i)=>`
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;">
-      <div style="display:flex;align-items:flex-start;gap:10px;">
-        <span style="background:rgba(233,169,62,0.12);color:var(--gold);width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:var(--font-mono);font-weight:700;flex-shrink:0;margin-top:1px;">Q${i+1}</span>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:600;margin-bottom:8px;line-height:1.4;">${esc(q.question)}</div>
-          <div style="background:rgba(233,169,62,0.06);border-left:3px solid var(--gold);padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:8px;">
-            <div style="font-size:10px;font-family:var(--font-mono);color:var(--gold);font-weight:700;margin-bottom:3px;">WHAT THEY'RE REALLY ASKING</div>
-            <div style="font-size:12px;color:var(--text-2);line-height:1.5;">${esc(q.why)}</div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);font-family:var(--font-mono);">💡 Prepare 1-2 specific examples with measurable outcomes (numbers, dates, results)</div>
-        </div>
-      </div>
-    </div>`).join('');
-
-  // ── Cover Letter hint ──
-  const coverHint = score>=50 ? `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:14px;">
-      <div style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:10px;">✉ Cover Note Strategy</div>
-      <div style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:10px;">
-        Your cover note should directly address your <strong style="color:var(--text);">${strengths.length} strengths</strong> and pre-empt your <strong style="color:var(--danger);">${gaps.length} gaps</strong>. Don't wait for the interviewer to find the gaps — own them first.
-      </div>
-      <div style="background:var(--surface2);border-radius:var(--r);padding:12px 14px;font-size:13px;font-style:italic;color:var(--text-2);line-height:1.65;">
-        "I bring [top strength from your resume]. While I'm still building experience in [biggest gap], I've [what you've done to address it — course, project, etc.] and am committed to [how you'll ramp]."
-      </div>
-    </div>` : '';
-
-  const candidateHtml=`
-    <div style="margin-bottom:14px;">
-      <div style="font-family:var(--font-display);font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-0.02em;">Your Career Match Report</div>
-      <div style="font-size:13px;color:var(--text-2);">Honest AI analysis — not flattery. Use this to decide whether to apply and how to prepare.</div>
-    </div>
-
-    <div class="apply-verdict ${applyClass}" style="margin-bottom:14px;">
-      <span class="apply-icon">${applyIcon}</span>
-      <div>
-        <div class="apply-title">${applyTitle}</div>
-        <div class="apply-desc">${applyDesc}</div>
-      </div>
-    </div>
-
-    ${gapItems?`<div class="result-section">
-      <div class="result-section-header" onclick="toggleSection(this)">
-        <div class="result-section-title">🔍 Gap Analysis — What to Fix Before Applying</div>
-        <span class="result-section-chevron open">▾</span>
-      </div>
-      <div class="result-section-body open">${gapItems}</div>
-    </div>`:''}
-
-    ${coverHint}
-
-    ${prepItems?`<div class="result-section">
-      <div class="result-section-header" onclick="toggleSection(this)">
-        <div class="result-section-title" style="color:var(--gold);">🎯 Interview Prep Guide — ${qs.length} Questions to Master</div>
-        <span class="result-section-chevron open">▾</span>
-      </div>
-      <div class="result-section-body open">
-        <div style="background:rgba(233,169,62,0.06);border:1px solid rgba(233,169,62,0.15);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--text-2);line-height:1.6;">
-          🧠 <strong style="color:var(--text);">These are the real questions this interviewer will ask you</strong> — based on your specific gaps in THIS role. For each one, prepare a STAR answer (Situation, Task, Action, Result) with real numbers.
-        </div>
-        ${prepItems}
-      </div>
-    </div>`:''}
-  `;
-
-  const existing=document.getElementById('candidateExtras');
-  if(existing)existing.remove();
-  const div=document.createElement('div');
-  div.id='candidateExtras';
-  div.innerHTML=candidateHtml;
-  document.getElementById('resultsContent').insertAdjacentElement('afterend',div);
-}
 </script>
 <style>
 :root{
@@ -347,7 +111,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .login-feature-text strong{display:block;color:var(--text);font-weight:600;margin-bottom:2px;}
 
 /* ══ APP SHELL — SIDEBAR LAYOUT ══ */
-#app-view{display:none;min-height:100vh;} #app-view.visible{display:flex;min-height:100vh;}
+#app-view{display:none;min-height:100vh;}
 .app-layout{display:flex;min-height:100vh;width:100%;}
 
 /* Sidebar */
@@ -733,7 +497,7 @@ body.candidate-mode .cand-form-hero{display:block;}
 </head>
 <body>
 
-<div id="loadingScreen">
+<div id="loadingScreen" style="display:none;">
   <svg class="loading-spinner" viewBox="0 0 100 100" width="60" height="60">
     <defs>
       <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1319,13 +1083,13 @@ function doLogin(){
 }
 function doLogout(){
   localStorage.removeItem('sm_user');
-  document.getElementById('app-view').classList.remove('visible'); document.getElementById('app-view').style.display='none';
+  document.getElementById('app-view').style.display='none';
   document.getElementById('login-view').style.display='flex';
   currentUser=null;
 }
 function showApp(){
   document.getElementById('login-view').style.display='none';
-  document.getElementById('app-view').classList.add('visible'); document.getElementById('app-view').style.display='';
+  document.getElementById('app-view').style.display='flex';
   document.getElementById('userName').textContent=currentUser.name.split(' ')[0];
   document.getElementById('userAvatar').textContent=currentUser.initial;
   initSupabase();
@@ -1513,7 +1277,7 @@ const SCREEN_STEPS=['Reading job description','Parsing resume content','Checking
 function showLoadingSimple(title,sub,isICP){
   const steps=isICP?ICP_STEPS:SCREEN_STEPS;
   steps.forEach((s,i)=>{const el=document.getElementById('ls'+(i+1)+'t');if(el)el.textContent=s;});
-  document.getElementById('loadingScreen').classList.add('visible');
+  document.getElementById('loadingScreen').style.display='flex';
   document.getElementById('screenBtn').disabled=true;
   animateLoadingSteps();
 }
@@ -1527,7 +1291,7 @@ function updateLoadingStep(msg){
   });
 }
 function hideLoading(){
-  document.getElementById('loadingScreen').classList.remove('visible');
+  document.getElementById('loadingScreen').style.display='none';
   document.getElementById('screenBtn').disabled=false;
   if(loadingInterval){clearInterval(loadingInterval);loadingInterval=null;}
   setLoadingSteps(['','','','','','']);
