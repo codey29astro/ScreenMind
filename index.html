@@ -113,7 +113,7 @@ function showApp(){
   // Restore saved state if exists
   var savedState = null;
   try{ savedState = JSON.parse(localStorage.getItem('sm_state_'+currentUser.name)||'null'); }catch(e){}
-  var mode = (savedState && savedState.mode) || 'recruiter';
+  var mode = (savedState && savedState.mode) || lpInitialMode || 'recruiter';
   var view = (savedState && savedState.view) || 'screen';
   applyMode(mode);
   switchView(view);
@@ -649,6 +649,86 @@ body.candidate-mode .cand-form-hero{display:block;}
   pointer-events:none;
   z-index:0;
 }
+
+/* ════════════════════════════════════════
+   LANDING PAGE (added — no existing CSS touched)
+════════════════════════════════════════ */
+#login-view{min-height:100vh;display:flex;align-items:stretch;padding:0;}
+.lp-wrap{display:flex;width:100%;min-height:100vh;}
+
+/* LEFT */
+.lp-hero{flex:1;padding:32px 52px 32px 52px;display:flex;flex-direction:column;justify-content:flex-start;justify-content:center;position:relative;overflow:hidden;border-right:1px solid var(--border);min-height:100vh;}
+.lp-hero-watermark{position:absolute;top:50%;left:42%;transform:translate(-50%,-50%);width:600px;height:600px;opacity:0.12;pointer-events:none;z-index:0;}
+.lp-hero>*{position:relative;z-index:1;}
+.lp-hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,169,62,0.07) 0%,transparent 70%);pointer-events:none;}
+.lp-hero::after{content:'';position:absolute;bottom:-150px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(91,141,239,0.07) 0%,transparent 70%);pointer-events:none;}
+
+.lp-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.lp-logo-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,#e9a93e 0%,#5b8def 60%,#9b7ff4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lp-beta-pill{background:rgba(233,169,62,0.12);color:var(--gold);font-size:9px;font-family:var(--font-mono);padding:2px 7px;border-radius:4px;border:1px solid rgba(233,169,62,0.25);letter-spacing:0.1em;}
+
+.lp-headline{font-family:var(--font-display);font-size:40px;font-weight:800;line-height:1.15;letter-spacing:-0.03em;margin-bottom:14px;color:var(--text);}
+.lp-sub{font-size:14px;color:var(--text-2);line-height:1.7;max-width:480px;margin-bottom:24px;}
+
+.lp-features{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.lp-feature{display:flex;align-items:flex-start;gap:14px;}
+.lp-feat-icon{font-size:16px;width:34px;height:34px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.lp-feat-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.lp-feat-desc{font-size:12px;color:var(--text-2);line-height:1.55;}
+
+.lp-stats{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
+.lp-stat{flex:1;padding:14px 16px;text-align:center;}
+.lp-stat-div{width:1px;background:var(--border);align-self:stretch;}
+.lp-stat-num{font-family:var(--font-display);font-size:22px;font-weight:800;background:linear-gradient(135deg,#e9a93e,#5b8def);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:3px;}
+.lp-stat-lbl{font-size:10px;color:var(--muted);font-family:var(--font-mono);line-height:1.4;}
+
+/* RIGHT */
+.lp-form-col{width:420px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:36px 32px;background:var(--surface);position:sticky;top:0;height:100vh;overflow-y:auto;}
+.lp-form-box{width:100%;}
+.lp-form-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+.lp-form-sub{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:24px;}
+
+.lp-iam-wrap{margin-bottom:20px;}
+.lp-iam-label{font-size:11px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px;}
+.lp-iam-btns{display:flex;gap:6px;}
+.lp-iam-btn{flex:1;padding:9px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;transition:all 0.2s;}
+.lp-iam-btn.lp-iam-active{background:rgba(91,141,239,0.1);border-color:var(--accent);color:var(--accent);font-weight:700;}
+.lp-iam-btn:hover:not(.lp-iam-active){background:var(--surface3);color:var(--text);}
+
+.lp-field{margin-bottom:14px;}
+.lp-lbl{display:block;font-size:11px;font-weight:600;font-family:var(--font-mono);color:var(--text-2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.lp-inp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-family:var(--font-body);font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box;}
+.lp-inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.lp-inp::placeholder{color:var(--muted);}
+
+.lp-cta{width:100%;padding:13px;background:linear-gradient(135deg,#e9a93e,#5b8def);color:#fff;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:15px;font-weight:800;cursor:pointer;transition:all 0.2s;margin-top:4px;letter-spacing:-0.01em;}
+.lp-cta:hover{opacity:0.92;transform:translateY(-1px);box-shadow:0 8px 24px rgba(91,141,239,0.3);}
+
+.lp-fine{font-size:11px;color:var(--muted);text-align:center;font-family:var(--font-mono);margin-top:16px;}
+
+@media(max-width:860px){
+  .lp-wrap{flex-direction:column;}
+  .lp-hero{padding:32px 24px;border-right:none;border-bottom:1px solid var(--border);}
+  .lp-headline{font-size:28px;}
+  .lp-stats{display:none;}
+  .lp-form-col{width:100%;padding:28px 24px;}
+}
+
+/* ── Candidate mode polish ── */
+body.candidate-mode #nav-bulk{ display:none !important; }
+body.candidate-mode .sidebar-logo-name{
+  background:linear-gradient(135deg,#e9a93e 0%,#34d399 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+body.candidate-mode .lp-iam-btn.lp-iam-active{
+  background:rgba(233,169,62,0.1);border-color:var(--gold);color:var(--gold);
+}
+/* Candidate mode — result sections get gold accent */
+body.candidate-mode .result-section-title{ color:var(--text); }
+body.candidate-mode .score-card::before{
+  background:linear-gradient(90deg,var(--gold),#34d399);
+}
+
 </style>
 </head>
 <body>
@@ -678,59 +758,99 @@ body.candidate-mode .cand-form-hero{display:block;}
 
 <!-- ═══ LOGIN ═══ -->
 <div id="login-view">
-  <div class="login-box">
-    <div class="login-logo-wrap">
-      <div style="position:relative;display:inline-block;margin-bottom:8px;">
-        <svg viewBox="0 0 100 100" width="72" height="72" style="display:block;">
-          <defs>
-            <linearGradient id="llg2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#e9a93e"/>
-              <stop offset="100%" style="stop-color:#5b8def"/>
-            </linearGradient>
-          </defs>
-          <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="rgba(233,169,62,0.06)" stroke="url(#llg2)" stroke-width="2.5"/>
-          <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="none" stroke="url(#llg2)" stroke-width="1.5" opacity="0.5"/>
-          <circle cx="50" cy="50" r="16" fill="rgba(91,141,239,0.08)" stroke="url(#llg2)" stroke-width="2"/>
-          <circle cx="50" cy="50" r="6" fill="url(#llg2)"/>
-          <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#llg2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <div class="lp-wrap">
+
+    <!-- ── LEFT HERO ── -->
+    <div class="lp-hero">
+      <!-- Subtle watermark logo behind content -->
+      <div class="lp-hero-watermark">
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <defs><linearGradient id="lpwg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e9a93e"/><stop offset="100%" stop-color="#5b8def"/></linearGradient></defs>
+          <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="none" stroke="url(#lpwg)" stroke-width="1.5"/>
+          <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="none" stroke="url(#lpwg)" stroke-width="1" opacity="0.6"/>
+          <circle cx="50" cy="50" r="16" fill="none" stroke="url(#lpwg)" stroke-width="1.2"/>
+          <circle cx="50" cy="50" r="6" fill="url(#lpwg)" opacity="0.5"/>
+          <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#lpwg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <svg class="login-logo-svg" viewBox="0 0 100 100" style="display:none;">
-        <defs>
-          <linearGradient id="llg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#60a5fa"/>
-            <stop offset="100%" style="stop-color:#f59e0b"/>
-          </linearGradient>
-        </defs>
-        <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="none" stroke="url(#llg)" stroke-width="3"/>
-        <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="rgba(96,165,250,0.06)" stroke="url(#llg)" stroke-width="1.5" opacity="0.6"/>
-        <circle cx="50" cy="50" r="18" fill="rgba(96,165,250,0.08)" stroke="url(#llg)" stroke-width="2"/>
-        <circle cx="50" cy="50" r="7" fill="url(#llg)"/>
-        <polyline points="33,50 42,59 67,41" fill="none" stroke="url(#llg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="24" y1="47" x2="76" y2="47" stroke="url(#llg)" stroke-width="1" opacity="0.4"/>
-        <line x1="24" y1="53" x2="76" y2="53" stroke="url(#llg)" stroke-width="1" opacity="0.4"/>
-      </svg>
-      </svg>
-      <div class="login-product-name" style="background:linear-gradient(135deg,#e9a93e,#5b8def,#9b7ff4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:32px;font-weight:800;letter-spacing:-0.02em;">ScreenMind</div>
-      <div class="login-tagline">// AI RESUME INTELLIGENCE · NOT JUST KEYWORDS</div>
+
+      <div class="lp-logo-row">
+        <svg viewBox="0 0 100 100" width="36" height="36" style="flex-shrink:0;">
+          <defs><linearGradient id="lpg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e9a93e"/><stop offset="100%" stop-color="#5b8def"/></linearGradient></defs>
+          <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="rgba(233,169,62,0.08)" stroke="url(#lpg2)" stroke-width="2.5"/>
+          <circle cx="50" cy="50" r="16" fill="none" stroke="url(#lpg2)" stroke-width="2"/>
+          <circle cx="50" cy="50" r="6" fill="url(#lpg2)"/>
+          <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#lpg2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="lp-logo-name">ScreenMind</span>
+        <span class="lp-beta-pill">BETA</span>
+      </div>
+
+      <h1 class="lp-headline">Stop reading resumes.<br>Start making decisions.</h1>
+      <p class="lp-sub">ScreenMind turns any job description into a weighted candidate scorecard — in 30 seconds. Built by a recruiter, powered by AI.</p>
+
+      <div class="lp-features">
+        <div class="lp-feature">
+          <div class="lp-feat-icon">⚡</div>
+          <div><div class="lp-feat-title">Weighted ICP Scoring</div><div class="lp-feat-desc">AI builds your ideal candidate profile from any JD. Every resume scored against it — Critical, Important, Nice-to-have.</div></div>
+        </div>
+        <div class="lp-feature">
+          <div class="lp-feat-icon">🧠</div>
+          <div><div class="lp-feat-title">Intake Intelligence</div><div class="lp-feat-desc">19-point intake form captures what the JD never says. Version-controlled source of truth with your hiring manager.</div></div>
+        </div>
+        <div class="lp-feature">
+          <div class="lp-feat-icon">📋</div>
+          <div><div class="lp-feat-title">Bulk Screening</div><div class="lp-feat-desc">Upload 20 resumes, get a ranked leaderboard. Screen a full shortlist in under 5 minutes.</div></div>
+        </div>
+        <div class="lp-feature">
+          <div class="lp-feat-icon">🎯</div>
+          <div><div class="lp-feat-title">Career Match (Job Seekers)</div><div class="lp-feat-desc">Honest fit score, gap analysis, and personalised interview prep guide for any role you want.</div></div>
+        </div>
+      </div>
+
+      <div class="lp-stats">
+        <div class="lp-stat"><div class="lp-stat-num">18</div><div class="lp-stat-lbl">Years of recruiting intelligence encoded</div></div>
+        <div class="lp-stat-div"></div>
+        <div class="lp-stat"><div class="lp-stat-num">30s</div><div class="lp-stat-lbl">Average time to screen one resume</div></div>
+        <div class="lp-stat-div"></div>
+        <div class="lp-stat"><div class="lp-stat-num">Free</div><div class="lp-stat-lbl">During beta — limited spots open</div></div>
+      </div>
     </div>
-    <div class="login-form">
-      <label>Your Name</label>
-      <input type="text" id="loginName" placeholder="e.g. Muralidhar Kasyapa" onkeydown="if(event.key==='Enter')doLogin()" />
-      <label>Your Role</label>
-      <input type="text" id="loginRole" placeholder="e.g. Senior Recruiter, TA Lead" onkeydown="if(event.key==='Enter')doLogin()" />
-      <button class="login-btn" onclick="doLogin()">Enter ScreenMind →</button>
-      <div class="login-error" id="loginError"></div>
+
+    <!-- ── RIGHT FORM ── -->
+    <div class="lp-form-col">
+      <div class="lp-form-box">
+        <div class="lp-form-title">Get started free</div>
+        <div class="lp-form-sub">No password. No credit card. Just enter your name and start screening.</div>
+
+        <!-- I am a toggle -->
+        <div class="lp-iam-wrap">
+          <div class="lp-iam-label">I am a:</div>
+          <div class="lp-iam-btns">
+            <button class="lp-iam-btn lp-iam-active" id="lp-rec" onclick="lpSetMode('recruiter')">👔 Recruiter / TA</button>
+            <button class="lp-iam-btn" id="lp-cand" onclick="lpSetMode('candidate')">🎯 Job Seeker</button>
+          </div>
+        </div>
+
+        <div class="lp-field">
+          <label class="lp-lbl">Your Name</label>
+          <input class="lp-inp" type="text" id="loginName" placeholder="e.g. Muralidhar Kasyapa" onkeydown="if(event.key==='Enter')doLogin()" autofocus />
+        </div>
+        <div class="lp-field">
+          <label class="lp-lbl">Your Role <span style="color:var(--muted);font-weight:400;font-size:11px;">(optional)</span></label>
+          <input class="lp-inp" type="text" id="loginRole" placeholder="e.g. Senior Recruiter, TA Lead" onkeydown="if(event.key==='Enter')doLogin()" />
+        </div>
+
+        <button class="lp-cta" onclick="doLogin()">Enter ScreenMind →</button>
+        <div class="login-error" id="loginError" style="font-size:13px;color:var(--danger);margin-top:8px;min-height:18px;"></div>
+
+        <div class="lp-fine">Your data stays private · Built on Supabase · Beta v1.0</div>
+      </div>
     </div>
-    <div class="login-note">No password needed · Your data stays on your device</div>
-    <div class="login-features">
-      <div class="login-feature"><div class="login-feature-icon">🎯</div><div class="login-feature-text"><strong>ICP Auto-generation</strong>AI builds your ideal candidate profile from any JD</div></div>
-      <div class="login-feature"><div class="login-feature-icon">🔵</div><div class="login-feature-text"><strong>Implicit Detection</strong>Finds experience even when not explicitly stated</div></div>
-      <div class="login-feature"><div class="login-feature-icon">🎤</div><div class="login-feature-text"><strong>Interview Co-pilot</strong>5 targeted questions per candidate</div></div>
-      <div class="login-feature"><div class="login-feature-icon">📊</div><div class="login-feature-text"><strong>Accuracy Dashboard</strong>Track your screen-to-interview ratio over time</div></div>
-    </div>
+
   </div>
 </div>
+
 
 <!-- ═══ APP ═══ -->
 <div id="app-view">
@@ -771,6 +891,10 @@ body.candidate-mode .cand-form-hero{display:block;}
     <!-- User -->
     <div class="sidebar-bottom">
       <span class="beta-badge">BETA</span>
+      <div id="dbStatus" style="font-size:10px;font-family:var(--font-mono);color:var(--muted);padding:2px 0 4px;display:flex;align-items:center;gap:5px;">
+        <span id="dbDot" style="width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;flex-shrink:0;"></span>
+        <span id="dbLabel">connecting...</span>
+      </div>
       <div class="user-chip">
         <div class="user-avatar" id="userAvatar">M</div>
         <span id="userName" style="font-size:13px;font-weight:600;">Recruiter</span>
@@ -1111,9 +1235,34 @@ function initSupabase(){
   try{
     sb = supabase.createClient(SUPA_URL, SUPA_KEY);
     console.log('✓ ScreenMind DB connected');
+    // Test connection with a lightweight ping
+    setTimeout(async function(){
+      try{
+        const {error} = await sb.from('users').select('name').limit(1);
+        const dot = document.getElementById('dbDot');
+        const lbl = document.getElementById('dbLabel');
+        if(!error){
+          if(dot){ dot.style.background='#34d399'; }
+          if(lbl){ lbl.textContent='DB live'; lbl.style.color='#34d399'; }
+          console.log('✓ Supabase ping OK');
+        } else {
+          if(dot){ dot.style.background='var(--warn)'; }
+          if(lbl){ lbl.textContent='DB warn'; lbl.style.color='var(--warn)'; }
+        }
+      }catch(e2){
+        const dot=document.getElementById('dbDot');
+        const lbl=document.getElementById('dbLabel');
+        if(dot) dot.style.background='var(--muted)';
+        if(lbl){ lbl.textContent='local mode'; }
+      }
+    }, 1200);
   }catch(e){
     console.warn('Supabase init failed — running in local mode:', e.message);
     sb = null;
+    const dot=document.getElementById('dbDot');
+    const lbl=document.getElementById('dbLabel');
+    if(dot) dot.style.background='var(--muted)';
+    if(lbl) lbl.textContent='local mode';
   }
 }
 
@@ -1247,6 +1396,14 @@ let currentRole='';
 let currentUser=null;
 
 // ── Auth ──
+var lpInitialMode = 'recruiter';
+function lpSetMode(m){
+  lpInitialMode = m;
+  var rec = document.getElementById('lp-rec');
+  var cand = document.getElementById('lp-cand');
+  if(rec) rec.className = 'lp-iam-btn' + (m==='recruiter' ? ' lp-iam-active' : '');
+  if(cand) cand.className = 'lp-iam-btn' + (m==='candidate' ? ' lp-iam-active' : '');
+}
 function doLogin(){
   const name=document.getElementById('loginName').value.trim();
   const role=document.getElementById('loginRole').value.trim();
@@ -2786,7 +2943,7 @@ function showApp(){
   // Restore saved state if exists
   var savedState = null;
   try{ savedState = JSON.parse(localStorage.getItem('sm_state_'+currentUser.name)||'null'); }catch(e){}
-  var mode = (savedState && savedState.mode) || 'recruiter';
+  var mode = (savedState && savedState.mode) || lpInitialMode || 'recruiter';
   var view = (savedState && savedState.view) || 'screen';
   applyMode(mode);
   switchView(view);
