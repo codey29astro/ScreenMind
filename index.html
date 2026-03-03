@@ -11,23 +11,19 @@
 let currentMode='recruiter';
 function setMode(m){
   currentMode=m;
+  // ALWAYS navigate to Screen Resume when switching mode
+  switchView('screen');
   document.getElementById('mode-recruiter').className='mode-btn'+(m==='recruiter'?' mode-active':'');
   document.getElementById('mode-candidate').className='mode-btn mode-candidate'+(m==='candidate'?' mode-active':'');
-  const banner=document.getElementById('candidateBanner');
   const jdDesc=document.getElementById('jdDesc');
-  const rsLabel=document.getElementById('resumeStepLabel');
-  const rsTitle=document.getElementById('resumeStepTitle');
-  const screenBtn=document.getElementById('screenBtn');
   if(m==='candidate'){
     document.body.classList.add('candidate-mode');
-    if(banner)banner.style.display='none'; // hero is now inside form
     if(jdDesc)jdDesc.textContent='Paste the job description you want to apply for — be honest with yourself about your fit.';
     document.body.style.setProperty('--accent','#e9a93e');
     document.body.style.setProperty('--accent-glow','rgba(233,169,62,0.1)');
     document.body.style.setProperty('--accent2','#34d399');
   } else {
     document.body.classList.remove('candidate-mode');
-    if(banner)banner.style.display='none';
     if(jdDesc)jdDesc.textContent='Paste the full JD — ScreenMind reads context and intent, not just keywords.';
     document.body.style.setProperty('--accent','#5b8def');
     document.body.style.setProperty('--accent-glow','rgba(91,141,239,0.12)');
@@ -115,9 +111,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .app-layout{display:flex;min-height:100vh;width:100%;}
 
 /* Sidebar */
-.sidebar{width:220px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;padding:0;}
+.sidebar{width:220px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;padding:0;transition:width 0.25s ease;}
+.sidebar.collapsed{width:56px;}
+.sidebar.collapsed .sidebar-logo-name,.sidebar.collapsed .sidebar-logo-tag,.sidebar.collapsed .sidebar-mode,.sidebar.collapsed .sidebar-nav-label,.sidebar.collapsed .nav-item span:not(.nav-icon),.sidebar.collapsed #userName,.sidebar.collapsed .logout-btn,.sidebar.collapsed .beta-badge{display:none;}
+.sidebar.collapsed .nav-item{justify-content:center;padding:10px;}
+.sidebar.collapsed .user-chip{justify-content:center;}
+.sidebar-toggle{position:absolute;right:-12px;top:22px;width:24px;height:24px;background:var(--surface3);border:1px solid var(--border-strong);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);z-index:101;transition:all 0.2s;}
+.sidebar-toggle:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.main-content{margin-left:220px;flex:1;min-height:100vh;padding:28px 32px;overflow-y:auto;max-width:calc(100vw - 220px);transition:margin-left 0.25s ease,max-width 0.25s ease;}
+.sidebar.collapsed~.main-content{margin-left:56px;max-width:calc(100vw - 56px);}
 .sidebar-logo{padding:18px 16px 0;border-bottom:1px solid var(--border);overflow:hidden;}
-.sidebar-logo-name{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;overflow:hidden;}
+.sidebar-logo-name{font-family:var(--font-display);font-size:17px;font-weight:800;letter-spacing:-0.01em;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;}
 .sidebar-logo-tag{font-size:9px;font-family:var(--font-mono);color:var(--muted);letter-spacing:0.08em;padding-bottom:14px;margin-top:2px;white-space:nowrap;overflow:hidden;}
 .sidebar-mode{padding:12px 14px;margin:12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;gap:4px;}
 .mode-btn{width:100%;text-align:left;padding:8px 10px;border-radius:6px;border:none;background:transparent;color:var(--text-2);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;}
@@ -453,7 +457,7 @@ body.candidate-mode .recruiter-only{display:none;}
 body.candidate-mode .candidate-only{display:block;}
 body.candidate-mode .card.green{display:none;}
 body.candidate-mode #savedRolesBar{display:none !important;}
-body.candidate-mode .intake-wrap{display:none;}
+body.candidate-mode .intake-wrap{display:none !important;}
 
 /* Candidate-specific hero in form */
 .cand-form-hero{display:none;background:linear-gradient(135deg,rgba(233,169,62,0.06),rgba(52,211,153,0.04));border:1px solid rgba(233,169,62,0.2);border-radius:var(--r-xl);padding:22px 24px;margin-bottom:16px;position:relative;overflow:hidden;}
@@ -565,6 +569,7 @@ body.candidate-mode .cand-form-hero{display:block;}
 
   <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()" id="sidebarToggle" title="Collapse sidebar">‹</button>
     <div class="sidebar-logo">
       <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;">
         <svg viewBox="0 0 36 36" width="32" height="32" style="flex-shrink:0;">
@@ -1106,23 +1111,31 @@ function showApp(){
   dbUpsertUser(currentUser.name, currentUser.role);
   renderSavedRoles();
   loadIntakeFromStorage();
+  switchView('screen'); // always land on Screen Resume, clean state
+  setMode('recruiter'); // always start in recruiter mode
 }
 window.onload=()=>{
-  // Always show login — clean experience every time
-  // (saved session available but user must click in)
-  document.getElementById('login-view').style.display='flex';
-  document.getElementById('app-view').style.display='none';
   const saved=localStorage.getItem('sm_user');
   if(saved){
-    const u=JSON.parse(saved);
-    // Pre-fill name so returning user just clicks enter
-    const nameEl=document.getElementById('loginName');
-    const roleEl=document.getElementById('loginRole');
-    if(nameEl && u.name) nameEl.value=u.name;
-    if(roleEl && u.role) roleEl.value=u.role;
+    // Returning user: restore session, stay logged in on refresh
+    try{
+      currentUser=JSON.parse(saved);
+      showApp();
+      switchView('screen'); // always start fresh on screen resume
+    }catch(e){
+      localStorage.removeItem('sm_user');
+      showLoginPage();
+    }
+  } else {
+    showLoginPage();
   }
   setupDragDrop();
 };
+
+function showLoginPage(){
+  document.getElementById('login-view').style.display='flex';
+  document.getElementById('app-view').style.display='none';
+}
 
 // ── View ──
 function switchView(v){
@@ -2536,6 +2549,14 @@ function exportBulkResults(){
   a.href = URL.createObjectURL(blob);
   a.download = 'ScreenMind_Bulk_Results_'+new Date().toISOString().split('T')[0]+'.csv';
   a.click();
+}
+
+function toggleSidebar(){
+  const sidebar = document.querySelector('.sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  const collapsed = sidebar.classList.toggle('collapsed');
+  btn.textContent = collapsed ? '›' : '‹';
+  btn.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
 }
 
 function toggleSection(header){
