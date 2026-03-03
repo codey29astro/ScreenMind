@@ -9,52 +9,131 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
 // ── Mode (Recruiter / Candidate) ──
 let currentMode='recruiter';
-function setMode(m){
-  currentMode=m;
+/* setMode moved below */
 
-  // ── Update mode button styles ──
-  document.getElementById('mode-recruiter').className='mode-btn'+(m==='recruiter'?' mode-active':'');
-  document.getElementById('mode-candidate').className='mode-btn mode-candidate'+(m==='candidate'?' mode-active':'');
 
-  // ── Navigate to Screen Resume ──
-  switchView('screen');
+// ═══════════════════════════════════════════════════════════════
+// CORE NAVIGATION — rewritten clean
+// ═══════════════════════════════════════════════════════════════
 
-  // ── Direct element show/hide — no CSS class fights ──
-  const intakeWrap   = document.querySelector('.intake-wrap');
-  const icpCard      = document.querySelector('.card.green');
-  const savedRolesBar= document.getElementById('savedRolesBar');
-  const candHero     = document.querySelector('.cand-form-hero');
-  const screenBtn    = document.getElementById('screenBtn');
-  const screenBtnC   = document.getElementById('screenBtnCand');
-  const jdDesc       = document.getElementById('jdDesc');
+function saveAppState(){
+  if(!currentUser) return;
+  try{ localStorage.setItem('sm_state_'+currentUser.name, JSON.stringify({mode:currentMode, view:currentView})); }catch(e){}
+}
+
+function switchView(v){
+  currentView = v;
+  // Hide all views
+  var views = ['screen','bulk','dashboard'];
+  for(var i=0;i<views.length;i++){
+    var el = document.getElementById('view-'+views[i]);
+    if(el) el.style.display = 'none';
+  }
+  // Hide results
+  var rs = document.getElementById('results-section');
+  if(rs) rs.style.display = 'none';
+  var cs = document.getElementById('copilotSection');
+  if(cs) cs.style.display = 'none';
+  // Show target view
+  var target = document.getElementById('view-'+v);
+  if(target) target.style.display = 'block';
+  // Update nav highlight
+  var navItems = document.querySelectorAll('.nav-item');
+  for(var j=0;j<navItems.length;j++) navItems[j].classList.remove('active');
+  var navTarget = document.getElementById('nav-'+v);
+  if(navTarget) navTarget.classList.add('active');
+  // Trigger view-specific init
+  if(v==='dashboard') renderDashboard();
+  if(v==='bulk') initBulkView();
+  saveAppState();
+}
+
+function applyMode(m){
+  currentMode = m;
+  // Mode button highlight
+  var rb = document.getElementById('mode-recruiter');
+  var cb = document.getElementById('mode-candidate');
+  if(rb) rb.className = 'mode-btn' + (m==='recruiter' ? ' mode-active' : '');
+  if(cb) cb.className = 'mode-btn mode-candidate' + (m==='candidate' ? ' mode-active' : '');
+
+  // Elements to show/hide — use IDs and direct selectors
+  var intakeWrap    = document.querySelector('.intake-wrap');
+  var icpCard       = document.querySelector('.card.green');
+  var savedRolesBar = document.getElementById('savedRolesBar');
+  var candHero      = document.querySelector('.cand-form-hero');
+  var screenBtn     = document.getElementById('screenBtn');
+  var screenBtnC    = document.getElementById('screenBtnCand');
+  var jdDesc        = document.getElementById('jdDesc');
+  var stepLabel     = document.getElementById('resumeStepLabel');
+  var stepTitle     = document.getElementById('resumeStepTitle');
 
   if(m==='candidate'){
     document.body.classList.add('candidate-mode');
-    if(intakeWrap)    intakeWrap.style.display='none';
-    if(icpCard)       icpCard.style.display='none';
-    if(savedRolesBar) savedRolesBar.style.display='none';
-    if(candHero)      candHero.style.display='block';
-    if(screenBtn)     screenBtn.style.display='none';
-    if(screenBtnC)    screenBtnC.style.display='inline-flex';
-    if(jdDesc)        jdDesc.textContent='Paste the job you want to apply for — get your honest match score.';
+    if(intakeWrap)    intakeWrap.style.setProperty('display','none','important');
+    if(icpCard)       icpCard.style.setProperty('display','none','important');
+    if(savedRolesBar) savedRolesBar.style.setProperty('display','none','important');
+    if(candHero)      candHero.style.display = 'block';
+    if(screenBtn)     screenBtn.style.display = 'none';
+    if(screenBtnC)    screenBtnC.style.display = 'inline-flex';
+    if(jdDesc)        jdDesc.textContent = 'Paste the job you want to apply for — get your honest match score.';
     document.body.style.setProperty('--accent','#e9a93e');
     document.body.style.setProperty('--accent-glow','rgba(233,169,62,0.1)');
     document.body.style.setProperty('--accent2','#34d399');
   } else {
     document.body.classList.remove('candidate-mode');
-    if(intakeWrap)    intakeWrap.style.display='block';
-    if(icpCard)       icpCard.style.display='block';
-    if(savedRolesBar) savedRolesBar.style.display='block';
-    if(candHero)      candHero.style.display='none';
-    if(screenBtn)     screenBtn.style.display='inline-flex';
-    if(screenBtnC)    screenBtnC.style.display='none';
-    if(jdDesc)        jdDesc.textContent='Paste the full JD — ScreenMind reads context and intent, not just keywords.';
+    if(intakeWrap)    intakeWrap.style.removeProperty('display');
+    if(icpCard)       icpCard.style.removeProperty('display');
+    if(savedRolesBar) savedRolesBar.style.removeProperty('display');
+    if(candHero)      candHero.style.display = 'none';
+    if(screenBtn)     screenBtn.style.display = 'inline-flex';
+    if(screenBtnC)    screenBtnC.style.display = 'none';
+    if(jdDesc)        jdDesc.textContent = 'Paste the full JD — ScreenMind reads context and intent, not just keywords.';
     document.body.style.setProperty('--accent','#5b8def');
     document.body.style.setProperty('--accent-glow','rgba(91,141,239,0.12)');
     document.body.style.setProperty('--accent2','#9b7ff4');
   }
+  saveAppState();
 }
 
+function setMode(m){
+  // Switch to screen view FIRST, then apply mode
+  switchView('screen');
+  applyMode(m);
+}
+
+function showApp(){
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('app-view').style.display = 'flex';
+  document.getElementById('userName').textContent = currentUser.name.split(' ')[0];
+  document.getElementById('userAvatar').textContent = currentUser.initial;
+  initSupabase();
+  dbUpsertUser(currentUser.name, currentUser.role);
+  renderSavedRoles();
+  loadIntakeFromStorage();
+  // Restore saved state if exists
+  var savedState = null;
+  try{ savedState = JSON.parse(localStorage.getItem('sm_state_'+currentUser.name)||'null'); }catch(e){}
+  var mode = (savedState && savedState.mode) || 'recruiter';
+  var view = (savedState && savedState.view) || 'screen';
+  applyMode(mode);
+  switchView(view);
+}
+
+window.onload = function(){
+  var saved = localStorage.getItem('sm_user');
+  if(saved){
+    try{
+      currentUser = JSON.parse(saved);
+      showApp();
+    }catch(e){
+      localStorage.removeItem('sm_user');
+      document.getElementById('login-view').style.display = 'flex';
+    }
+  } else {
+    document.getElementById('login-view').style.display = 'flex';
+  }
+  setupDragDrop();
+};
 
 </script>
 <style>
@@ -136,14 +215,25 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* Sidebar */
 .sidebar{width:236px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;padding:0;transition:width 0.25s ease;}
-.sidebar.collapsed{width:56px;}
-.sidebar.collapsed .sidebar-logo-name,.sidebar.collapsed .sidebar-logo-tag,.sidebar.collapsed .sidebar-mode,.sidebar.collapsed .sidebar-nav-label,.sidebar.collapsed .nav-item span:not(.nav-icon),.sidebar.collapsed #userName,.sidebar.collapsed .logout-btn,.sidebar.collapsed .beta-badge{display:none;}
-.sidebar.collapsed .nav-item{justify-content:center;padding:10px;}
-.sidebar.collapsed .user-chip{justify-content:center;}
+.sidebar.collapsed{width:56px;overflow:hidden;}
+.sidebar.collapsed .sidebar-logo-name,
+.sidebar.collapsed .sidebar-logo-tag,
+.sidebar.collapsed .sidebar-mode,
+.sidebar.collapsed .sidebar-nav-label,
+.sidebar.collapsed .nav-item span:last-child,
+.sidebar.collapsed #userName,
+.sidebar.collapsed #userRole,
+.sidebar.collapsed .logout-btn span,
+.sidebar.collapsed .beta-badge{display:none !important;}
+.sidebar.collapsed .nav-item{justify-content:center;padding:12px 0;width:56px;}
+.sidebar.collapsed .nav-icon{font-size:18px;}
+.sidebar.collapsed .sidebar-logo{padding:16px 0;display:flex;justify-content:center;}
+.sidebar.collapsed .user-chip{justify-content:center;padding:8px 0;}
+.sidebar.collapsed .logout-btn{justify-content:center;padding:8px;}
 .sidebar-toggle{position:absolute;right:-12px;top:22px;width:24px;height:24px;background:var(--surface3);border:1px solid var(--border-strong);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);z-index:101;transition:all 0.2s;}
 .sidebar-toggle:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-.main-content{margin-left:236px;flex:1;min-height:100vh;padding:28px 32px;overflow-y:auto;max-width:calc(100vw - 236px);transition:margin-left 0.25s ease,max-width 0.25s ease;}
-.sidebar.collapsed~.main-content{margin-left:56px;}
+.main-content{margin-left:236px;flex:1;min-height:100vh;padding:28px 32px;overflow-y:auto;width:calc(100vw - 236px);transition:margin-left 0.25s ease,width 0.25s ease;}
+.sidebar.collapsed~.main-content{margin-left:56px;width:calc(100vw - 56px);}
 .sidebar-logo{padding:18px 20px 14px;border-bottom:1px solid var(--border);}
 .sidebar-logo-name{font-family:var(--font-display);font-size:19px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;overflow:visible;}
 .sidebar-logo-tag{font-size:9px;font-family:var(--font-mono);color:var(--muted);letter-spacing:0.08em;padding-bottom:14px;margin-top:2px;white-space:nowrap;overflow:hidden;}
@@ -1096,6 +1186,7 @@ async function dbGetStats(){
 
 let resumeContent='';
 let lastResult=null;
+let currentView='screen';
 let criteria=[];
 let currentRole='';
 let currentUser=null;
@@ -1117,37 +1208,8 @@ function doLogout(){
   document.getElementById('app-view').style.display='none';
   document.getElementById('login-view').style.display='flex';
 }
-function showApp(){
-  document.getElementById('login-view').style.display='none';
-  document.getElementById('app-view').style.display='flex';
-  document.getElementById('userName').textContent=currentUser.name.split(' ')[0];
-  document.getElementById('userAvatar').textContent=currentUser.initial;
-  initSupabase();
-  dbUpsertUser(currentUser.name, currentUser.role);
-  renderSavedRoles();
-  loadIntakeFromStorage();
-  // Defer to ensure DOM fully ready
-  setTimeout(function(){
-    switchView('screen');
-    setMode('recruiter');
-  }, 0);
-}
-window.onload=()=>{
-  const saved=localStorage.getItem('sm_user');
-  if(saved){
-    // Returning user: restore session, stay logged in on refresh
-    try{
-      currentUser=JSON.parse(saved);
-      showApp(); // showApp handles view reset internally
-    }catch(e){
-      localStorage.removeItem('sm_user');
-      showLoginPage();
-    }
-  } else {
-    showLoginPage();
-  }
-  setupDragDrop();
-};
+/* showApp moved below */
+/* onload moved below */
 
 function showLoginPage(){
   document.getElementById('login-view').style.display='flex';
@@ -1155,23 +1217,7 @@ function showLoginPage(){
 }
 
 // ── View ──
-function switchView(v){
-  // Hide ALL views explicitly
-  ['screen','bulk','dashboard'].forEach(function(name){
-    const el=document.getElementById('view-'+name);
-    if(el){el.style.display='none';el.classList.remove('active');}
-  });
-  document.querySelectorAll('.nav-item,.nav-tab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('results-section').style.display='none';
-  const cp=document.getElementById('copilotSection');if(cp)cp.style.display='none';
-  // Show only the target view
-  const target=document.getElementById('view-'+v);
-  if(target){target.style.display='block';target.classList.add('active');}
-  const navTarget=document.getElementById('nav-'+v);
-  if(navTarget)navTarget.classList.add('active');
-  if(v==='dashboard')renderDashboard();
-  if(v==='bulk')initBulkView();
-}
+/* switchView moved below */
 
 // ── Storage ──
 function getKey(){return 'sm_screenings_'+(currentUser?currentUser.name.replace(/\s/g,''):'default');}
@@ -2583,6 +2629,129 @@ function toggleSection(header){
   body.classList.toggle('open', !isOpen);
   if(chevron) chevron.classList.toggle('open', !isOpen);
 }
+
+// ═══════════════════════════════════════════════════════════════
+// CORE NAVIGATION — rewritten clean
+// ═══════════════════════════════════════════════════════════════
+
+function saveAppState(){
+  if(!currentUser) return;
+  try{ localStorage.setItem('sm_state_'+currentUser.name, JSON.stringify({mode:currentMode, view:currentView})); }catch(e){}
+}
+
+function switchView(v){
+  currentView = v;
+  // Hide all views
+  var views = ['screen','bulk','dashboard'];
+  for(var i=0;i<views.length;i++){
+    var el = document.getElementById('view-'+views[i]);
+    if(el) el.style.display = 'none';
+  }
+  // Hide results
+  var rs = document.getElementById('results-section');
+  if(rs) rs.style.display = 'none';
+  var cs = document.getElementById('copilotSection');
+  if(cs) cs.style.display = 'none';
+  // Show target view
+  var target = document.getElementById('view-'+v);
+  if(target) target.style.display = 'block';
+  // Update nav highlight
+  var navItems = document.querySelectorAll('.nav-item');
+  for(var j=0;j<navItems.length;j++) navItems[j].classList.remove('active');
+  var navTarget = document.getElementById('nav-'+v);
+  if(navTarget) navTarget.classList.add('active');
+  // Trigger view-specific init
+  if(v==='dashboard') renderDashboard();
+  if(v==='bulk') initBulkView();
+  saveAppState();
+}
+
+function applyMode(m){
+  currentMode = m;
+  // Mode button highlight
+  var rb = document.getElementById('mode-recruiter');
+  var cb = document.getElementById('mode-candidate');
+  if(rb) rb.className = 'mode-btn' + (m==='recruiter' ? ' mode-active' : '');
+  if(cb) cb.className = 'mode-btn mode-candidate' + (m==='candidate' ? ' mode-active' : '');
+
+  // Elements to show/hide — use IDs and direct selectors
+  var intakeWrap    = document.querySelector('.intake-wrap');
+  var icpCard       = document.querySelector('.card.green');
+  var savedRolesBar = document.getElementById('savedRolesBar');
+  var candHero      = document.querySelector('.cand-form-hero');
+  var screenBtn     = document.getElementById('screenBtn');
+  var screenBtnC    = document.getElementById('screenBtnCand');
+  var jdDesc        = document.getElementById('jdDesc');
+  var stepLabel     = document.getElementById('resumeStepLabel');
+  var stepTitle     = document.getElementById('resumeStepTitle');
+
+  if(m==='candidate'){
+    document.body.classList.add('candidate-mode');
+    if(intakeWrap)    intakeWrap.style.setProperty('display','none','important');
+    if(icpCard)       icpCard.style.setProperty('display','none','important');
+    if(savedRolesBar) savedRolesBar.style.setProperty('display','none','important');
+    if(candHero)      candHero.style.display = 'block';
+    if(screenBtn)     screenBtn.style.display = 'none';
+    if(screenBtnC)    screenBtnC.style.display = 'inline-flex';
+    if(jdDesc)        jdDesc.textContent = 'Paste the job you want to apply for — get your honest match score.';
+    document.body.style.setProperty('--accent','#e9a93e');
+    document.body.style.setProperty('--accent-glow','rgba(233,169,62,0.1)');
+    document.body.style.setProperty('--accent2','#34d399');
+  } else {
+    document.body.classList.remove('candidate-mode');
+    if(intakeWrap)    intakeWrap.style.removeProperty('display');
+    if(icpCard)       icpCard.style.removeProperty('display');
+    if(savedRolesBar) savedRolesBar.style.removeProperty('display');
+    if(candHero)      candHero.style.display = 'none';
+    if(screenBtn)     screenBtn.style.display = 'inline-flex';
+    if(screenBtnC)    screenBtnC.style.display = 'none';
+    if(jdDesc)        jdDesc.textContent = 'Paste the full JD — ScreenMind reads context and intent, not just keywords.';
+    document.body.style.setProperty('--accent','#5b8def');
+    document.body.style.setProperty('--accent-glow','rgba(91,141,239,0.12)');
+    document.body.style.setProperty('--accent2','#9b7ff4');
+  }
+  saveAppState();
+}
+
+function setMode(m){
+  // Switch to screen view FIRST, then apply mode
+  switchView('screen');
+  applyMode(m);
+}
+
+function showApp(){
+  document.getElementById('login-view').style.display = 'none';
+  document.getElementById('app-view').style.display = 'flex';
+  document.getElementById('userName').textContent = currentUser.name.split(' ')[0];
+  document.getElementById('userAvatar').textContent = currentUser.initial;
+  initSupabase();
+  dbUpsertUser(currentUser.name, currentUser.role);
+  renderSavedRoles();
+  loadIntakeFromStorage();
+  // Restore saved state if exists
+  var savedState = null;
+  try{ savedState = JSON.parse(localStorage.getItem('sm_state_'+currentUser.name)||'null'); }catch(e){}
+  var mode = (savedState && savedState.mode) || 'recruiter';
+  var view = (savedState && savedState.view) || 'screen';
+  applyMode(mode);
+  switchView(view);
+}
+
+window.onload = function(){
+  var saved = localStorage.getItem('sm_user');
+  if(saved){
+    try{
+      currentUser = JSON.parse(saved);
+      showApp();
+    }catch(e){
+      localStorage.removeItem('sm_user');
+      document.getElementById('login-view').style.display = 'flex';
+    }
+  } else {
+    document.getElementById('login-view').style.display = 'flex';
+  }
+  setupDragDrop();
+};
 
 </script>
 </body>
