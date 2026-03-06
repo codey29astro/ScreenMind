@@ -651,83 +651,348 @@ body.candidate-mode .cand-form-hero{display:block;}
 }
 
 /* ════════════════════════════════════════
-   LANDING PAGE (added — no existing CSS touched)
+   LANDING PAGE — Hiring Intelligence Platform
 ════════════════════════════════════════ */
-#login-view{height:100vh;display:flex;align-items:stretch;padding:0;overflow:hidden;}
+
+/* ── Layout shell — fills exactly one viewport ── */
+#login-view{
+  height:100vh;
+  display:flex;
+  overflow:hidden;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+}
 .lp-wrap{display:flex;width:100%;height:100%;}
 
-/* LEFT */
-.lp-hero{flex:1;padding:24px 48px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;position:relative;border-right:1px solid var(--border);}
-.lp-hero-watermark{position:absolute;top:50%;left:42%;transform:translate(-50%,-50%);width:580px;height:580px;opacity:0.18;pointer-events:none;z-index:0;filter:drop-shadow(0 0 40px rgba(233,169,62,0.3)) drop-shadow(0 0 80px rgba(91,141,239,0.2));}
-.lp-hero>*{position:relative;z-index:1;}
-.lp-hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,169,62,0.07) 0%,transparent 70%);pointer-events:none;}
-.lp-hero::after{content:'';position:absolute;bottom:-150px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(91,141,239,0.07) 0%,transparent 70%);pointer-events:none;}
+/* ── LEFT HERO ── */
+.lp-hero{
+  flex:1;
+  position:relative;
+  overflow:hidden;
+  border-right:1px solid var(--border);
+  display:flex;
+  align-items:center;
+}
 
-.lp-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.lp-logo-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,#e9a93e 0%,#5b8def 60%,#9b7ff4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.lp-beta-pill{background:rgba(233,169,62,0.12);color:var(--gold);font-size:9px;font-family:var(--font-mono);padding:2px 7px;border-radius:4px;border:1px solid rgba(233,169,62,0.25);letter-spacing:0.1em;}
+/* Ambient glow blobs — atmosphere only */
+.lp-hero::before{
+  content:'';position:absolute;
+  top:-20%;right:-10%;
+  width:60%;height:60%;
+  background:radial-gradient(circle,rgba(233,169,62,0.07) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
+.lp-hero::after{
+  content:'';position:absolute;
+  bottom:-20%;left:-10%;
+  width:55%;height:55%;
+  background:radial-gradient(circle,rgba(91,141,239,0.07) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
 
-.lp-headline{font-family:var(--font-display);font-size:34px;font-weight:800;line-height:1.12;letter-spacing:-0.03em;margin-bottom:10px;color:var(--text);}
-.lp-sub{font-size:13px;color:var(--text-2);line-height:1.65;max-width:480px;margin-bottom:16px;}
+/* Watermark — absolutely positioned box, NEVER affects layout */
+.lp-wm{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:70%;
+  height:70%;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.18;
+  filter:
+    drop-shadow(0 0 40px rgba(233,169,62,0.5))
+    drop-shadow(0 0 80px rgba(91,141,239,0.35))
+    drop-shadow(0 0 120px rgba(155,127,244,0.2));
+}
 
-.lp-features{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.lp-feature{display:flex;align-items:flex-start;gap:14px;}
-.lp-feat-icon{font-size:14px;width:30px;height:30px;background:var(--surface);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.lp-feat-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px;}
-.lp-feat-desc{font-size:11px;color:var(--text-2);line-height:1.5;}
+/* Content — above watermark */
+.lp-content{
+  position:relative;
+  z-index:1;
+  padding:0 44px;
+  width:100%;
+}
 
-.lp-stats{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
-.lp-stat{flex:1;padding:10px 12px;text-align:center;}
-.lp-stat-div{width:1px;background:var(--border);align-self:stretch;}
-.lp-stat-num{font-family:var(--font-display);font-size:20px;font-weight:800;background:linear-gradient(135deg,#e9a93e,#5b8def);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:2px;}
-.lp-stat-lbl{font-size:10px;color:var(--muted);font-family:var(--font-mono);line-height:1.4;}
+/* Logo row */
+.lp-logo-row{
+  display:flex;align-items:center;gap:9px;
+  margin-bottom:12px;
+}
+.lp-wordmark{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:800;
+  letter-spacing:-0.02em;
+  background:linear-gradient(135deg,#e9a93e 0%,#5b8def 55%,#9b7ff4 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.lp-beta{
+  font-size:9px;font-family:var(--font-mono);
+  padding:2px 6px;border-radius:4px;
+  background:rgba(233,169,62,0.1);
+  border:1px solid rgba(233,169,62,0.25);
+  color:var(--gold);letter-spacing:0.08em;
+}
 
-/* RIGHT */
-.lp-form-col{width:420px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:36px 32px;background:var(--surface);height:100%;overflow-y:auto;}
+/* Kicker line */
+.lp-kicker{
+  font-size:10px;font-family:var(--font-mono);
+  font-weight:700;letter-spacing:0.18em;
+  color:var(--gold);
+  margin-bottom:10px;
+  opacity:0.85;
+}
+
+/* Headline */
+.lp-headline{
+  font-family:var(--font-display);
+  font-size:32px;font-weight:800;
+  line-height:1.1;letter-spacing:-0.03em;
+  color:var(--text);
+  margin-bottom:8px;
+}
+
+/* Sub */
+.lp-sub{
+  font-size:12.5px;color:var(--text-2);
+  line-height:1.65;max-width:430px;
+  margin-bottom:16px;
+}
+
+/* 2×2 feature grid */
+.lp-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-bottom:14px;
+}
+.lp-card{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 12px;
+  transition:border-color 0.25s,background 0.25s;
+}
+.lp-card:hover{
+  border-color:rgba(233,169,62,0.3);
+  background:rgba(233,169,62,0.025);
+}
+.lp-card-icon{
+  font-size:16px;
+  width:28px;flex-shrink:0;
+  margin-top:1px;
+}
+.lp-card-body{flex:1;}
+.lp-card-title{
+  font-size:12px;font-weight:700;
+  color:var(--text);margin-bottom:3px;
+  letter-spacing:-0.01em;
+}
+.lp-card-desc{
+  font-size:11px;color:var(--text-2);
+  line-height:1.5;
+}
+
+/* Trust bar */
+.lp-trust{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;
+}
+.lp-trust-item{flex:1;padding:9px 12px;text-align:center;}
+.lp-trust-div{width:1px;background:var(--border);align-self:stretch;}
+.lp-trust-num{
+  font-family:var(--font-display);
+  font-size:14px;font-weight:800;
+  background:linear-gradient(135deg,#e9a93e,#5b8def);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:1px;
+}
+.lp-trust-lbl{
+  font-size:9px;color:var(--muted);
+  font-family:var(--font-mono);
+}
+
+/* ── RIGHT FORM ── */
+.lp-form-col{
+  width:360px;flex-shrink:0;
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  padding:28px 24px;
+  height:100%;
+  overflow-y:auto;
+  box-sizing:border-box;
+}
 .lp-form-box{width:100%;}
-.lp-form-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
-.lp-form-sub{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:24px;}
 
-.lp-iam-wrap{margin-bottom:20px;}
-.lp-iam-label{font-size:11px;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px;}
-.lp-iam-btns{display:flex;gap:6px;}
-.lp-iam-btn{flex:1;padding:9px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;transition:all 0.2s;}
-.lp-iam-btn.lp-iam-active{background:rgba(91,141,239,0.1);border-color:var(--accent);color:var(--accent);font-weight:700;}
-.lp-iam-btn:hover:not(.lp-iam-active){background:var(--surface3);color:var(--text);}
+.lp-form-hd{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:800;
+  letter-spacing:-0.02em;
+  margin-bottom:4px;
+}
+.lp-form-sub{
+  font-size:12px;color:var(--text-2);
+  line-height:1.5;margin-bottom:18px;
+}
 
-.lp-field{margin-bottom:14px;}
-.lp-lbl{display:block;font-size:11px;font-weight:600;font-family:var(--font-mono);color:var(--text-2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
-.lp-inp{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-family:var(--font-body);font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box;}
-.lp-inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+/* Role toggle */
+.lp-toggle-wrap{margin-bottom:14px;}
+.lp-toggle-lbl{
+  font-size:10px;font-family:var(--font-mono);
+  color:var(--muted);letter-spacing:0.1em;
+  margin-bottom:5px;
+}
+.lp-toggle{display:flex;gap:5px;}
+.lp-tog{
+  flex:1;padding:9px 6px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-family:var(--font-body);
+  font-size:12px;font-weight:500;
+  color:var(--text-2);cursor:pointer;
+  transition:all 0.2s;text-align:center;
+}
+.lp-tog.lp-tog-on{
+  background:rgba(91,141,239,0.1);
+  border-color:var(--accent);
+  color:var(--accent);font-weight:700;
+}
+.lp-tog:hover:not(.lp-tog-on){
+  background:var(--surface3);color:var(--text);
+}
+
+/* Fields */
+.lp-field{margin-bottom:11px;}
+.lp-lbl{
+  display:block;font-size:10px;font-weight:700;
+  font-family:var(--font-mono);
+  color:var(--text-2);letter-spacing:0.08em;
+  margin-bottom:5px;
+}
+.lp-opt{color:var(--muted);font-weight:400;font-size:10px;}
+.lp-inp{
+  width:100%;background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;
+  font-family:var(--font-body);
+  font-size:13px;color:var(--text);
+  outline:none;transition:all 0.2s;
+  box-sizing:border-box;
+}
+.lp-inp:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
 .lp-inp::placeholder{color:var(--muted);}
 
-.lp-cta{width:100%;padding:13px;background:linear-gradient(135deg,#e9a93e,#5b8def);color:#fff;border:none;border-radius:var(--r);font-family:var(--font-display);font-size:15px;font-weight:800;cursor:pointer;transition:all 0.2s;margin-top:4px;letter-spacing:-0.01em;}
-.lp-cta:hover{opacity:0.92;transform:translateY(-1px);box-shadow:0 8px 24px rgba(91,141,239,0.3);}
+/* CTA */
+.lp-cta{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,#e9a93e 0%,#5b8def 100%);
+  color:#fff;border:none;border-radius:8px;
+  font-family:var(--font-display);
+  font-size:15px;font-weight:800;
+  cursor:pointer;transition:all 0.2s;
+  margin-top:2px;letter-spacing:-0.01em;
+}
+.lp-cta:hover{
+  opacity:0.9;
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(91,141,239,0.3);
+}
 
-.lp-fine{font-size:11px;color:var(--muted);text-align:center;font-family:var(--font-mono);margin-top:16px;}
+/* Privacy note */
+.lp-privacy{
+  margin-top:12px;padding:9px 11px;
+  background:rgba(52,211,153,0.05);
+  border:1px solid rgba(52,211,153,0.15);
+  border-radius:8px;
+  font-size:11px;color:var(--text-2);
+  line-height:1.55;
+}
 
-@media(max-width:860px){
-  #login-view{height:auto;overflow:visible;}
+/* Powered by */
+.lp-powered{
+  margin-top:10px;
+  font-size:11px;color:var(--muted);
+  text-align:center;font-family:var(--font-mono);
+}
+.lp-powered strong{color:var(--text-2);}
+
+/* ── Mobile ── */
+@media(max-width:800px){
+  #login-view{
+    position:relative;
+    height:auto;overflow:visible;
+  }
   .lp-wrap{flex-direction:column;height:auto;}
-  .lp-hero{padding:32px 24px;border-right:none;border-bottom:1px solid var(--border);height:auto;overflow:visible;}
-  .lp-headline{font-size:28px;}
-  .lp-stats{display:none;}
-  .lp-form-col{width:100%;padding:28px 24px;height:auto;}
+  .lp-hero{
+    height:auto;overflow:visible;
+    border-right:none;
+    border-bottom:1px solid var(--border);
+  }
+  .lp-content{padding:28px 20px;}
+  .lp-headline{font-size:24px;}
+  .lp-grid{grid-template-columns:1fr;}
+  .lp-trust{display:none;}
+  .lp-wm{width:80%;height:80%;}
+  .lp-form-col{
+    width:100%;height:auto;
+    padding:24px 20px;
+  }
 }
 
-/* ── Candidate mode polish ── */
-body.candidate-mode #nav-bulk{ display:none !important; }
-body.candidate-mode .sidebar-logo-name{
-  background:linear-gradient(135deg,#e9a93e 0%,#34d399 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+/* ── Candidate Persona Card ── */
+.persona-card{
+  background:linear-gradient(135deg,rgba(233,169,62,0.04),rgba(91,141,239,0.04));
+  border:1px solid rgba(233,169,62,0.2);
+  border-radius:var(--r-lg);
+  padding:14px 16px;
+  margin-bottom:10px;
 }
-body.candidate-mode .lp-iam-btn.lp-iam-active{
-  background:rgba(233,169,62,0.1);border-color:var(--gold);color:var(--gold);
+.persona-header{
+  display:flex;align-items:center;
+  gap:10px;margin-bottom:8px;
+  flex-wrap:wrap;
 }
-/* Candidate mode — result sections get gold accent */
-body.candidate-mode .result-section-title{ color:var(--text); }
-body.candidate-mode .score-card::before{
-  background:linear-gradient(90deg,var(--gold),#34d399);
+.persona-archetype-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:20px;
+  font-family:var(--font-mono);
+  font-size:12px;font-weight:700;
+  letter-spacing:0.04em;
+}
+.persona-builder{background:rgba(233,169,62,0.12);color:var(--gold);border:1px solid rgba(233,169,62,0.25);}
+.persona-operator{background:rgba(91,141,239,0.12);color:var(--accent);border:1px solid rgba(91,141,239,0.25);}
+.persona-strategist{background:rgba(155,127,244,0.12);color:var(--accent2);border:1px solid rgba(155,127,244,0.25);}
+.persona-specialist{background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.25);}
+.persona-trajectory{
+  font-size:11px;font-family:var(--font-mono);
+  color:var(--text-2);
+  padding:3px 9px;border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+}
+.persona-reason{
+  font-size:13px;color:var(--text);
+  line-height:1.6;margin-bottom:8px;
+}
+.persona-row{
+  font-size:12px;color:var(--text-2);
+  line-height:1.5;margin-bottom:3px;
+}
+.persona-tag{
+  font-family:var(--font-mono);
+  font-size:10px;font-weight:700;
+  color:var(--gold);
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  margin-right:4px;
 }
 
 </style>
@@ -761,91 +1026,142 @@ body.candidate-mode .score-card::before{
 <div id="login-view">
   <div class="lp-wrap">
 
-    <!-- ── LEFT HERO ── -->
+    <!-- ════ LEFT HERO ════ -->
     <div class="lp-hero">
-      <!-- Subtle watermark logo behind content -->
-      <div class="lp-hero-watermark">
-        <svg viewBox="0 0 100 100" width="100%" height="100%">
-          <defs><linearGradient id="lpwg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e9a93e"/><stop offset="100%" stop-color="#5b8def"/></linearGradient></defs>
-          <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="none" stroke="url(#lpwg)" stroke-width="1.5"/>
-          <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="none" stroke="url(#lpwg)" stroke-width="1" opacity="0.6"/>
-          <circle cx="50" cy="50" r="16" fill="none" stroke="url(#lpwg)" stroke-width="1.2"/>
-          <circle cx="50" cy="50" r="6" fill="url(#lpwg)" opacity="0.5"/>
-          <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#lpwg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Watermark: absolutely positioned, never affects layout -->
+      <div class="lp-wm" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="wm-g" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e9a93e"/>
+              <stop offset="50%" stop-color="#5b8def"/>
+              <stop offset="100%" stop-color="#9b7ff4"/>
+            </linearGradient>
+          </defs>
+          <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="rgba(233,169,62,0.04)" stroke="url(#wm-g)" stroke-width="1.2"/>
+          <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="none" stroke="url(#wm-g)" stroke-width="0.8" opacity="0.8"/>
+          <circle cx="50" cy="50" r="16" fill="rgba(91,141,239,0.04)" stroke="url(#wm-g)" stroke-width="1"/>
+          <circle cx="50" cy="50" r="6" fill="url(#wm-g)" opacity="0.8"/>
+          <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#wm-g)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
 
-      <div class="lp-logo-row">
-        <svg viewBox="0 0 100 100" width="36" height="36" style="flex-shrink:0;">
-          <defs><linearGradient id="lpg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e9a93e"/><stop offset="100%" stop-color="#5b8def"/></linearGradient></defs>
-          <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="rgba(233,169,62,0.08)" stroke="url(#lpg2)" stroke-width="2.5"/>
-          <circle cx="50" cy="50" r="16" fill="none" stroke="url(#lpg2)" stroke-width="2"/>
-          <circle cx="50" cy="50" r="6" fill="url(#lpg2)"/>
-          <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#lpg2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="lp-logo-name">ScreenMind</span>
-        <span class="lp-beta-pill">BETA</span>
-      </div>
+      <!-- All content sits above watermark via z-index -->
+      <div class="lp-content">
 
-      <h1 class="lp-headline">Stop reading resumes.<br>Start making decisions.</h1>
-      <p class="lp-sub">18 years of recruiting intelligence. Now available to every recruiter, in 30 seconds.</p>
+        <!-- Logo — identical SVG to sidebar -->
+        <div class="lp-logo-row">
+          <svg viewBox="0 0 100 100" width="28" height="28" style="flex-shrink:0;display:block;">
+            <defs><linearGradient id="lp-lg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e9a93e"/>
+              <stop offset="100%" stop-color="#5b8def"/>
+            </linearGradient></defs>
+            <polygon points="50,5 88,27 88,73 50,95 12,73 12,27" fill="rgba(233,169,62,0.08)" stroke="url(#lp-lg)" stroke-width="2.5"/>
+            <polygon points="50,18 76,33 76,67 50,82 24,67 24,33" fill="none" stroke="url(#lp-lg)" stroke-width="1.5" opacity="0.5"/>
+            <circle cx="50" cy="50" r="16" fill="rgba(91,141,239,0.08)" stroke="url(#lp-lg)" stroke-width="2"/>
+            <circle cx="50" cy="50" r="6" fill="url(#lp-lg)"/>
+            <polyline points="34,50 43,59 66,41" fill="none" stroke="url(#lp-lg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="lp-wordmark">ScreenMind</span>
+          <span class="lp-beta">BETA</span>
+        </div>
 
-      <div class="lp-features">
-        <div class="lp-feature">
-          <div class="lp-feat-icon">⚡</div>
-          <div><div class="lp-feat-title">Weighted ICP Scoring</div><div class="lp-feat-desc">AI builds your ideal candidate profile from any JD. Every resume scored against it — Critical, Important, Nice-to-have.</div></div>
-        </div>
-        <div class="lp-feature">
-          <div class="lp-feat-icon">🧠</div>
-          <div><div class="lp-feat-title">Intake Intelligence</div><div class="lp-feat-desc">19-point intake form captures what the JD never says. Version-controlled source of truth with your hiring manager.</div></div>
-        </div>
-        <div class="lp-feature">
-          <div class="lp-feat-icon">📋</div>
-          <div><div class="lp-feat-title">Bulk Screening</div><div class="lp-feat-desc">Upload 20 resumes, get a ranked leaderboard. Screen a full shortlist in under 5 minutes.</div></div>
-        </div>
-        <div class="lp-feature">
-          <div class="lp-feat-icon">🎯</div>
-          <div><div class="lp-feat-title">Career Match (Job Seekers)</div><div class="lp-feat-desc">Honest fit score, gap analysis, and personalised interview prep guide for any role you want.</div></div>
-        </div>
-      </div>
+        <!-- Positioning line -->
+        <div class="lp-kicker">HIRING INTELLIGENCE PLATFORM</div>
 
-      <div class="lp-stats">
-        <div class="lp-stat"><div class="lp-stat-num">18</div><div class="lp-stat-lbl">Years of recruiting intelligence encoded</div></div>
-        <div class="lp-stat-div"></div>
-        <div class="lp-stat"><div class="lp-stat-num">30s</div><div class="lp-stat-lbl">Average time to screen one resume</div></div>
-        <div class="lp-stat-div"></div>
-        <div class="lp-stat"><div class="lp-stat-num">Free</div><div class="lp-stat-lbl">During beta — limited spots open</div></div>
+        <!-- Headline -->
+        <div class="lp-headline">The Bloomberg Terminal<br>for recruiters.</div>
+        <div class="lp-sub">Stop being a gatekeeper. Start being a strategic advisor. ScreenMind gives you the candidate intelligence, market data, and hiring brief to walk into any HM meeting with authority.</div>
+
+        <!-- 2×2 feature grid — fits without scrolling -->
+        <div class="lp-grid">
+          <div class="lp-card">
+            <div class="lp-card-icon">⚡</div>
+            <div class="lp-card-body">
+              <div class="lp-card-title">Weighted ICP Scoring</div>
+              <div class="lp-card-desc">You define what matters — Critical, Important, Nice-to-have. Every resume scored against YOUR criteria, not an algorithm's guess.</div>
+            </div>
+          </div>
+          <div class="lp-card">
+            <div class="lp-card-icon">🧠</div>
+            <div class="lp-card-body">
+              <div class="lp-card-title">Candidate Persona</div>
+              <div class="lp-card-desc">Builder, Operator, Strategist, or Specialist. Know who this person IS before the first call — for any role, any industry.</div>
+            </div>
+          </div>
+          <div class="lp-card">
+            <div class="lp-card-icon">📊</div>
+            <div class="lp-card-body">
+              <div class="lp-card-title">Intake Intelligence</div>
+              <div class="lp-card-desc">19-point HM intake form. Captures what no JD ever says. Version-controlled. Your source of truth before a single resume is read.</div>
+            </div>
+          </div>
+          <div class="lp-card">
+            <div class="lp-card-icon">🎯</div>
+            <div class="lp-card-body">
+              <div class="lp-card-title">HM Advisor Brief</div>
+              <div class="lp-card-desc">Market TAM, comp benchmarks, persona analysis. Walk into every HM meeting with data that changes the conversation.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust bar -->
+        <div class="lp-trust">
+          <div class="lp-trust-item">
+            <div class="lp-trust-num">18 yrs</div>
+            <div class="lp-trust-lbl">Recruiting intelligence</div>
+          </div>
+          <div class="lp-trust-div"></div>
+          <div class="lp-trust-item">
+            <div class="lp-trust-num">Claude</div>
+            <div class="lp-trust-lbl">Powered by Anthropic</div>
+          </div>
+          <div class="lp-trust-div"></div>
+          <div class="lp-trust-item">
+            <div class="lp-trust-num">Free</div>
+            <div class="lp-trust-lbl">Open beta</div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- ── RIGHT FORM ── -->
+    <!-- ════ RIGHT FORM ════ -->
     <div class="lp-form-col">
       <div class="lp-form-box">
-        <div class="lp-form-title">Get started free</div>
-        <div class="lp-form-sub">No password. No credit card. Just enter your name and start screening.</div>
 
-        <!-- I am a toggle -->
-        <div class="lp-iam-wrap">
-          <div class="lp-iam-label">I am a:</div>
-          <div class="lp-iam-btns">
-            <button class="lp-iam-btn lp-iam-active" id="lp-rec" onclick="lpSetMode('recruiter')">👔 Recruiter / TA</button>
-            <button class="lp-iam-btn" id="lp-cand" onclick="lpSetMode('candidate')">🎯 Job Seeker</button>
+        <div class="lp-form-hd">Get started free</div>
+        <div class="lp-form-sub">No password · No credit card · Ready in 10 seconds</div>
+
+        <div class="lp-toggle-wrap">
+          <div class="lp-toggle-lbl">I AM A:</div>
+          <div class="lp-toggle">
+            <button class="lp-tog lp-tog-on" id="lp-rec" onclick="lpSetMode('recruiter')">👔 Recruiter / TA</button>
+            <button class="lp-tog" id="lp-cand" onclick="lpSetMode('candidate')">🎯 Job Seeker</button>
           </div>
         </div>
 
         <div class="lp-field">
-          <label class="lp-lbl">Your Name</label>
+          <label class="lp-lbl">YOUR NAME</label>
           <input class="lp-inp" type="text" id="loginName" placeholder="e.g. Muralidhar Kasyapa" onkeydown="if(event.key==='Enter')doLogin()" autofocus />
         </div>
         <div class="lp-field">
-          <label class="lp-lbl">Your Role <span style="color:var(--muted);font-weight:400;font-size:11px;">(optional)</span></label>
+          <label class="lp-lbl">YOUR ROLE <span class="lp-opt">(optional)</span></label>
           <input class="lp-inp" type="text" id="loginRole" placeholder="e.g. Senior Recruiter, TA Lead" onkeydown="if(event.key==='Enter')doLogin()" />
         </div>
 
         <button class="lp-cta" onclick="doLogin()">Enter ScreenMind →</button>
-        <div class="login-error" id="loginError" style="font-size:13px;color:var(--danger);margin-top:8px;min-height:18px;"></div>
+        <div id="loginError" style="font-size:12px;color:var(--danger);margin-top:6px;min-height:16px;text-align:center;"></div>
 
-        <div class="lp-fine">Your data stays private · Built on Supabase · Beta v1.0</div>
+        <div class="lp-privacy">
+          🔒 Resumes are processed in real-time and <strong>never stored</strong> on our servers. Your data stays completely private.
+        </div>
+
+        <div class="lp-powered">
+          Powered by <strong>Claude · Anthropic</strong> &nbsp;·&nbsp; Built on Supabase
+        </div>
+
       </div>
     </div>
 
@@ -1402,8 +1718,8 @@ function lpSetMode(m){
   lpInitialMode = m;
   var rec = document.getElementById('lp-rec');
   var cand = document.getElementById('lp-cand');
-  if(rec) rec.className = 'lp-iam-btn' + (m==='recruiter' ? ' lp-iam-active' : '');
-  if(cand) cand.className = 'lp-iam-btn' + (m==='candidate' ? ' lp-iam-active' : '');
+  if(rec) rec.className = 'lp-tog' + (m==='recruiter' ? ' lp-tog-on' : '');
+  if(cand) cand.className = 'lp-tog' + (m==='candidate' ? ' lp-tog-on' : '');
 }
 function doLogin(){
   const name=document.getElementById('loginName').value.trim();
@@ -1620,7 +1936,7 @@ async function runScreening(){
   const resume=getResumeText();
   if(!jd){showError('formError','⚠ Please paste a Job Description.');return;}
   if(!resume){showError('formError','⚠ No resume found. Upload a file or use Paste Text tab.');return;}
-  if(!criteria.length){showError('formError','⚠ Please add ICP criteria or click Auto-generate ICP first.');return;}
+  if(!criteria.length && currentMode!=='candidate'){showError('formError','⚠ Please add ICP criteria or click Auto-generate ICP first.');return;}
 
   const dup=checkDuplicate(resume);
   if(dup){
@@ -1728,6 +2044,7 @@ function buildMainPrompt(jd, icpText, criticals, allCriteriaNames, resume, socia
     + '  "dealbreaker_triggered": false,\n'
     + '  "dealbreaker_reason": "",\n'
     + '  "market_context": "1-2 sentences — is this profile rare or common in market? compensation expectation? business risk?",\n'
+    + '  "candidate_persona": {"archetype":"Builder|Operator|Strategist|Specialist","archetype_reason":"2 sentences: why this archetype fits based on career pattern, ownership signals, trajectory. Works for any role from CEO to delivery rider.","trajectory":"Ascending|Plateaued|Pivoting|Bouncing","trajectory_note":"what career movement reveals in 1 sentence","working_style":"how they likely operate in 1 sentence"},\n'
     + '  "recommended_action": "Advance to interview|Consider with reservations|Request more info|Pass",\n'
     + '  "interview_questions": [{"area":"specific area","question":"precise question referencing resume","why":"what business risk this de-risks"},{"area":"","question":"","why":""},{"area":"","question":"","why":""},{"area":"","question":"","why":""},{"area":"","question":"","why":""}]\n'
     + '}\n\n'
@@ -1879,6 +2196,27 @@ function renderResults(r){
         </div>
       </div>
     </div>
+
+
+    <!-- ── CANDIDATE PERSONA ── always visible ── -->
+    ${r.candidate_persona ? `<div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-archetype-badge persona-${(r.candidate_persona.archetype||'').toLowerCase().replace(/[^a-z]/g,'')}">
+          ${{Builder:'🔨',Operator:'⚙️',Strategist:'♟️',Specialist:'🎯'}[r.candidate_persona.archetype]||'👤'}
+          ${esc(r.candidate_persona.archetype||'')}
+        </div>
+        <div class="persona-trajectory">
+          ${{Ascending:'↗ Ascending',Plateaued:'→ Plateaued',Pivoting:'↻ Pivoting',Bouncing:'↕ Bouncing'}[r.candidate_persona.trajectory]||r.candidate_persona.trajectory||''}
+        </div>
+      </div>
+      <div class="persona-reason">${esc(r.candidate_persona.archetype_reason||'')}</div>
+      <div class="persona-row">
+        <span class="persona-tag">Trajectory:</span> ${esc(r.candidate_persona.trajectory_note||'')}
+      </div>
+      <div class="persona-row">
+        <span class="persona-tag">Working style:</span> ${esc(r.candidate_persona.working_style||'')}
+      </div>
+    </div>` : ''}
 
     <!-- ── STRENGTHS & GAPS ── collapsible ── -->
     <div class="result-section">
