@@ -995,6 +995,530 @@ body.candidate-mode .cand-form-hero{display:block;}
   margin-right:4px;
 }
 
+/* ════════════════════════════════════════
+   CANDIDATE MODE — Complete UI System
+════════════════════════════════════════ */
+
+/* ── 4-Tab Result Layout ── */
+.cm-wrap{ width:100%; }
+
+.cm-tabs{
+  display:flex;gap:4px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:4px;
+  margin-bottom:16px;
+}
+.cm-tab{
+  flex:1;padding:9px 8px;
+  background:transparent;
+  border:none;border-radius:7px;
+  font-family:var(--font-body);
+  font-size:12px;font-weight:600;
+  color:var(--text-2);
+  cursor:pointer;transition:all 0.2s;
+}
+.cm-tab.cm-tab-active{
+  background:var(--surface3);
+  color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.cm-tab:hover:not(.cm-tab-active){ color:var(--text); }
+
+.cm-panel{ display:none; }
+.cm-panel.cm-panel-active{ display:block; }
+
+/* ── Match bar ── */
+.cm-match-bar-wrap{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px 18px;
+  margin-bottom:12px;
+}
+.cm-match-header{
+  display:flex;justify-content:space-between;
+  align-items:baseline;margin-bottom:10px;
+}
+.cm-match-label{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:800;
+  letter-spacing:-0.02em;
+}
+.cm-match-score{
+  font-family:var(--font-mono);
+  font-size:13px;color:var(--muted);
+}
+.cm-bar-track{
+  height:8px;background:var(--surface2);
+  border-radius:4px;overflow:hidden;
+  margin-bottom:10px;
+}
+.cm-bar-fill{
+  height:100%;border-radius:4px;
+  transition:width 1.2s cubic-bezier(0.16,1,0.3,1);
+}
+.cm-match-advice{
+  font-size:13px;color:var(--text-2);
+  line-height:1.65;
+}
+
+/* ── Fit grid (profile + signals) ── */
+.cm-fit-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.cm-profile-card,
+.cm-signals-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+}
+.cm-profile-label{
+  font-size:9px;font-family:var(--font-mono);
+  font-weight:700;color:var(--muted);
+  letter-spacing:0.12em;text-transform:uppercase;
+  margin-bottom:10px;display:block;
+}
+.cm-archetype-row{
+  display:flex;align-items:center;
+  gap:10px;margin-bottom:8px;
+}
+.cm-archetype-icon{ font-size:24px; }
+.cm-archetype-name{
+  font-family:var(--font-display);
+  font-size:16px;font-weight:800;
+  color:var(--gold);letter-spacing:-0.01em;
+}
+.cm-archetype-traj{
+  font-size:11px;font-family:var(--font-mono);
+  color:var(--text-2);margin-top:1px;
+}
+.cm-archetype-desc{
+  font-size:12px;color:var(--text-2);
+  line-height:1.6;margin-bottom:8px;
+}
+.cm-archetype-style{
+  font-size:12px;color:var(--text-2);
+  line-height:1.5;
+}
+.cm-signal{
+  display:flex;align-items:flex-start;
+  gap:8px;margin-bottom:8px;
+  font-size:13px;color:var(--text);
+  line-height:1.5;
+}
+.cm-signal-dot{
+  width:6px;height:6px;
+  border-radius:50%;flex-shrink:0;
+  margin-top:6px;
+}
+
+/* ── Panel intro ── */
+.cm-panel-intro{ margin-bottom:14px; }
+.cm-panel-title{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:800;
+  letter-spacing:-0.02em;margin-bottom:4px;
+}
+.cm-panel-sub{
+  font-size:13px;color:var(--text-2);line-height:1.6;
+}
+
+/* ── Gap cards ── */
+.cm-gap-card{
+  display:flex;gap:14px;align-items:flex-start;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:8px;
+  transition:border-color 0.2s;
+}
+.cm-gap-card:hover{ border-color:rgba(251,191,36,0.3); }
+.cm-gap-num{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:800;
+  color:rgba(251,191,36,0.25);
+  flex-shrink:0;line-height:1;
+  min-width:28px;
+}
+.cm-gap-body{ flex:1; }
+.cm-gap-title{
+  font-size:14px;font-weight:700;
+  color:var(--text);margin-bottom:8px;
+  line-height:1.4;
+}
+.cm-gap-fix{
+  background:rgba(52,211,153,0.05);
+  border:1px solid rgba(52,211,153,0.12);
+  border-radius:8px;
+  padding:9px 12px;
+  font-size:12px;color:var(--text-2);
+  line-height:1.6;
+}
+.cm-gap-fix-label{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:9px;font-weight:700;
+  color:#34d399;letter-spacing:0.1em;
+  margin-bottom:4px;
+}
+
+/* ── Prep cards ── */
+.cm-prep-card{
+  display:flex;gap:14px;align-items:flex-start;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:8px;
+}
+.cm-prep-num{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:700;
+  color:var(--gold);
+  background:rgba(233,169,62,0.1);
+  border:1px solid rgba(233,169,62,0.2);
+  border-radius:6px;
+  padding:4px 7px;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.cm-prep-body{ flex:1; }
+.cm-prep-q{
+  font-size:14px;font-weight:600;
+  color:var(--text);line-height:1.5;
+  margin-bottom:8px;
+}
+.cm-prep-why{
+  background:rgba(233,169,62,0.05);
+  border-left:2px solid var(--gold);
+  border-radius:0 6px 6px 0;
+  padding:8px 12px;
+  font-size:12px;color:var(--text-2);
+  line-height:1.6;margin-bottom:6px;
+}
+.cm-prep-why-label{
+  display:block;font-family:var(--font-mono);
+  font-size:9px;font-weight:700;
+  color:var(--gold);letter-spacing:0.1em;
+  margin-bottom:3px;
+}
+.cm-prep-tip{
+  font-size:11px;color:var(--muted);
+  font-family:var(--font-mono);
+}
+
+/* ── Note sections ── */
+.cm-note-section{ margin-bottom:14px; }
+.cm-note-sec-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:8px;
+}
+.cm-note-sec-icon{ font-size:16px; }
+.cm-note-sec-title{
+  font-size:11px;font-family:var(--font-mono);
+  font-weight:700;letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.cm-note-sec-body{
+  font-size:13px;color:var(--text-2);
+  line-height:1.75;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;padding:14px 16px;
+}
+
+/* Market */
+.cm-market{
+  background:rgba(91,141,239,0.04);
+  border:1px solid rgba(91,141,239,0.15);
+  border-radius:10px;padding:12px 14px;
+  margin-bottom:14px;
+}
+.cm-market-label{
+  font-size:9px;font-family:var(--font-mono);
+  font-weight:700;color:var(--accent);
+  letter-spacing:0.12em;margin-bottom:6px;
+}
+.cm-market-text{
+  font-size:13px;color:var(--text-2);line-height:1.65;
+}
+
+/* Decision */
+.cm-decision{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;padding:16px;
+  text-align:center;
+}
+.cm-decision-advice{
+  font-size:13px;color:var(--text-2);
+  margin-bottom:14px;line-height:1.6;
+}
+.cm-decision-btns{
+  display:flex;gap:8px;justify-content:center;
+  flex-wrap:wrap;
+}
+.cm-btn{
+  padding:10px 18px;border-radius:8px;
+  border:none;cursor:pointer;
+  font-family:var(--font-body);
+  font-size:13px;font-weight:700;
+  transition:all 0.2s;
+}
+.cm-btn-go{
+  background:linear-gradient(135deg,#34d399,#059669);
+  color:#fff;
+}
+.cm-btn-hold{
+  background:rgba(233,169,62,0.1);
+  border:1px solid rgba(233,169,62,0.3);
+  color:var(--gold);
+}
+.cm-btn-pass{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text-2);
+}
+.cm-btn:hover{ opacity:0.85;transform:translateY(-1px); }
+.cm-decision-done{
+  margin-top:10px;font-size:12px;
+  color:var(--text-2);font-family:var(--font-mono);
+  display:none;
+}
+.cm-empty{
+  font-size:13px;color:var(--muted);
+  font-style:italic;padding:16px 0;
+  font-family:var(--font-mono);
+}
+
+/* ════ WAR ROOM DASHBOARD ════ */
+.wr-wrap{ width:100%; }
+
+.wr-hero{
+  background:linear-gradient(135deg,rgba(233,169,62,0.06),rgba(91,141,239,0.06));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px 28px;
+  margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.wr-hero::before{
+  content:'';position:absolute;
+  top:-40%;right:-10%;width:50%;height:160%;
+  background:radial-gradient(circle,rgba(233,169,62,0.08),transparent 65%);
+  pointer-events:none;
+}
+.wr-greeting{
+  font-family:var(--font-mono);
+  font-size:11px;color:var(--muted);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.wr-narrative{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:700;
+  line-height:1.4;letter-spacing:-0.01em;
+  color:var(--text);max-width:600px;
+  margin-bottom:20px;
+}
+.wr-hero-stats{
+  display:flex;gap:24px;flex-wrap:wrap;
+}
+.wr-hero-stat{ text-align:center; }
+.wr-hero-num{
+  font-family:var(--font-display);
+  font-size:32px;font-weight:800;
+  line-height:1;margin-bottom:4px;
+}
+.wr-hero-lbl{
+  font-size:10px;font-family:var(--font-mono);
+  color:var(--muted);letter-spacing:0.06em;
+}
+
+/* Section */
+.wr-section{ margin-bottom:20px; }
+.wr-section-title{
+  font-family:var(--font-mono);
+  font-size:10px;font-weight:700;
+  color:var(--muted);letter-spacing:0.14em;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.wr-section-title-row{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:10px;
+}
+.wr-add-btn{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:700;
+  color:var(--gold);
+  background:rgba(233,169,62,0.08);
+  border:1px solid rgba(233,169,62,0.2);
+  border-radius:6px;padding:5px 12px;
+  cursor:pointer;transition:all 0.2s;
+}
+.wr-add-btn:hover{ background:rgba(233,169,62,0.15); }
+
+/* Funnel */
+.wr-funnel{ margin-bottom:8px; }
+.wr-funnel-step{
+  display:flex;align-items:center;
+  gap:10px;margin-bottom:6px;
+}
+.wr-funnel-label{
+  font-size:11px;font-family:var(--font-mono);
+  color:var(--text-2);width:80px;flex-shrink:0;
+}
+.wr-funnel-track{
+  flex:1;height:6px;
+  background:var(--surface2);
+  border-radius:3px;overflow:hidden;
+}
+.wr-funnel-fill{
+  height:100%;border-radius:3px;
+  transition:width 1s cubic-bezier(0.16,1,0.3,1);
+}
+.wr-funnel-count{
+  font-family:var(--font-display);
+  font-size:14px;font-weight:800;
+  width:32px;text-align:right;flex-shrink:0;
+}
+.wr-grave{
+  display:flex;align-items:center;
+  gap:8px;flex-wrap:wrap;
+  font-size:12px;color:var(--muted);
+  padding:8px 0;
+  font-family:var(--font-mono);
+}
+.wr-grave-item strong{ color:var(--text-2); }
+.wr-grave-sep{ opacity:0.3; }
+
+/* Insight cards */
+.wr-insights{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+.wr-insight-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  transition:border-color 0.2s;
+}
+.wr-insight-card:hover{ border-color:var(--border-strong); }
+.wr-insight-icon{ font-size:20px;margin-bottom:6px; }
+.wr-insight-title{
+  font-family:var(--font-mono);
+  font-size:10px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.wr-insight-text{
+  font-size:12px;color:var(--text-2);line-height:1.65;
+}
+.wr-insight-lock{
+  background:var(--surface);
+  border:1px dashed var(--border);
+  border-radius:12px;
+  padding:24px;text-align:center;
+}
+.wr-insight-lock-icon{ font-size:24px;margin-bottom:8px; }
+.wr-insight-lock-text{
+  font-size:13px;color:var(--muted);
+  font-family:var(--font-mono);
+}
+
+/* Application cards */
+.wr-apps{ display:flex;flex-direction:column;gap:6px; }
+.app-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  transition:border-color 0.2s;
+}
+.app-card:hover{ border-color:var(--border-strong); }
+.app-card-main{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:12px;
+}
+.app-card-left{ flex:1;min-width:0; }
+.app-card-role{
+  font-size:14px;font-weight:700;
+  color:var(--text);margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.app-card-company{
+  font-size:11px;color:var(--text-2);
+  font-family:var(--font-mono);
+}
+.app-card-note{
+  font-size:11px;color:var(--muted);
+  margin-top:4px;font-style:italic;
+}
+.app-card-right{
+  display:flex;align-items:center;
+  gap:10px;flex-shrink:0;
+}
+.app-card-score{
+  font-family:var(--font-display);
+  font-size:18px;font-weight:800;
+}
+.app-card-status{
+  font-size:11px;font-family:var(--font-mono);
+  font-weight:700;white-space:nowrap;
+}
+.app-status-select{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text-2);
+  font-family:var(--font-mono);
+  font-size:10px;padding:3px 6px;
+  cursor:pointer;outline:none;
+}
+
+/* Add App Modal */
+.wr-modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.6);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;
+  backdrop-filter:blur(4px);
+}
+.wr-modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+  width:380px;max-width:90vw;
+}
+.wr-modal-title{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:800;
+  letter-spacing:-0.02em;margin-bottom:4px;
+}
+.wr-modal-sub{
+  font-size:12px;color:var(--text-2);
+  margin-bottom:20px;
+}
+
+/* Mobile */
+@media(max-width:700px){
+  .cm-fit-grid{ grid-template-columns:1fr; }
+  .wr-insights{ grid-template-columns:1fr; }
+  .wr-hero-stats{ gap:16px; }
+  .wr-hero-num{ font-size:24px; }
+  .cm-tabs .cm-tab{ font-size:11px;padding:8px 4px; }
+  .app-card-main{ flex-direction:column;align-items:flex-start; }
+  .app-card-right{ width:100%;justify-content:space-between; }
+}
+
 </style>
 </head>
 <body>
@@ -1982,6 +2506,22 @@ async function runScreening(){
       screenedAt:Date.now(),resumeSnippet:resume.substring(0,600),
       screenedBy:currentUser?currentUser.name:''
     });
+    // Auto-log to candidate app tracker if in candidate mode
+    if(currentMode==='candidate'){
+      const cApps = loadCandidateApps();
+      const roleTitle = currentRole || jd.split('\n')[0].substring(0,60);
+      cApps.unshift({
+        id:'screened_'+Date.now(),
+        company: result.company || roleTitle.split(' at ').pop() || '',
+        role: roleTitle,
+        status:'applying',
+        appliedAt:Date.now(),
+        source:'screened',
+        score:result.score||0,
+        note:result.verdict||''
+      });
+      saveCandidateApps(cApps);
+    }
 
     // ── Step 2: Dedicated recruiter note ──
     updateLoadingStep('Crafting Principal Recruiter briefing...');
@@ -2055,39 +2595,44 @@ function buildNotePrompt(result, jd, isCandidateMode) {
   const score = result.score||0;
   const name = result.candidateName||'Candidate';
   const role = jd.split('\n')[0].substring(0,100);
-
-  const scoreGuide = score>=85
-    ? 'EXCEPTIONAL (85+): This person should be in front of the HM this week. Say so with confidence.'
-    : score>=70
-    ? 'CREDIBLE WITH GAPS (70-84): Worth a targeted screen to validate specific gaps. Do NOT say strong candidate or recommend advancing without specifying exactly what to validate.'
-    : score>=50
-    ? 'PARTIAL FIT (50-69): Significant gaps exist. Be honest. Exploratory call only. Specify exactly what is missing.'
-    : 'SIGNIFICANT MISMATCH (below 50): Save the HM time. Be direct. Specify exactly what critical criteria are missing.';
-
   const strengthsList = (result.strengths||[]).map(function(s,i){return (i+1)+'. '+s;}).join('\n');
   const gapsList = (result.gaps||[]).length ? (result.gaps||[]).map(function(g,i){return (i+1)+'. '+g;}).join('\n') : 'No significant gaps';
-
   const icpSummary = (result.icp_breakdown||[]).map(function(x){
     const status = x.met===true ? 'MET' : x.met==='inferred' ? 'INFERRED' : 'MISSING';
     return '- ['+x.weight+'] '+x.criterion+': '+status+' — '+(x.evidence||'');
   }).join('\n');
+  const scoreGuide = score>=85
+    ? 'EXCEPTIONAL (85+): This person should be in front of the HM this week. Say so with confidence.'
+    : score>=70
+    ? 'CREDIBLE WITH GAPS (70-84): Worth a targeted screen to validate specific gaps.'
+    : score>=50
+    ? 'PARTIAL FIT (50-69): Significant gaps exist. Be honest. Exploratory call only.'
+    : 'SIGNIFICANT MISMATCH (below 50): Save the HM time. Be direct.';
 
   if(isCandidateMode){
-    return 'You are a brutally honest career coach — NOT a supportive friend. Your job is to give this job seeker the TRUTH about their application so they can make a smart decision.\n\n'
-      + 'CANDIDATE: ' + name + '\n'
-      + 'APPLYING FOR: ' + role + '\n'
-      + 'MATCH SCORE: ' + score + '/100\n'
-      + score_guide_candidate(score) + '\n\n'
-      + 'WHAT THEY HAVE:\n' + strengthsList + '\n\n'
+    return 'You are a world-class career strategist with 20 years of recruiting experience on BOTH sides of the table. You have hired thousands of people and coached thousands of job seekers. You know exactly what recruiters think but never say, and what hiring managers look for but never write in JDs.\n\n'
+      + 'JOB SEEKER: ' + name + '\n'
+      + 'ROLE THEY WANT: ' + role + '\n'
+      + 'MATCH SCORE: ' + score + '/100\n\n'
+      + 'WHAT THEY BRING:\n' + strengthsList + '\n\n'
       + 'WHAT THEY ARE MISSING:\n' + gapsList + '\n\n'
-      + 'ICP MATCH:\n' + icpSummary + '\n\n'
-      + 'Write a BULLET POINT assessment with these exact sections:\n'
-      + '**VERDICT:** One sentence — should they apply or not, and why (mention the score)\n'
-      + '**WHAT WORKS FOR YOU:** 2-3 bullets — specific strengths from their profile with evidence\n'
-      + '**HONEST GAPS:** 2-3 bullets — exactly what is missing and what it means for their chances\n'
-      + '**BEFORE YOU APPLY:** 2-3 bullets — specific things to add to resume or cover letter to improve chances\n'
-      + '**INTERVIEW PREP PRIORITY:** 1-2 bullets — the first things they must be ready to answer\n\n'
-      + 'Be a tough but fair coach. If they are missing critical skills, say it directly. Do not soften bad news. They need truth to make a good career decision.';
+      + 'ICP DETAIL:\n' + icpSummary + '\n\n'
+      + 'Write THREE sections with EXACTLY these headers and formats:\n\n'
+      + '**YOUR HONEST ASSESSMENT**\n'
+      + 'Write 2-3 sentences in plain human language. Tell them exactly where they stand. Score of ' + score + ' means what in reality? Are they competitive? Should they apply now or build first? Be the mentor who tells the truth, not the friend who says "you got this."\n\n'
+      + '**WHAT THE RECRUITER AND HIRING MANAGER ACTUALLY SEE**\n'
+      + 'This is insider knowledge they cannot get anywhere else. Write 3-4 bullets:\n'
+      + '- What makes a recruiter stop scrolling and actually read this resume (their hook)\n'
+      + '- What quietly raises a flag without anyone saying it (the unspoken concern)\n'
+      + '- What would make a hiring manager excited enough to respond same day\n'
+      + '- One thing that could silently kill this application before it reaches human eyes\n'
+      + 'Be specific to THIS candidate and THIS role. Not generic advice.\n\n'
+      + '**YOUR MOVE**\n'
+      + 'Write exactly 3 bullets:\n'
+      + '- Should they apply now, apply after fixing something, or redirect to a better-fit role? State it directly.\n'
+      + '- One specific thing to add or change in their resume or cover note before hitting submit\n'
+      + '- The single most important thing to prepare for if they get a call\n\n'
+      + 'Tone: Direct, warm, mentoring. Like a senior colleague who genuinely wants them to succeed and respects them enough to tell the truth. No corporate language. No hedging. No "it depends."';
   }
 
   return 'You are a Seasoned Principal Recruiter writing a briefing note for a Hiring Manager who has 10 minutes to make a decision.\n\n'
@@ -2101,13 +2646,14 @@ function buildNotePrompt(result, jd, isCandidateMode) {
     + 'TRANSLATE EXPERIENCE INTO WHAT IT REALLY MEANS — FOR ANY ROLE: Do not repeat what the resume says — decode it. If resume says Engineered API at Uber for 80% traffic: this means end-to-end microservice design, API gateway, high-traffic production. If 5 years Python at fintech: knows async frameworks FastAPI/Django, financial data pipelines. If Led AWS migration: knows IaC Terraform, VPCs, IAM. For sales: 8M ARR growth at Salesforce means enterprise cycle, MEDDIC, executive selling. For leadership: scaled hiring 50 to 400/quarter means workforce planning, TA ops at scale, C-suite partnership. EDUCATION MATTERS: CS degree from top institution signals strong fundamentals. No CS degree requires compensating portfolio evidence. For any role take the 2-3 most specific achievements and decode what they actually mean for THIS job. This is ScreenMind intelligence.\n\n'
     + 'OUTPUT FORMAT — USE EXACTLY THESE SECTION HEADERS:\n'
     + '**HEADLINE:** [One powerful sentence — candidate name + their single strongest credential (IIT/Stripe/FAANG etc counts heavily) + specific achievement + why it directly matters for THIS role]\n'
-    + '**WHY THIS SCORE (' + score + '/100):** [2-3 sentences in PROSE — not bullets — explaining exactly what drove this number. Name which Critical criteria were met or failed. If IIT/top-tier education is present, call it out as a strong signal. If FAANG/top company is in background, decode what that means technically. Justify the score so the HM understands the math.]\n'
-    + '**WHAT MAKES THEM COMPELLING:** [2-3 sentences of pure story-telling prose. This is where you decode their experience. If they built API infrastructure at Uber serving 80% traffic — say what that means: end-to-end microservice ownership, API gateway design, high-traffic production engineering, rate limiting, auth middleware. If they are from IIT + Stripe — say IIT signals strong CS fundamentals and Stripe engineering culture means payment systems at scale, financial data integrity, high-reliability systems. Make the HM see the REAL person behind the resume words.]\n'
-    + '**HONEST CONCERNS:** [1-2 sentences only — what is genuinely missing or worth probing. Be surgical: name the exact gap and its business impact for THIS role. Do not invent concerns if there are none.]\n'
-    + '**RECOMMENDATION:** [One decisive sentence. Advance to full loop / 30-min technical screen to validate X / Pass. State exactly why based on score and the single most important factor.]\n\n'
-    + 'WRITING STYLE: Write like a senior partner at an executive search firm briefing a CEO. Prose paragraphs under each header — NOT bullet points. Confident, specific, no hedging. Each section should read like it was written by someone who deeply understands both the candidate and the business need.\n'
+    + '**WHY THIS SCORE (' + score + '/100):** [2-3 sentences in PROSE — not bullets — explaining exactly what drove this number. Name which Critical criteria were met or failed. Justify the score so the HM understands the math.]\n'
+    + '**WHAT MAKES THEM COMPELLING:** [2-3 sentences of pure story-telling prose decoding their experience. Make the HM see the REAL person behind the resume words.]\n'
+    + '**HONEST CONCERNS:** [1-2 sentences only — what is genuinely missing or worth probing.]\n'
+    + '**RECOMMENDATION:** [One decisive sentence. Advance to full loop / 30-min screen to validate X / Pass.]\n\n'
+    + 'WRITING STYLE: Write like a senior partner at an executive search firm briefing a CEO. Prose paragraphs — NOT bullet points. Confident, specific, no hedging.\n'
     + 'BANNED WORDS: strong candidate, solid background, proven experience, strong track record, highly experienced, recommend advancing, further assess. Zero tolerance.';
 }
+
 
 function score_guide_candidate(score) {
   if(score>=80) return 'HIGH FIT: They have a genuine shot. Tell them what to strengthen to seal it.';
@@ -2149,6 +2695,20 @@ function formatNote(text){
 
 // ── Render Results ──
 function renderResults(r){
+  if(currentMode==='candidate'){
+    renderCandidateResults(r);
+  } else {
+    renderRecruiterResults(r);
+  }
+  document.getElementById('results-section').style.display='block';
+  document.getElementById('view-screen').style.display='none';
+  document.getElementById('results-section').scrollIntoView({behavior:'smooth'});
+  lastResult = r;
+  dbSaveScreening(r, currentMode);
+}
+
+// ── RECRUITER RESULTS — unchanged logic, clean render ──
+function renderRecruiterResults(r){
   const score=r.score||0;
   const sc=score>=85?'#60a5fa':score>=70?'#818cf8':score>=50?'#fbbf24':'#f87171';
   const circ=2*Math.PI*48,dash=circ-(score/100)*circ;
@@ -2169,18 +2729,31 @@ function renderResults(r){
     </div>`;
   }).join('');
 
+  // Persona card
+  const personaCard = r.candidate_persona ? `
+    <div class="persona-card">
+      <div class="persona-header">
+        <div class="persona-archetype-badge persona-${(r.candidate_persona.archetype||'').toLowerCase().replace(/[^a-z]/g,'')}">
+          ${{Builder:'🔨',Operator:'⚙️',Strategist:'♟️',Specialist:'🎯'}[r.candidate_persona.archetype]||'👤'}
+          ${esc(r.candidate_persona.archetype||'')}
+        </div>
+        <div class="persona-trajectory">${{'Ascending':'↗ Ascending','Plateaued':'→ Plateaued','Pivoting':'↻ Pivoting','Bouncing':'↕ Bouncing'}[r.candidate_persona.trajectory]||r.candidate_persona.trajectory||''}</div>
+      </div>
+      <div class="persona-reason">${esc(r.candidate_persona.archetype_reason||'')}</div>
+      <div class="persona-row"><span class="persona-tag">Trajectory:</span> ${esc(r.candidate_persona.trajectory_note||'')}</div>
+      <div class="persona-row"><span class="persona-tag">Working style:</span> ${esc(r.candidate_persona.working_style||'')}</div>
+    </div>` : '';
+
   document.getElementById('resultsContent').innerHTML=`
     ${r.dealbreaker_triggered?`<div class="dealbreaker-alert">⛔ <b>Deal-breaker triggered:</b> ${esc(r.dealbreaker_reason)}</div>`:''}
-
-    <!-- ── SCORE HERO ── always visible ── -->
     <div class="score-card">
       <div class="score-row">
         <div class="score-circle-wrap" style="position:relative;width:90px;height:90px;flex-shrink:0;">
-          <svg viewBox="0 0 110 110" width="90" height="90" style="position:relative;">
+          <svg viewBox="0 0 110 110" width="90" height="90">
             <circle cx="55" cy="55" r="48" fill="none" stroke="var(--border)" stroke-width="8"/>
             <circle cx="55" cy="55" r="48" fill="none" stroke="${sc}" stroke-width="8" stroke-dasharray="${circ}" stroke-dashoffset="${dash}" stroke-linecap="round" transform="rotate(-90 55 55)"/>
           </svg>
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
             <div style="font-family:var(--font-display);font-size:24px;font-weight:800;color:${sc};line-height:1;">${score}</div>
             <div style="font-size:9px;font-family:var(--font-mono);color:var(--muted);">/100</div>
           </div>
@@ -2196,29 +2769,7 @@ function renderResults(r){
         </div>
       </div>
     </div>
-
-
-    <!-- ── CANDIDATE PERSONA ── always visible ── -->
-    ${r.candidate_persona ? `<div class="persona-card">
-      <div class="persona-header">
-        <div class="persona-archetype-badge persona-${(r.candidate_persona.archetype||'').toLowerCase().replace(/[^a-z]/g,'')}">
-          ${{Builder:'🔨',Operator:'⚙️',Strategist:'♟️',Specialist:'🎯'}[r.candidate_persona.archetype]||'👤'}
-          ${esc(r.candidate_persona.archetype||'')}
-        </div>
-        <div class="persona-trajectory">
-          ${{Ascending:'↗ Ascending',Plateaued:'→ Plateaued',Pivoting:'↻ Pivoting',Bouncing:'↕ Bouncing'}[r.candidate_persona.trajectory]||r.candidate_persona.trajectory||''}
-        </div>
-      </div>
-      <div class="persona-reason">${esc(r.candidate_persona.archetype_reason||'')}</div>
-      <div class="persona-row">
-        <span class="persona-tag">Trajectory:</span> ${esc(r.candidate_persona.trajectory_note||'')}
-      </div>
-      <div class="persona-row">
-        <span class="persona-tag">Working style:</span> ${esc(r.candidate_persona.working_style||'')}
-      </div>
-    </div>` : ''}
-
-    <!-- ── STRENGTHS & GAPS ── collapsible ── -->
+    ${personaCard}
     <div class="result-section">
       <div class="result-section-header" onclick="toggleSection(this)">
         <div class="result-section-title">✅ Strengths &amp; ⚠ Gaps</div>
@@ -2231,8 +2782,6 @@ function renderResults(r){
         </div>
       </div>
     </div>
-
-    <!-- ── ICP BREAKDOWN ── collapsible ── -->
     ${icpRows?`<div class="result-section">
       <div class="result-section-header" onclick="toggleSection(this)">
         <div class="result-section-title">📋 ICP Criteria Breakdown</div>
@@ -2246,8 +2795,6 @@ function renderResults(r){
         </div>
       </div>
     </div>`:''}
-
-    <!-- ── RECRUITER NOTE ── collapsible ── -->
     <div class="result-section">
       <div class="result-section-header" onclick="toggleSection(this)">
         <div class="result-section-title">💬 Principal Recruiter Briefing Note</div>
@@ -2257,8 +2804,6 @@ function renderResults(r){
         <div class="recruiter-note">${formatNote(r.recruiter_note)}</div>
       </div>
     </div>
-
-    <!-- ── MARKET CONTEXT ── collapsible ── -->
     ${r.market_context?`<div class="result-section">
       <div class="result-section-header" onclick="toggleSection(this)">
         <div class="result-section-title" style="color:var(--gold);">📊 Talent Market Context</div>
@@ -2268,8 +2813,6 @@ function renderResults(r){
         <div style="font-size:13px;color:var(--text-2);line-height:1.7;">${esc(r.market_context)}</div>
       </div>
     </div>`:''}
-
-    <!-- ── FEEDBACK ── -->
     <div style="padding:14px 0;">
       <div style="font-size:12px;font-family:var(--font-mono);color:var(--muted);margin-bottom:10px;">Was this assessment accurate?</div>
       <div class="feedback-row">
@@ -2286,35 +2829,239 @@ function renderResults(r){
     r.interview_questions.forEach(q=>{const a=q.area||'General';if(!groups[a])groups[a]=[];groups[a].push(q);});
     let qHtml='';
     Object.entries(groups).forEach(([area,qs])=>{
-      qHtml+=`<div class="question-group">
-        <div class="question-group-title">
-          <span style="color:var(--accent2);">▸ COMPETENCY:</span> ${esc(area)}
-        </div>`;
+      qHtml+=`<div class="question-group"><div class="question-group-title"><span style="color:var(--accent2);">▸ COMPETENCY:</span> ${esc(area)}</div>`;
       qs.forEach((q,i)=>{
-        qHtml+=`<div class="question-item">
-          <span class="question-num">Q${i+1}</span>
-          <div style="flex:1;">
-            <div style="font-weight:600;font-size:14px;margin-bottom:6px;">${esc(q.question)}</div>
-            <div style="display:flex;gap:6px;align-items:flex-start;background:rgba(129,140,248,0.06);border-radius:6px;padding:7px 10px;">
-              <span style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:1px;">WHAT TO EVALUATE</span>
-              <div class="question-why" style="margin:0;">${esc(q.why)}</div>
-            </div>
-          </div>
-        </div>`;
+        qHtml+=`<div class="question-item"><span class="question-num">Q${i+1}</span><div style="flex:1;"><div style="font-weight:600;font-size:14px;margin-bottom:6px;">${esc(q.question)}</div><div style="display:flex;gap:6px;align-items:flex-start;background:rgba(129,140,248,0.06);border-radius:6px;padding:7px 10px;"><span style="font-size:10px;font-family:var(--font-mono);color:var(--accent2);font-weight:700;flex-shrink:0;margin-top:1px;">WHAT TO EVALUATE</span><div class="question-why" style="margin:0;">${esc(q.why)}</div></div></div></div>`;
       });
       qHtml+='</div>';
     });
     document.getElementById('copilotContent').innerHTML=qHtml;
     document.getElementById('copilotSection').style.display='block';
   }
-
-  document.getElementById('results-section').style.display='block';
-  document.getElementById('view-screen').style.display='none';
-  document.getElementById('results-section').scrollIntoView({behavior:'smooth'});
-  // Save to Supabase
-  lastResult = r;
-  dbSaveScreening(r, currentMode);
 }
+
+// ── CANDIDATE RESULTS — completely separate, clean 4-tab layout ──
+function renderCandidateResults(r){
+  const score=r.score||0;
+
+  // Match strength label — no number shaming
+  const matchLabel = score>=85 ? 'Strong Fit' : score>=70 ? 'Good Foundation' : score>=50 ? 'Needs Work' : 'Wrong Role Right Now';
+  const matchColor = score>=85 ? '#34d399' : score>=70 ? '#60a5fa' : score>=50 ? '#fbbf24' : '#f87171';
+  const matchGrad  = score>=85
+    ? 'linear-gradient(90deg,#e9a93e,#34d399)'
+    : score>=70
+    ? 'linear-gradient(90deg,#e9a93e,#60a5fa)'
+    : score>=50
+    ? 'linear-gradient(90deg,#f87171,#fbbf24)'
+    : 'linear-gradient(90deg,#f87171,#ef4444)';
+
+  const matchAdvice = score>=85
+    ? 'You are a competitive applicant for this role. Apply now and use the prep guide below to convert this into an offer.'
+    : score>=70
+    ? 'You have a real shot at this role. A few gaps to address — own them in your cover note and prepare to be asked about them.'
+    : score>=50
+    ? 'You meet some criteria but have meaningful gaps. Apply strategically or strengthen your profile first.'
+    : 'This role is a significant stretch right now. Consider a closer-fit role or build these missing areas first.';
+
+  // Persona
+  const persona = r.candidate_persona || {};
+  const archetypeIcon = {Builder:'🔨',Operator:'⚙️',Strategist:'♟️',Specialist:'🎯'}[persona.archetype]||'👤';
+  const trajIcon = {Ascending:'↗',Plateaued:'→',Pivoting:'↻',Bouncing:'↕'}[persona.trajectory]||'';
+
+  // Strengths — top 3 signals
+  const topStrengths = (r.strengths||[]).slice(0,3).map((s,i)=>`
+    <div class="cm-signal">
+      <div class="cm-signal-dot" style="background:${matchColor};"></div>
+      <span>${esc(s)}</span>
+    </div>`).join('');
+
+  // Tab 2: Gaps as development roadmap
+  const gapCards = (r.gaps||[]).map((g,i)=>`
+    <div class="cm-gap-card">
+      <div class="cm-gap-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="cm-gap-body">
+        <div class="cm-gap-title">${esc(g)}</div>
+        <div class="cm-gap-fix">
+          <span class="cm-gap-fix-label">HOW TO CLOSE THIS</span>
+          Add a specific project, metric, or achievement that demonstrates this. Even a side project or course counts. Mention it explicitly in your cover note.
+        </div>
+      </div>
+    </div>`).join('') || '<div class="cm-empty">No significant gaps identified for this role.</div>';
+
+  // Tab 3: Interview questions
+  const allQs = r.interview_questions||[];
+  const prepCards = allQs.map((q,i)=>`
+    <div class="cm-prep-card">
+      <div class="cm-prep-num">Q${i+1}</div>
+      <div class="cm-prep-body">
+        <div class="cm-prep-q">${esc(q.question)}</div>
+        <div class="cm-prep-why">
+          <span class="cm-prep-why-label">WHAT THEY'RE REALLY TESTING</span>
+          ${esc(q.why)}
+        </div>
+        <div class="cm-prep-tip">Prepare a STAR answer with specific numbers and outcomes.</div>
+      </div>
+    </div>`).join('') || '<div class="cm-empty">Run the screening to generate interview questions.</div>';
+
+  // Tab 4: Insider note — broken into 3 sub-sections
+  const noteText = r.recruiter_note || '';
+  const noteHtml = formatCandidateNote(noteText);
+
+  // Market context
+  const marketHtml = r.market_context ? `
+    <div class="cm-market">
+      <div class="cm-market-label">MARKET REALITY CHECK</div>
+      <div class="cm-market-text">${esc(r.market_context)}</div>
+    </div>` : '';
+
+  // Decision buttons
+  const decisionAdvice = score>=70
+    ? 'Based on your score, you should apply now.'
+    : score>=50
+    ? 'Consider applying after addressing your top gap.'
+    : 'This role may not be the best use of your time right now.';
+
+  document.getElementById('resultsContent').innerHTML = `
+    <div class="cm-wrap">
+
+      <!-- ── TAB NAV ── -->
+      <div class="cm-tabs">
+        <button class="cm-tab cm-tab-active" onclick="cmShowTab(0,this)">Your Fit</button>
+        <button class="cm-tab" onclick="cmShowTab(1,this)">Close the Gap</button>
+        <button class="cm-tab" onclick="cmShowTab(2,this)">Interview Prep</button>
+        <button class="cm-tab" onclick="cmShowTab(3,this)">Your Move</button>
+      </div>
+
+      <!-- ── TAB 1: YOUR FIT ── -->
+      <div class="cm-panel cm-panel-active" id="cm-panel-0">
+
+        <!-- Match bar — no intimidating number -->
+        <div class="cm-match-bar-wrap">
+          <div class="cm-match-header">
+            <span class="cm-match-label" style="color:${matchColor};">${matchLabel}</span>
+            <span class="cm-match-score">${score}/100</span>
+          </div>
+          <div class="cm-bar-track">
+            <div class="cm-bar-fill" style="width:${score}%;background:${matchGrad};"></div>
+          </div>
+          <div class="cm-match-advice">${matchAdvice}</div>
+        </div>
+
+        <!-- Persona + top signals side by side -->
+        <div class="cm-fit-grid">
+          <div class="cm-profile-card">
+            <div class="cm-profile-label">YOUR PROFESSIONAL PROFILE</div>
+            <div class="cm-archetype-row">
+              <span class="cm-archetype-icon">${archetypeIcon}</span>
+              <div>
+                <div class="cm-archetype-name">${esc(persona.archetype||'—')}</div>
+                <div class="cm-archetype-traj">${trajIcon} ${esc(persona.trajectory||'')}</div>
+              </div>
+            </div>
+            <div class="cm-archetype-desc">${esc(persona.archetype_reason||'')}</div>
+            ${persona.working_style ? `<div class="cm-archetype-style"><span class="cm-profile-label" style="display:inline;">WORKING STYLE</span> ${esc(persona.working_style)}</div>` : ''}
+          </div>
+          <div class="cm-signals-card">
+            <div class="cm-profile-label">WHAT WORKS FOR YOU</div>
+            ${topStrengths || '<div class="cm-empty">No top signals identified.</div>'}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── TAB 2: CLOSE THE GAP ── -->
+      <div class="cm-panel" id="cm-panel-1">
+        <div class="cm-panel-intro">
+          <div class="cm-panel-title">Your Development Roadmap</div>
+          <div class="cm-panel-sub">These are the specific gaps between your profile and this role. Each one is closable — here's how.</div>
+        </div>
+        ${gapCards}
+      </div>
+
+      <!-- ── TAB 3: INTERVIEW PREP ── -->
+      <div class="cm-panel" id="cm-panel-2">
+        <div class="cm-panel-intro">
+          <div class="cm-panel-title">Questions They Will Ask You</div>
+          <div class="cm-panel-sub">Generated from your specific profile gaps for this role. For each question, prepare a real STAR answer with numbers.</div>
+        </div>
+        ${prepCards}
+      </div>
+
+      <!-- ── TAB 4: YOUR MOVE ── -->
+      <div class="cm-panel" id="cm-panel-3">
+        <div class="cm-panel-intro">
+          <div class="cm-panel-title">Your Career Strategy Brief</div>
+          <div class="cm-panel-sub">What a recruiter sees. What the hiring manager thinks. What you should do next.</div>
+        </div>
+        ${noteHtml}
+        ${marketHtml}
+        <div class="cm-decision">
+          <div class="cm-decision-advice">${decisionAdvice}</div>
+          <div class="cm-decision-btns">
+            <button class="cm-btn cm-btn-go" onclick="recordCandidateDecision('applying')">🚀 I'm Applying</button>
+            <button class="cm-btn cm-btn-hold" onclick="recordCandidateDecision('saved')">📌 Save for Later</button>
+            <button class="cm-btn cm-btn-pass" onclick="recordCandidateDecision('passing')">⏭ Not for Me</button>
+          </div>
+          <div class="cm-decision-done" id="cmDecisionDone"></div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  // Hide recruiter co-pilot
+  const copilot = document.getElementById('copilotSection');
+  if(copilot) copilot.style.display='none';
+}
+
+function cmShowTab(idx, btn){
+  document.querySelectorAll('.cm-tab').forEach(function(t){t.classList.remove('cm-tab-active');});
+  document.querySelectorAll('.cm-panel').forEach(function(p){p.classList.remove('cm-panel-active');});
+  btn.classList.add('cm-tab-active');
+  var panel = document.getElementById('cm-panel-'+idx);
+  if(panel) panel.classList.add('cm-panel-active');
+}
+
+function formatCandidateNote(text){
+  if(!text) return '<div class="cm-empty">Assessment being generated...</div>';
+  // Parse the 3 sections from the note
+  const sections = [
+    {key:'YOUR HONEST ASSESSMENT', icon:'🎯', color:'var(--gold)'},
+    {key:'WHAT THE RECRUITER AND HIRING MANAGER ACTUALLY SEE', icon:'👁', color:'var(--accent)'},
+    {key:'YOUR MOVE', icon:'→', color:'#34d399'},
+  ];
+  let html = '';
+  let remaining = text;
+  sections.forEach(function(sec, i){
+    const marker = '**' + sec.key + '**';
+    const nextMarker = i < sections.length-1 ? '**' + sections[i+1].key + '**' : null;
+    const start = remaining.indexOf(marker);
+    if(start === -1){ return; }
+    const contentStart = start + marker.length;
+    const contentEnd = nextMarker ? remaining.indexOf(nextMarker) : remaining.length;
+    const content = remaining.substring(contentStart, contentEnd > -1 ? contentEnd : remaining.length).trim();
+    html += `<div class="cm-note-section">
+      <div class="cm-note-sec-header">
+        <span class="cm-note-sec-icon" style="color:${sec.color};">${sec.icon}</span>
+        <span class="cm-note-sec-title" style="color:${sec.color};">${sec.key}</span>
+      </div>
+      <div class="cm-note-sec-body">${formatNote(content)}</div>
+    </div>`;
+  });
+  return html || `<div class="cm-note-section"><div class="cm-note-sec-body">${formatNote(text)}</div></div>`;
+}
+
+function recordCandidateDecision(decision){
+  const labels = {applying:'Applied — good luck! 🚀', saved:'Saved for later 📌', passing:'Noted — on to the next one ⏭'};
+  const el = document.getElementById('cmDecisionDone');
+  if(el){ el.textContent = labels[decision]||'Decision recorded.'; el.style.display='block'; }
+  // Save to screening history
+  if(lastResult){
+    const outcome = decision==='applying'?'advanced':decision==='passing'?'passed':'reserved';
+    recordOutcome(outcome);
+  }
+}
+
 
 // ── Feedback ──
 function recordOutcome(outcome){
@@ -2329,6 +3076,15 @@ function recordOutcome(outcome){
 
 // ── Dashboard ──
 function renderDashboard(){
+  if(currentMode==='candidate'){
+    renderCandidateDashboard();
+  } else {
+    renderRecruiterDashboard();
+  }
+}
+
+// ── RECRUITER DASHBOARD — unchanged ──
+function renderRecruiterDashboard(){
   const screenings=loadScreenings();
   const dash=document.getElementById('dashContent');
   if(!screenings.length){
@@ -2393,6 +3149,288 @@ function renderDashboard(){
       ${rows}
     </div>`;
 }
+
+// ── CANDIDATE WAR ROOM DASHBOARD ──
+function renderCandidateDashboard(){
+  const dash = document.getElementById('dashContent');
+  const name = currentUser ? currentUser.name.split(' ')[0] : 'there';
+
+  // Load all applications (screened via ScreenMind + manually added)
+  const apps = loadCandidateApps();
+  const screened = apps.filter(function(a){ return a.source==='screened'; });
+
+  // Pipeline counts
+  const total     = apps.length;
+  const applying  = apps.filter(function(a){ return a.status==='applying'; }).length;
+  const screening = apps.filter(function(a){ return a.status==='screening'; }).length;
+  const advanced  = apps.filter(function(a){ return a.status==='advanced'; }).length;
+  const interview = apps.filter(function(a){ return a.status==='interviewing'; }).length;
+  const offer     = apps.filter(function(a){ return a.status==='offer'; }).length;
+  const rejected  = apps.filter(function(a){ return a.status==='rejected'; }).length;
+  const ghosted   = apps.filter(function(a){ return a.status==='ghosted'; }).length;
+  const onhold    = apps.filter(function(a){ return a.status==='onhold'; }).length;
+
+  const hitRate = total > 0 ? Math.round((advanced+interview+offer)/total*100) : 0;
+  const avgScore = screened.length > 0 ? Math.round(screened.reduce(function(a,s){ return a+(s.score||0); },0)/screened.length) : 0;
+
+  // Narrative — generated dynamically
+  const narrative = buildCandidateNarrative(name, total, advanced+interview+offer, hitRate, ghosted, offer);
+
+  // Pipeline funnel steps
+  const funnelSteps = [
+    {label:'Applied', count:total, color:'#5b8def'},
+    {label:'Screening', count:screening+applying, color:'#9b7ff4'},
+    {label:'Advanced', count:advanced, color:'#60a5fa'},
+    {label:'Interviewing', count:interview, color:'#34d399'},
+    {label:'Offer', count:offer, color:'#e9a93e'},
+  ];
+  const maxF = Math.max(total, 1);
+  const funnelHtml = funnelSteps.map(function(step){
+    const pct = Math.max(Math.round((step.count/maxF)*100), step.count>0?4:0);
+    return `<div class="wr-funnel-step">
+      <div class="wr-funnel-label">${step.label}</div>
+      <div class="wr-funnel-track">
+        <div class="wr-funnel-fill" style="width:${pct}%;background:${step.color};"></div>
+      </div>
+      <div class="wr-funnel-count" style="color:${step.color};">${step.count}</div>
+    </div>`;
+  }).join('');
+
+  // Below-funnel ghost+reject+hold
+  const graveHtml = `<div class="wr-grave">
+    <span class="wr-grave-item">👻 Ghosted <strong>${ghosted}</strong></span>
+    <span class="wr-grave-sep">·</span>
+    <span class="wr-grave-item">❌ Rejected <strong>${rejected}</strong></span>
+    <span class="wr-grave-sep">·</span>
+    <span class="wr-grave-item">⏳ On Hold <strong>${onhold}</strong></span>
+  </div>`;
+
+  // AI Insight cards — show only if 5+ apps
+  const insightHtml = total >= 5
+    ? buildInsightCards(apps, screened, hitRate)
+    : `<div class="wr-insight-lock">
+        <div class="wr-insight-lock-icon">🔒</div>
+        <div class="wr-insight-lock-text">Add ${5-total} more application${(5-total)!==1?'s':''} to unlock your personal insights</div>
+      </div>`;
+
+  // Application cards
+  const appCards = apps.length > 0
+    ? apps.slice(0,50).map(function(a){ return buildAppCard(a); }).join('')
+    : `<div class="cm-empty">No applications yet. Screen a role or add one manually.</div>`;
+
+  dash.innerHTML = `
+    <div class="wr-wrap">
+
+      <!-- HERO NARRATIVE -->
+      <div class="wr-hero">
+        <div class="wr-greeting">Hey ${esc(name)}.</div>
+        <div class="wr-narrative">${narrative}</div>
+        <div class="wr-hero-stats">
+          <div class="wr-hero-stat">
+            <div class="wr-hero-num" style="background:linear-gradient(135deg,#e9a93e,#5b8def);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${total}</div>
+            <div class="wr-hero-lbl">Doors Knocked</div>
+          </div>
+          <div class="wr-hero-stat">
+            <div class="wr-hero-num" style="background:linear-gradient(135deg,#34d399,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${advanced+interview+offer}</div>
+            <div class="wr-hero-lbl">Doors Opened</div>
+          </div>
+          <div class="wr-hero-stat">
+            <div class="wr-hero-num" style="background:linear-gradient(135deg,#e9a93e,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${hitRate}%</div>
+            <div class="wr-hero-lbl">Hit Rate</div>
+          </div>
+          ${avgScore>0?`<div class="wr-hero-stat">
+            <div class="wr-hero-num" style="background:linear-gradient(135deg,#9b7ff4,#5b8def);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${avgScore}</div>
+            <div class="wr-hero-lbl">Avg Match Score</div>
+          </div>`:''}
+        </div>
+      </div>
+
+      <!-- PIPELINE FUNNEL -->
+      <div class="wr-section">
+        <div class="wr-section-title">Your Pipeline</div>
+        <div class="wr-funnel">${funnelHtml}</div>
+        ${graveHtml}
+      </div>
+
+      <!-- AI INSIGHT CARDS -->
+      <div class="wr-section">
+        <div class="wr-section-title">What the Data is Telling You</div>
+        ${insightHtml}
+      </div>
+
+      <!-- APPLICATIONS -->
+      <div class="wr-section">
+        <div class="wr-section-title-row">
+          <div class="wr-section-title">Your Applications</div>
+          <button class="wr-add-btn" onclick="showAddAppModal()">+ Add Application</button>
+        </div>
+        <div class="wr-apps">${appCards}</div>
+      </div>
+
+    </div>
+
+    <!-- ADD APPLICATION MODAL -->
+    <div class="wr-modal-overlay" id="addAppModal" style="display:none;" onclick="if(event.target===this)hideAddAppModal()">
+      <div class="wr-modal">
+        <div class="wr-modal-title">Add Application</div>
+        <div class="wr-modal-sub">For jobs you applied to outside ScreenMind</div>
+        <div class="lp-field"><label class="lp-lbl">COMPANY</label><input class="lp-inp" id="addCompany" placeholder="e.g. Stripe" /></div>
+        <div class="lp-field"><label class="lp-lbl">ROLE</label><input class="lp-inp" id="addRole" placeholder="e.g. Senior Product Manager" /></div>
+        <div class="lp-field">
+          <label class="lp-lbl">STATUS</label>
+          <select class="lp-inp" id="addStatus">
+            <option value="applying">Applied</option>
+            <option value="screening">Screening</option>
+            <option value="advanced">Advanced</option>
+            <option value="interviewing">Interviewing</option>
+            <option value="offer">Offer Received</option>
+            <option value="rejected">Rejected</option>
+            <option value="ghosted">Ghosted</option>
+            <option value="onhold">On Hold</option>
+          </select>
+        </div>
+        <div class="lp-field"><label class="lp-lbl">DATE APPLIED</label><input class="lp-inp" type="date" id="addDate" /></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="lp-cta" style="flex:1;" onclick="saveManualApp()">Save Application</button>
+          <button class="btn btn-ghost" style="flex:0.4;" onclick="hideAddAppModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildCandidateNarrative(name, total, opened, hitRate, ghosted, offers){
+  if(total === 0) return "Your job search story starts the moment you screen your first role. Let's go.";
+  if(offers > 0) return `${total} applications. ${offers} offer${offers>1?'s':''}. That's not luck — that's a search that worked.`;
+  if(opened > 0 && hitRate >= 10) return `${total} doors knocked. ${opened} opened. A ${hitRate}% hit rate is a signal — you're targeting the right roles.`;
+  if(opened > 0) return `${total} applications sent. ${opened} moved forward. Every number in this room is data — not judgement.`;
+  if(ghosted > total * 0.5) return `${total} applications. ${ghosted} ghosts. That's the market, not you. The ones that reply are the ones that matter.`;
+  return `${total} applications and counting. Your search is a numbers game — and you're playing it. Keep going.`;
+}
+
+function buildInsightCards(apps, screened, hitRate){
+  // Find sweet spot — roles/domains where score is highest
+  const scored = screened.filter(function(a){ return a.score > 0; });
+  const sweetSpot = scored.length > 0
+    ? 'Your highest scoring applications are in ' + (scored.sort(function(a,b){ return b.score-a.score; }).slice(0,2).map(function(a){ return a.role||'similar roles'; }).join(' and ')) + '. Apply more here.'
+    : 'Screen more roles to discover where you score highest.';
+
+  // Pattern — look for rejection patterns
+  const rejected = apps.filter(function(a){ return a.status==='rejected'; });
+  const pattern = rejected.length >= 3
+    ? `${rejected.length} rejections in your history. Look for common role types or seniority levels — that's where your positioning may need work.`
+    : apps.filter(function(a){ return a.status==='ghosted'; }).length > 5
+    ? 'Heavy ghosting usually means application volume without targeting. Consider quality over quantity.'
+    : 'Not enough data yet to detect patterns. Keep adding applications.';
+
+  // Next move
+  const interviewing = apps.filter(function(a){ return a.status==='interviewing'; });
+  const nextMove = interviewing.length > 0
+    ? `You have ${interviewing.length} active interview${interviewing.length>1?'s':''}. Pause new applications. Prepare hard for these — they're your best shots right now.`
+    : apps.filter(function(a){ return a.status==='advanced'; }).length > 0
+    ? `${apps.filter(function(a){ return a.status==='advanced'; }).length} role${apps.filter(function(a){ return a.status==='advanced'; }).length>1?'s':''} advanced. Follow up this week if you haven't heard.`
+    : 'Keep applying. The law of large numbers is on your side — the right response is coming.';
+
+  return `<div class="wr-insights">
+    <div class="wr-insight-card">
+      <div class="wr-insight-icon" style="color:var(--gold);">📍</div>
+      <div class="wr-insight-title" style="color:var(--gold);">Your Sweet Spot</div>
+      <div class="wr-insight-text">${sweetSpot}</div>
+    </div>
+    <div class="wr-insight-card">
+      <div class="wr-insight-icon" style="color:var(--accent);">⚠</div>
+      <div class="wr-insight-title" style="color:var(--accent);">Pattern Detected</div>
+      <div class="wr-insight-text">${pattern}</div>
+    </div>
+    <div class="wr-insight-card">
+      <div class="wr-insight-icon" style="color:#34d399;">🎯</div>
+      <div class="wr-insight-title" style="color:#34d399;">Your Next Move</div>
+      <div class="wr-insight-text">${nextMove}</div>
+    </div>
+  </div>`;
+}
+
+function buildAppCard(a){
+  const statusMap = {
+    applying:    {label:'Applied',      color:'#5b8def', icon:'📤'},
+    screening:   {label:'Screening',    color:'#9b7ff4', icon:'🔍'},
+    advanced:    {label:'Advanced',     color:'#60a5fa', icon:'✅'},
+    interviewing:{label:'Interviewing', color:'#34d399', icon:'🎙'},
+    offer:       {label:'Offer',        color:'#e9a93e', icon:'🎉'},
+    rejected:    {label:'Rejected',     color:'#f87171', icon:'❌'},
+    ghosted:     {label:'Ghosted',      color:'#6b7280', icon:'👻'},
+    onhold:      {label:'On Hold',      color:'#fbbf24', icon:'⏳'},
+  };
+  const st = statusMap[a.status] || {label:a.status||'Applied', color:'var(--muted)', icon:'📄'};
+  const scoreHtml = a.score ? `<div class="app-card-score" style="color:${a.score>=70?'#34d399':a.score>=50?'#fbbf24':'#f87171'};">${a.score}</div>` : '';
+  const dateStr = a.appliedAt ? new Date(a.appliedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+  const noteHtml = a.note ? `<div class="app-card-note">${esc(a.note)}</div>` : '';
+
+  return `<div class="app-card" style="border-left:3px solid ${st.color};">
+    <div class="app-card-main">
+      <div class="app-card-left">
+        <div class="app-card-role">${esc(a.role||'Unknown Role')}</div>
+        <div class="app-card-company">${esc(a.company||'')}${dateStr?' · '+dateStr:''}</div>
+        ${noteHtml}
+      </div>
+      <div class="app-card-right">
+        ${scoreHtml}
+        <div class="app-card-status" style="color:${st.color};">${st.icon} ${st.label}</div>
+        <div class="app-card-actions">
+          <select class="app-status-select" onchange="updateAppStatus('${a.id}',this.value)" style="border-color:${st.color}33;">
+            <option value="applying" ${a.status==='applying'?'selected':''}>Applied</option>
+            <option value="screening" ${a.status==='screening'?'selected':''}>Screening</option>
+            <option value="advanced" ${a.status==='advanced'?'selected':''}>Advanced</option>
+            <option value="interviewing" ${a.status==='interviewing'?'selected':''}>Interviewing</option>
+            <option value="offer" ${a.status==='offer'?'selected':''}>Offer</option>
+            <option value="rejected" ${a.status==='rejected'?'selected':''}>Rejected</option>
+            <option value="ghosted" ${a.status==='ghosted'?'selected':''}>Ghosted</option>
+            <option value="onhold" ${a.status==='onhold'?'selected':''}>On Hold</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function loadCandidateApps(){
+  const key = 'sm_apps_' + (currentUser?currentUser.name:'guest');
+  try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){ return []; }
+}
+
+function saveCandidateApps(apps){
+  const key = 'sm_apps_' + (currentUser?currentUser.name:'guest');
+  localStorage.setItem(key, JSON.stringify(apps));
+}
+
+function updateAppStatus(id, status){
+  const apps = loadCandidateApps();
+  const app = apps.find(function(a){ return a.id===id; });
+  if(app){ app.status=status; saveCandidateApps(apps); }
+}
+
+function showAddAppModal(){ document.getElementById('addAppModal').style.display='flex'; }
+function hideAddAppModal(){ document.getElementById('addAppModal').style.display='none'; }
+
+function saveManualApp(){
+  const company = document.getElementById('addCompany').value.trim();
+  const role    = document.getElementById('addRole').value.trim();
+  const status  = document.getElementById('addStatus').value;
+  const date    = document.getElementById('addDate').value;
+  if(!company && !role){ return; }
+  const apps = loadCandidateApps();
+  apps.unshift({
+    id: 'manual_'+Date.now(),
+    company, role, status,
+    appliedAt: date ? new Date(date).getTime() : Date.now(),
+    source: 'manual',
+    score: 0,
+  });
+  saveCandidateApps(apps);
+  hideAddAppModal();
+  renderCandidateDashboard();
+}
+
 
 // ── Utilities ──
 function switchTab(tab){
