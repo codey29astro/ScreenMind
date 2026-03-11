@@ -1684,7 +1684,7 @@ body.candidate-mode footer{background:#f0f2f8 !important;color:#8b91b8 !importan
 // Set your Anthropic API key here for the investor demo:
 const ANTHROPIC_KEY = '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';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const AI_MODEL     = 'claude-sonnet-4-20250514';
+const AI_MODEL     = 'claude-sonnet-4-5';
 
 // Drop-in replacement — same {text} shape all call sites expect
 async function callAI(prompt) {
@@ -1704,7 +1704,8 @@ async function callAI(prompt) {
   });
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || 'Anthropic API error ' + resp.status);
+    const detail = err.error?.message || err.error?.type || JSON.stringify(err);
+    throw new Error('AI Error ' + resp.status + ': ' + detail);
   }
   const data = await resp.json();
   // Return same shape as old Render backend: { text: '...' }
