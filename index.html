@@ -1126,6 +1126,246 @@ body.candidate-mode footer{background:#f0f2f8 !important;color:#8b91b8 !importan
 .wr-insight-lock-icon{font-size:28px;margin-bottom:8px;}
 .wr-insight-lock-text{font-size:13px;color:var(--muted);}
 
+
+/* ═══════════════════════════════════════════════════════════
+   SCOUT — ScreenMind's Triune AI Co-Pilot
+   Signal Clarity · Outcome Underwriting · Talent Intelligence
+   ═══════════════════════════════════════════════════════════ */
+
+/* Panel */
+#scoutPanel{
+  position:fixed;
+  top:0;right:-420px;
+  width:380px;
+  height:100vh;
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  z-index:1200;
+  transition:right 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,0.4);
+}
+#scoutPanel.open{ right:0; }
+
+/* Tab trigger */
+#scoutTab{
+  position:fixed;
+  top:50%;right:0;
+  transform:translateY(-50%);
+  background:linear-gradient(135deg,#00bfa6,#6c63d8);
+  color:#fff;
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:700;
+  letter-spacing:0.12em;
+  padding:14px 6px;
+  border-radius:10px 0 0 10px;
+  cursor:pointer;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  z-index:1201;
+  border:none;
+  transition:right 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s;
+  display:none;
+  gap:8px;
+  align-items:center;
+  box-shadow:-3px 0 16px rgba(0,191,166,0.25);
+}
+#scoutTab.visible{ display:flex; }
+#scoutTab.panel-open{ right:380px; }
+#scoutTab:hover{ background:linear-gradient(135deg,#00d4b4,#7c74e8); }
+
+/* Scout radar icon in tab */
+.scout-tab-icon{
+  width:16px;height:16px;
+  display:block;
+  margin-bottom:4px;
+}
+
+/* Header */
+.scout-header{
+  padding:16px 18px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,rgba(0,191,166,0.06),rgba(108,99,216,0.06));
+  flex-shrink:0;
+}
+.scout-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#00bfa6,#6c63d8);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 0 16px rgba(0,191,166,0.3);
+  animation:scout-pulse 3s ease-in-out infinite;
+}
+@keyframes scout-pulse{
+  0%,100%{box-shadow:0 0 16px rgba(0,191,166,0.3);}
+  50%{box-shadow:0 0 24px rgba(0,191,166,0.5);}
+}
+.scout-avatar svg{ width:18px;height:18px; }
+.scout-header-info{ flex:1;min-width:0; }
+.scout-name{
+  font-family:var(--font-mono);
+  font-size:13px;font-weight:700;
+  color:#00bfa6;
+  letter-spacing:0.1em;
+}
+.scout-tagline{
+  font-size:10px;color:var(--muted);
+  font-family:var(--font-mono);
+  letter-spacing:0.06em;
+}
+.scout-close{
+  background:none;border:none;
+  color:var(--muted);cursor:pointer;
+  font-size:18px;padding:4px;
+  border-radius:6px;flex-shrink:0;
+}
+.scout-close:hover{ color:var(--text);background:var(--surface3); }
+
+/* Messages */
+.scout-messages{
+  flex:1;overflow-y:auto;
+  padding:14px 16px;
+  display:flex;flex-direction:column;
+  gap:12px;
+  scroll-behavior:smooth;
+}
+.scout-msg{
+  display:flex;flex-direction:column;
+  gap:4px;
+  animation:scout-msg-in 0.25s ease;
+}
+@keyframes scout-msg-in{
+  from{opacity:0;transform:translateY(6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.scout-msg-scout .scout-bubble{
+  background:var(--surface2);
+  border:1px solid rgba(0,191,166,0.15);
+  border-radius:12px 12px 12px 3px;
+  padding:10px 13px;
+  font-size:13px;line-height:1.65;
+  color:var(--text);
+  max-width:100%;
+}
+.scout-msg-user .scout-bubble{
+  background:linear-gradient(135deg,rgba(108,99,216,0.18),rgba(0,191,166,0.12));
+  border:1px solid rgba(108,99,216,0.2);
+  border-radius:12px 12px 3px 12px;
+  padding:10px 13px;
+  font-size:13px;line-height:1.65;
+  color:var(--text);
+  align-self:flex-end;
+  max-width:90%;
+}
+.scout-msg-label{
+  font-size:9px;font-family:var(--font-mono);
+  font-weight:700;letter-spacing:0.1em;
+  color:var(--muted);padding:0 4px;
+}
+.scout-msg-scout .scout-msg-label{ color:#00bfa6; }
+
+/* Typing indicator */
+.scout-typing{
+  display:flex;align-items:center;gap:5px;
+  padding:10px 13px;
+  background:var(--surface2);
+  border:1px solid rgba(0,191,166,0.1);
+  border-radius:12px 12px 12px 3px;
+  width:fit-content;
+}
+.scout-typing span{
+  width:6px;height:6px;border-radius:50%;
+  background:#00bfa6;opacity:0.4;
+  animation:scout-dot 1.2s ease-in-out infinite;
+}
+.scout-typing span:nth-child(2){animation-delay:0.2s;}
+.scout-typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes scout-dot{
+  0%,60%,100%{opacity:0.4;transform:scale(1);}
+  30%{opacity:1;transform:scale(1.3);}
+}
+
+/* Quick questions */
+.scout-chips{
+  padding:10px 16px 0;
+  display:flex;flex-direction:column;gap:6px;
+  flex-shrink:0;
+}
+.scout-chip{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:7px 11px;
+  font-size:11px;
+  color:var(--text-2);
+  cursor:pointer;text-align:left;
+  font-family:var(--font-body);
+  transition:all 0.15s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.scout-chip:hover{
+  border-color:#00bfa6;color:#00bfa6;
+  background:rgba(0,191,166,0.05);
+}
+
+/* Input */
+.scout-input-wrap{
+  padding:12px 16px 16px;
+  border-top:1px solid var(--border);
+  display:flex;gap:8px;align-items:flex-end;
+  flex-shrink:0;
+  background:var(--surface);
+}
+.scout-input{
+  flex:1;background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:9px 12px;
+  font-size:13px;font-family:var(--font-body);
+  color:var(--text);resize:none;
+  min-height:40px;max-height:100px;
+  outline:none;
+  transition:border-color 0.2s;
+  line-height:1.5;
+}
+.scout-input:focus{ border-color:#00bfa6; }
+.scout-input::placeholder{ color:var(--muted); }
+.scout-send{
+  background:linear-gradient(135deg,#00bfa6,#6c63d8);
+  border:none;border-radius:10px;
+  width:36px;height:36px;flex-shrink:0;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.2s;
+}
+.scout-send:hover{ opacity:0.85; }
+.scout-send:disabled{ opacity:0.4;cursor:not-allowed; }
+.scout-send svg{ width:16px;height:16px; }
+
+/* Context badge */
+.scout-context-bar{
+  padding:6px 16px;
+  background:rgba(0,191,166,0.04);
+  border-bottom:1px solid var(--border);
+  font-size:10px;font-family:var(--font-mono);
+  color:var(--muted);letter-spacing:0.06em;
+  flex-shrink:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.scout-ctx-dot{
+  display:inline-block;width:6px;height:6px;
+  border-radius:50%;background:#00bfa6;
+  margin-right:6px;vertical-align:middle;
+  animation:scout-pulse 2s ease-in-out infinite;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  #scoutPanel{ width:100vw; right:-100vw; }
+  #scoutTab.panel-open{ right:100vw; }
+}
+
 </style>
 </head>
 <body>
@@ -2432,8 +2672,10 @@ function formatNote(text){
 function renderResults(r){
   if(currentMode==='candidate'){
     renderCandidateResults(r);
+    scoutHide();
   } else {
     renderRecruiterResults(r);
+    scoutOnResult(r);
   }
   // Show results, hide all panels
   var _rs=document.getElementById('results-section');
@@ -4338,6 +4580,7 @@ function switchView(v){
   // View-specific init
   if(v==='dashboard') renderDashboard();
   if(v==='bulk') initBulkView();
+  if(v!=='results') scoutHide();
   saveAppState();
 }
 
@@ -4512,6 +4755,457 @@ window.onload = function(){
   setupDragDrop();
 };
 
+
+
+// ═══════════════════════════════════════════════════════════════
+// SCOUT — ScreenMind's Triune AI Co-Pilot
+// Signal Clarity · Outcome Underwriting · Talent Intelligence
+// Multi-turn, context-aware, recruiter-mode only
+// ═══════════════════════════════════════════════════════════════
+
+var scoutOpen = false;
+var scoutHistory = [];          // full conversation history for multi-turn
+var scoutBusy = false;
+var scoutCurrentResultId = null; // track when candidate changes → reset history
+
+// ── Radar icon SVG (reused in messages) ──
+var SCOUT_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" style="display:inline;vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3" fill="#00bfa6"/><circle cx="12" cy="12" r="6" stroke="#00bfa6" stroke-width="1.5" fill="none" opacity="0.6"/></svg>';
+
+// ── System prompt — Scout's full identity and context ──
+function scoutBuildSystem() {
+  var r = lastResult || {};
+  var jd = (document.getElementById('jobDescription')||{}).value || '';
+  var criteriaText = (criteria||[]).map(function(c,i){
+    return (i+1)+'. ['+c.weight+'] '+c.text;
+  }).join('\n') || 'No criteria set.';
+
+  return [
+    'You are SCOUT — ScreenMind\'s AI Co-Pilot. You are the triune intelligence inside ScreenMind:',
+    '• Cipher: You read signals others miss. You decode career patterns. You see what resumes hide.',
+    '• Vera: You speak in verified facts. You never speculate without flagging it. You are precise.',
+    '• Scout: You make the call. You give verdicts, not suggestions. You speak like a 20-year talent veteran.',
+    '',
+    'YOUR PERSONALITY:',
+    '- Direct and confident. Never hedge unnecessarily.',
+    '- Never say "Great question", "Certainly!", "As an AI", or any corporate filler.',
+    '- Speak like a seasoned recruiter who has seen 10,000 candidates.',
+    '- If something is a red flag, say so clearly. If a candidate is strong, own it.',
+    '- Short answers when the question is simple. Deep analysis when it warrants it.',
+    '- You can challenge the recruiter\'s assumptions if data supports it.',
+    '',
+    'YOU KNOW SCREENMIND INSIDE OUT:',
+    '- Scoring: Criticals MET=20/INFERRED=14, Importants MET=10/INFERRED=7, Nice-to-have MET=5/INFERRED=3.',
+    '- Hard caps: any Critical missing → max 45. Two+ missing → max 30.',
+    '- Level fit modifier: overqualified >1 level → -8pts.',
+    '- Four-dimensional fit: Role / Level / Trajectory / Culture — all independent.',
+    '- Confidence: High/Medium/Low based on evidence quality, not just score.',
+    '- Inferred = strong contextual signal but not explicitly stated in resume.',
+    '- Met = explicitly evidenced in resume.',
+    '',
+    'CURRENT CONTEXT:',
+    '--- JOB DESCRIPTION (first 800 chars) ---',
+    jd.substring(0, 800) || 'Not provided.',
+    '',
+    '--- ICP CRITERIA ---',
+    criteriaText,
+    '',
+    '--- CANDIDATE RESULT ---',
+    'Name: ' + (r.candidateName || 'Unknown'),
+    'Score: ' + (r.score || 0) + '/100',
+    'Verdict: ' + (r.verdict || 'N/A'),
+    'Hiring Confidence: ' + (r.hiring_confidence || 'N/A'),
+    'Hiring Confidence Reason: ' + (r.hiring_confidence_reason || ''),
+    'Recommended Action: ' + (r.recommended_action || 'N/A'),
+    'Level Assessment: ' + (r.level_assessment || 'N/A'),
+    'Level Risk: ' + (r.level_risk || 'N/A'),
+    'Risks: ' + JSON.stringify(r.risks || []),
+    'Strengths: ' + JSON.stringify(r.strengths || []),
+    'Gaps: ' + JSON.stringify(r.gaps || []),
+    'Four Fit: ' + JSON.stringify(r.four_fit || {}),
+    'Score Calculation: ' + JSON.stringify(r.score_calculation || {}),
+    'Confidence Breakdown: ' + JSON.stringify(r.confidence_breakdown || {}),
+    'ICP Breakdown: ' + JSON.stringify(r.icp_breakdown || []),
+    'Market Context: ' + (r.market_context || ''),
+    'Candidate Persona: ' + JSON.stringify(r.candidate_persona || {}),
+    '',
+    'IMPORTANT: Answer questions about this specific candidate and result.',
+    'You can also answer questions about ScreenMind features, hiring strategy, and talent market.',
+    'You can help write emails, recommendations, rejection notes, and reference check questions.',
+    'You can draft any hiring communication the recruiter needs.',
+  ].join('\n');
+}
+
+// ── Contextual quick-questions based on result ──
+function scoutBuildChips() {
+  var r = lastResult || {};
+  var chips = [];
+
+  if (!r.score) {
+    chips = [
+      'How does ScreenMind scoring work?',
+      'What makes a Strong Match vs Good Match?',
+      'How should I set ICP criteria weights?',
+    ];
+  } else {
+    // Always relevant
+    chips.push('Why this score and not higher?');
+
+    // Confidence-based
+    if (r.hiring_confidence === 'Medium' || r.hiring_confidence === 'Low') {
+      chips.push('What would make this High Confidence?');
+    }
+
+    // Risk-based
+    if (r.risks && r.risks.length > 0) {
+      chips.push('Explain the top risk in plain English');
+    }
+
+    // Level risk
+    if (r.level_risk && r.level_risk !== 'None') {
+      chips.push('Is the overqualification risk real here?');
+    }
+
+    // Action-based
+    if (r.recommended_action === 'Advance to interview') {
+      chips.push('Write a note to the hiring manager recommending this candidate');
+    } else if (r.recommended_action === 'Pass') {
+      chips.push('Draft a respectful rejection email');
+    } else {
+      chips.push('What should I validate in a 30-min screen?');
+    }
+
+    // Interview
+    chips.push('Give me 5 more interview questions for this candidate');
+  }
+
+  return chips.slice(0, 3);
+}
+
+// ── Render chips into panel ──
+function scoutRenderChips() {
+  var container = document.getElementById('scoutChips');
+  if (!container) return;
+  var chips = scoutBuildChips();
+  container.innerHTML = chips.map(function(c) {
+    return '<button class="scout-chip" onclick="scoutAskChip(this)">' + esc(c) + '</button>';
+  }).join('');
+}
+
+// ── User clicked a chip ──
+function scoutAskChip(btn) {
+  var q = btn.textContent;
+  document.getElementById('scoutInput').value = q;
+  scoutSend();
+}
+
+// ── Toggle panel open/closed ──
+function scoutToggle() {
+  scoutOpen = !scoutOpen;
+  var panel = document.getElementById('scoutPanel');
+  var tab   = document.getElementById('scoutTab');
+  if (scoutOpen) {
+    panel.classList.add('open');
+    tab.classList.add('panel-open');
+    document.getElementById('scoutInput').focus();
+  } else {
+    panel.classList.remove('open');
+    tab.classList.remove('panel-open');
+  }
+}
+
+// ── Show Scout tab (only in recruiter mode, after results) ──
+function scoutShow() {
+  var tab = document.getElementById('scoutTab');
+  if (tab) tab.classList.add('visible');
+}
+
+function scoutHide() {
+  var tab   = document.getElementById('scoutTab');
+  var panel = document.getElementById('scoutPanel');
+  if (tab)   { tab.classList.remove('visible','panel-open'); }
+  if (panel) { panel.classList.remove('open'); }
+  scoutOpen = false;
+}
+
+// ── Add a message bubble to the chat ──
+function scoutAddMessage(role, text) {
+  var container = document.getElementById('scoutMessages');
+  if (!container) return;
+
+  var div = document.createElement('div');
+  div.className = 'scout-msg scout-msg-' + role;
+
+  var label = document.createElement('div');
+  label.className = 'scout-msg-label';
+  label.innerHTML = role === 'scout' ? SCOUT_ICON + 'SCOUT' : 'YOU';
+
+  var bubble = document.createElement('div');
+  bubble.className = 'scout-bubble';
+  // Render line breaks
+  bubble.innerHTML = text.replace(/\n/g, '<br>');
+
+  if (role === 'scout') {
+    div.appendChild(label);
+    div.appendChild(bubble);
+  } else {
+    div.appendChild(label);
+    div.appendChild(bubble);
+  }
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+// ── Show/hide typing indicator ──
+function scoutShowTyping() {
+  var container = document.getElementById('scoutMessages');
+  if (!container) return;
+  var el = document.createElement('div');
+  el.className = 'scout-msg scout-msg-scout';
+  el.id = 'scoutTyping';
+  el.innerHTML = '<div class="scout-msg-label">' + SCOUT_ICON + 'SCOUT</div><div class="scout-typing"><span></span><span></span><span></span></div>';
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+}
+
+function scoutHideTyping() {
+  var el = document.getElementById('scoutTyping');
+  if (el) el.remove();
+}
+
+// ── Update context bar ──
+function scoutUpdateContext() {
+  var r = lastResult || {};
+  var ctx = document.getElementById('scoutContextText');
+  if (!ctx) return;
+  if (r.candidateName) {
+    ctx.textContent = r.candidateName + ' · ' + (r.score||0) + '/100 · ' + (r.verdict||'');
+  } else {
+    ctx.textContent = 'Waiting for a candidate result...';
+  }
+}
+
+// ── Called by renderResults when recruiter gets a result ──
+function scoutOnResult(r) {
+  // Check if this is a new candidate
+  var resultId = (r.candidateName||'') + '_' + (r.score||0);
+  if (resultId !== scoutCurrentResultId) {
+    scoutCurrentResultId = resultId;
+    scoutHistory = [];
+    // Clear messages
+    var container = document.getElementById('scoutMessages');
+    if (container) container.innerHTML = '';
+    // Scout speaks first
+    setTimeout(function() {
+      scoutUpdateContext();
+      scoutRenderChips();
+      var opening = scoutOpeningLine(r);
+      scoutAddMessage('scout', opening);
+      // Add to history
+      scoutHistory.push({ role: 'assistant', content: opening });
+    }, 600);
+  }
+  scoutUpdateContext();
+  scoutRenderChips();
+  scoutShow();
+}
+
+// ── Scout's opening line — changes based on result ──
+function scoutOpeningLine(r) {
+  var score = r.score || 0;
+  var conf  = r.hiring_confidence || '';
+  var risks = r.risks || [];
+  var action = r.recommended_action || '';
+  var levelRisk = r.level_risk || '';
+
+  if (score >= 85 && conf === 'High') {
+    return 'Strong signal. ' + (r.candidateName||'This candidate') + ' clears the bar. A few things worth validating before you advance — want me to walk through the interview blueprint or draft your recommendation to the hiring manager?';
+  }
+  if (score >= 85 && conf !== 'High') {
+    return 'High score but ' + conf + ' confidence — that gap matters. The score says advance but I\'m reading some inference risk in the evidence. Want me to explain where the uncertainty is?';
+  }
+  if (score >= 70 && score < 85) {
+    return 'Solid foundation, not a slam dunk. ' + (r.candidateName||'This candidate') + ' meets the bar but I see ' + (risks.length||'some') + ' risk factor' + (risks.length !== 1 ? 's' : '') + ' worth discussing. Where do you want to start?';
+  }
+  if (score >= 50 && score < 70) {
+    if (levelRisk && levelRisk !== 'None') {
+      return 'Mixed profile — and the level risk is real here. The score reflects genuine gaps, not just inference uncertainty. I\'d read the level assessment carefully before deciding.';
+    }
+    return 'Mixed profile. The score is honest but I want to show you what\'s underneath it before you decide. There\'s more context in this result than the number shows.';
+  }
+  if (action === 'Pass') {
+    return (r.candidateName||'This candidate') + ' doesn\'t clear the bar on current evidence. I can explain the specific gaps, help you draft a respectful rejection, or suggest what profile would clear these criteria. What\'s most useful right now?';
+  }
+  return 'I\'ve read the full result. Ask me anything — the score rationale, interview questions, a recommendation draft, what the risks mean — I\'m here.';
+}
+
+// ── Send a message ──
+function scoutSend() {
+  if (scoutBusy) return;
+  var input = document.getElementById('scoutInput');
+  var text = (input.value || '').trim();
+  if (!text) return;
+
+  input.value = '';
+  scoutAutoResize(input);
+
+  // Add user message to UI
+  scoutAddMessage('user', text);
+
+  // Add to history
+  scoutHistory.push({ role: 'user', content: text });
+
+  // Disable input
+  scoutBusy = true;
+  document.getElementById('scoutSend').disabled = true;
+  input.disabled = true;
+
+  // Show typing
+  scoutShowTyping();
+
+  // Build messages array with system context injected as first user message
+  var systemPrompt = scoutBuildSystem();
+  var messages = [];
+
+  // Inject system context on first message or every Nth to keep it fresh
+  if (scoutHistory.length <= 2) {
+    // First exchange — prepend system as a user/assistant primer
+    messages.push({
+      role: 'user',
+      content: '[CONTEXT — read this before every answer]\n' + systemPrompt + '\n\n[END CONTEXT]\n\nYou are now ready. When the recruiter asks their first question, answer as Scout.'
+    });
+    messages.push({
+      role: 'assistant',
+      content: 'Understood. I have the full candidate context, JD, ICP criteria, and result. Ready.'
+    });
+  }
+
+  // Add conversation history
+  for (var i = 0; i < scoutHistory.length; i++) {
+    messages.push(scoutHistory[i]);
+  }
+
+  // Call AI
+  callAI_messages(messages).then(function(reply) {
+    scoutHideTyping();
+    scoutAddMessage('scout', reply);
+    scoutHistory.push({ role: 'assistant', content: reply });
+    // Refresh chips after each exchange
+    scoutRenderChips();
+  }).catch(function(err) {
+    scoutHideTyping();
+    scoutAddMessage('scout', 'Something went wrong: ' + err.message + '. Try again.');
+  }).finally(function() {
+    scoutBusy = false;
+    document.getElementById('scoutSend').disabled = false;
+    input.disabled = false;
+    input.focus();
+  });
+}
+
+// ── callAI variant that accepts pre-built messages array ──
+async function callAI_messages(messages) {
+  var resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type':            'application/json',
+      'x-api-key':               ANTHROPIC_KEY,
+      'anthropic-version':       '2023-06-01',
+      'anthropic-dangerous-direct-browser-calls': 'true',
+    },
+    body: JSON.stringify({
+      model:      AI_MODEL,
+      max_tokens: 1024,
+      messages:   messages,
+    }),
+  });
+  if (!resp.ok) {
+    var err = await resp.json().catch(function(){ return {}; });
+    throw new Error(err.error && err.error.message ? err.error.message : 'API error ' + resp.status);
+  }
+  var data = await resp.json();
+  return (data.content && data.content[0] && data.content[0].text) || '';
+}
+
+// ── Key handler — Enter sends, Shift+Enter newline ──
+function scoutHandleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    scoutSend();
+  }
+}
+
+// ── Auto-resize textarea ──
+function scoutAutoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
 </script>
+
+  <!-- ═══════════════════════════════════════════════
+       SCOUT — ScreenMind's Triune AI Co-Pilot
+       ═══════════════════════════════════════════════ -->
+
+  <!-- Slide-in trigger tab -->
+  <button id="scoutTab" onclick="scoutToggle()" title="Ask Scout">
+    <svg class="scout-tab-icon" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3" fill="#00bfa6"/>
+      <circle cx="12" cy="12" r="6" stroke="#00bfa6" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <circle cx="12" cy="12" r="10" stroke="#00bfa6" stroke-width="1" fill="none" opacity="0.3"/>
+    </svg>
+    SCOUT
+  </button>
+
+  <!-- Panel -->
+  <div id="scoutPanel">
+
+    <!-- Header -->
+    <div class="scout-header">
+      <div class="scout-avatar">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="3" fill="white"/>
+          <circle cx="12" cy="12" r="6" stroke="white" stroke-width="1.5" fill="none" opacity="0.7"/>
+          <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1" fill="none" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="scout-header-info">
+        <div class="scout-name">SCOUT</div>
+        <div class="scout-tagline">Signal · Clarity · Outcome · Understanding · Truth</div>
+      </div>
+      <button class="scout-close" onclick="scoutToggle()" title="Close">✕</button>
+    </div>
+
+    <!-- Context bar -->
+    <div class="scout-context-bar" id="scoutContextBar">
+      <span class="scout-ctx-dot"></span>
+      <span id="scoutContextText">Waiting for a candidate result...</span>
+    </div>
+
+    <!-- Messages -->
+    <div class="scout-messages" id="scoutMessages"></div>
+
+    <!-- Quick question chips -->
+    <div class="scout-chips" id="scoutChips"></div>
+
+    <!-- Input -->
+    <div class="scout-input-wrap">
+      <textarea
+        class="scout-input"
+        id="scoutInput"
+        placeholder="Ask Scout anything about this candidate..."
+        rows="1"
+        onkeydown="scoutHandleKey(event)"
+        oninput="scoutAutoResize(this)"
+      ></textarea>
+      <button class="scout-send" id="scoutSend" onclick="scoutSend()" title="Send">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
 </body>
 </html>
