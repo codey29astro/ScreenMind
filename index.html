@@ -1920,36 +1920,24 @@ body.candidate-mode footer{background:#f0f2f8 !important;color:#8b91b8 !importan
 
 <script>
 // ── AI Backend ─────────────────────────────────────────────────────
-// Direct Anthropic API — no Groq rate limits, no Render cold starts
-// Set your Anthropic API key here for the investor demo:
-const ANTHROPIC_KEY = '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';
+const BACKEND = 'https://still-sea-659e.pskasyapa.workers.dev/';
+const ANTHROPIC_KEY = 'YOUR_KEY_FOR_SCOUT_ONLY';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const AI_MODEL     = 'claude-sonnet-4-5';
+const AI_MODEL = 'claude-haiku-4-5-20251001';
 
-// Drop-in replacement — same {text} shape all call sites expect
+// Render backend — for all screening calls (ICP, main screen, note, bulk)
 async function callAI(prompt) {
-  const resp = await fetch(ANTHROPIC_URL, {
+  const resp = await fetch(BACKEND, {
     method: 'POST',
-    headers: {
-      'Content-Type':            'application/json',
-      'x-api-key':               ANTHROPIC_KEY,
-      'anthropic-version':       '2023-06-01',
-      'anthropic-dangerous-direct-browser-calls': 'true',
-    },
-    body: JSON.stringify({
-      model:      AI_MODEL,
-      max_tokens: 4096,
-      messages:   [{ role: 'user', content: prompt }],
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
   });
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    const detail = err.error?.message || err.error?.type || JSON.stringify(err);
-    throw new Error('AI Error ' + resp.status + ': ' + detail);
+    throw new Error(err.error || 'Server error ' + resp.status);
   }
   const data = await resp.json();
-  // Return same shape as old Render backend: { text: '...' }
-  return { text: (data.content?.[0]?.text || '') };
+  return { text: data.text || '' };
 }
 
 // ══════════════════════════════════════════════════
