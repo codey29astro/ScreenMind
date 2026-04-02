@@ -3425,25 +3425,45 @@ function recordOutcome(outcome){
   // Persist so refresh restores this state
   try{
     var _key = 'sm_rec_dec_'+(lastResult&&lastResult.candidateName||'u')+'_'+(currentUser&&currentUser.name||'');
-    localStorage.setItem(_key, outcome);
+    localStorage.setItem(_key, JSON.stringify({outcome:outcome}));
   }catch(e){}
-  applyRecruiterDecisionUI();
+  applyRecruiterDecisionUI(outcome);
   // Update in DB
   if(lastResult && lastResult.candidateName){
     dbUpdateOutcome(lastResult.candidateName, outcome);
   }
 }
 
-function applyRecruiterDecisionUI(){
+function applyRecruiterDecisionUI(outcome){
+  // If no outcome passed, read from localStorage
+  if(!outcome){
+    try{
+      var _key = 'sm_rec_dec_'+(lastResult&&lastResult.candidateName||'u')+'_'+(currentUser&&currentUser.name||'');
+      var _saved = localStorage.getItem(_key);
+      if(_saved) outcome = JSON.parse(_saved).outcome;
+    }catch(e){}
+  }
   var fd = document.getElementById('feedbackDone');
   if(fd) fd.classList.add('visible');
   // Scope to decisionSection only — never touch accuracy buttons
   var sect = document.getElementById('decisionSection');
-  if(sect) sect.querySelectorAll('.feedback-btn').forEach(function(b){
-    b.disabled = true;
-    b.style.opacity = '0.4';
-    b.style.pointerEvents = 'none';
-    b.style.cursor = 'not-allowed';
+  if(!sect) return;
+  sect.querySelectorAll('.feedback-btn').forEach(function(b){
+    var onc = b.getAttribute('onclick')||'';
+    var isSelected = outcome && onc.indexOf("'"+outcome+"'") !== -1;
+    if(isSelected){
+      b.style.opacity = '1';
+      b.style.background = 'rgba(52,211,153,0.15)';
+      b.style.borderColor = 'var(--success)';
+      b.style.color = 'var(--success)';
+      b.style.pointerEvents = 'none';
+      b.style.cursor = 'default';
+    } else {
+      b.disabled = true;
+      b.style.opacity = '0.3';
+      b.style.pointerEvents = 'none';
+      b.style.cursor = 'not-allowed';
+    }
   });
 }
 
@@ -3931,7 +3951,11 @@ function setMode(m){
     rsLabel.textContent='Step 3 · Candidate Resume';
     rsTitle.textContent='Upload Resume';
     rsDesc.textContent='PDF, DOCX, or TXT — ScreenMind extracts and understands context automatically.';
+    // Hide Job Seeker tab in recruiter mode
+    var _cbHide = document.getElementById('mode-candidate');
+    if(_cbHide) _cbHide.style.display = 'none';
   }
+  applyMode(m);
 }
 
 function renderCandidateExtras(r){ /* retired */ }
@@ -4679,21 +4703,27 @@ function showApp(){
   applyMode(mode);  // applyMode calls saveAppState — currentView is now correct
 
   // ── Restore view ────────────────────────────────────────────
-  if(isRefresh && view === 'results'){
+  // Restore if: refresh within session OR tab reopened with recent result (<2hrs)
+  var shouldRestoreResults = (isRefresh && view === 'results');
+  if(!shouldRestoreResults && !isRefresh){
+    // Check if there's a recent result even without sessionStorage
+    try{
+      var _rrCheck = JSON.parse(localStorage.getItem(mode==='candidate'?'sm_last_cand_result':'sm_last_result')||'null');
+      if(_rrCheck && _rrCheck.result && (Date.now()-_rrCheck.ts < 7200000)) shouldRestoreResults = true;
+    }catch(e){}
+  }
+  if(shouldRestoreResults){
     if(mode === 'candidate'){
-      // Candidate restore — use candidate-specific key
       try{
         var _cr = JSON.parse(localStorage.getItem('sm_last_cand_result')||'null');
         if(_cr && _cr.result && (Date.now()-_cr.ts < 7200000)){
           var _jec=document.getElementById('jobDescription');
           if(_jec && _cr.jd) _jec.value = _cr.jd;
           renderResults(_cr.result);
-          // Tab is now pre-rendered correctly — no setTimeout needed
           return;
         }
       }catch(e){}
     } else {
-      // Recruiter restore — use recruiter-specific key
       try{
         var _rr = JSON.parse(localStorage.getItem('sm_last_result')||'null');
         if(_rr && _rr.result && (Date.now()-_rr.ts < 7200000)){
@@ -4704,7 +4734,6 @@ function showApp(){
         }
       }catch(e){}
     }
-    // Nothing found — fall back to screen
     view = 'screen';
   }
 
