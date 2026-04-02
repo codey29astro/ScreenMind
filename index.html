@@ -2129,11 +2129,20 @@ function doLogin(){
   showApp();
 }
 function doLogout(){
-  try{ sessionStorage.removeItem('sm_nav'); }catch(e){}
+  try{ sessionStorage.clear(); }catch(e){}
   localStorage.removeItem('sm_user');
   currentUser=null;
   document.body.classList.remove('candidate-mode');
   document.body.style.removeProperty('--accent');
+  document.body.style.removeProperty('--accent-glow');
+  document.body.style.removeProperty('--accent2');
+  // Clear login fields so previous user's details don't show
+  var nameEl = document.getElementById('loginName');
+  var roleEl = document.getElementById('loginRole');
+  if(nameEl) nameEl.value = '';
+  if(roleEl) roleEl.value = '';
+  // Hide scout
+  scoutHide();
   document.getElementById('app-view').style.display='none';
   document.getElementById('login-view').style.display='flex';
 }
