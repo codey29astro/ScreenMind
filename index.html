@@ -1921,7 +1921,7 @@ body.candidate-mode footer{background:#f0f2f8 !important;color:#8b91b8 !importan
 <script>
 // ── AI Backend ─────────────────────────────────────────────────────
 const BACKEND = 'https://still-sea-659e.pskasyapa.workers.dev/';
-const ANTHROPIC_KEY = '';
+const ANTHROPIC_KEY = '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';
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const AI_MODEL = 'claude-3-5-haiku-20241022';
 
@@ -2376,9 +2376,16 @@ async function runScreening(){
     let result;
     try{
       let clean=rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
-      const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
+      const s=clean.indexOf('{');
       if(s===-1)throw new Error('No JSON in response');
-      result=JSON.parse(clean.substring(s,e+1));
+      clean=clean.substring(s);
+      // Find the real closing brace by counting depth
+      let depth=0,end=-1;
+      for(let i=0;i<clean.length;i++){
+        if(clean[i]==='{')depth++;
+        else if(clean[i]==='}'){depth--;if(depth===0){end=i;break;}}
+      }
+      result=JSON.parse(end!==-1?clean.substring(0,end+1):clean);
     }catch(e){throw new Error('Could not parse AI response. Please try again.');}
 
     if(!currentRole&&jd)currentRole=jd.split('\n')[0].substring(0,60);
@@ -5131,11 +5138,26 @@ function scoutSend() {
 
 // ── callAI variant that accepts pre-built messages array ──
 async function callAI_messages(messages) {
-  // Route through Cloudflare Worker - key lives there, not in HTML
-  var lastMsg = messages[messages.length-1];
-  var prompt = lastMsg ? lastMsg.content : '';
-  var d = await callAI(prompt);
-  return d.text || '';
+  var resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type':            'application/json',
+      'x-api-key':               ANTHROPIC_KEY,
+      'anthropic-version':       '2023-06-01',
+      'anthropic-dangerous-direct-browser-calls': 'true',
+    },
+    body: JSON.stringify({
+      model:      AI_MODEL,
+      max_tokens: 1024,
+      messages:   messages,
+    }),
+  });
+  if (!resp.ok) {
+    var err = await resp.json().catch(function(){ return {}; });
+    throw new Error(err.error && err.error.message ? err.error.message : 'API error ' + resp.status);
+  }
+  var data = await resp.json();
+  return (data.content && data.content[0] && data.content[0].text) || '';
 }
 
 // ── Key handler — Enter sends, Shift+Enter newline ──
